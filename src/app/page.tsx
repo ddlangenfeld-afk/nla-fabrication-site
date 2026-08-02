@@ -135,7 +135,7 @@ export default function HomePage() {
           <div className="flex items-end justify-between gap-4">
             <div>
               <Reveal as="p" className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
-                Available now
+                Current catalog
               </Reveal>
               <RevealLines
                 as="h2"
@@ -219,7 +219,7 @@ export default function HomePage() {
       <section aria-labelledby="pipeline-heading" className="border-b border-line">
         <div className="shell py-16 sm:py-20">
           <Reveal as="p" className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
-            In development
+            Development pipeline
           </Reveal>
           <RevealLines
             as="h2"
