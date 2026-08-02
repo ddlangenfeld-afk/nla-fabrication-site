@@ -44,6 +44,15 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  // icon.svg is the modern icon; favicon.ico lives in public/ because browsers,
+  // crawlers, and link unfurlers request /favicon.ico whatever the markup says.
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "48x48" },
+    ],
+    shortcut: "/favicon.ico",
+  },
 };
 
 export const viewport: Viewport = {
@@ -83,7 +92,10 @@ export default function RootLayout({
           Skip to content
         </a>
         <Header />
-        <main id="main" className="flex-1">
+        {/* tabIndex={-1} lets the skip link actually move focus here. Without
+            it the hash changes but focus stays on <body>, so the next Tab
+            restarts at the top of the page and the skip link does nothing. */}
+        <main id="main" tabIndex={-1} className="flex-1 outline-none">
           {children}
         </main>
         <Footer />

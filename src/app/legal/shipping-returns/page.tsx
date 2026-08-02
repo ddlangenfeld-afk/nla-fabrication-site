@@ -40,7 +40,7 @@ export default function ShippingReturnsPage() {
         <h2 className="font-display text-lg font-semibold text-ink">Contact</h2>
         <p className="mt-2">
           For an order issue, reach out at{" "}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="text-accent hover:text-accent-bright">
+          <a href={`mailto:${CONTACT_EMAIL}`} className="link-inline">
             {CONTACT_EMAIL}
           </a>
           .

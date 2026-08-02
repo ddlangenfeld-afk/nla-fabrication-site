@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PipelineList } from "@/components/PipelineList";
 import { ProductCard } from "@/components/ProductCard";
 import { getAllProducts, getAvailableProducts, getComingSoonProducts } from "@/lib/products";
 
@@ -78,14 +79,8 @@ export default function ShopPage() {
             Each of these needs fitment verification on a real car before it gets modeled
             and tooled. No pre-orders — they go live when they fit.
           </p>
-          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {pipeline.map((product) => (
-              <ProductCard
-                key={product.slug}
-                product={product}
-                index={allProducts.indexOf(product) + 1}
-              />
-            ))}
+          <div className="mt-8">
+            <PipelineList products={pipeline} startIndex={available.length + 1} showFitment />
           </div>
         </div>
       </section>

@@ -125,7 +125,7 @@ export function ContactForm() {
       {status === "error" && (
         <p role="alert" className="border border-error/40 bg-error/10 px-4 py-3 text-sm text-ink">
           Something went wrong sending that. Try again, or email{" "}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="text-accent hover:text-accent-bright">
+          <a href={`mailto:${CONTACT_EMAIL}`} className="link-inline">
             {CONTACT_EMAIL}
           </a>{" "}
           directly.

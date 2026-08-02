@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PipelineList } from "@/components/PipelineList";
 import { ProductArt } from "@/components/ProductArt";
 import { ProductCard } from "@/components/ProductCard";
 import { getAllProducts, getAvailableProducts, getComingSoonProducts } from "@/lib/products";
@@ -201,28 +202,9 @@ export default function HomePage() {
             Each part gets fitment-verified on a real car before it&rsquo;s tooled. These
             are next in line.
           </p>
-          <ul className="mt-8 divide-y divide-line border-y border-line">
-            {pipeline.map((product, i) => (
-              <li key={product.slug}>
-                <Link
-                  href={`/products/${product.slug}`}
-                  className="group flex items-baseline justify-between gap-4 py-4 transition-colors hover:bg-bg-raised sm:px-4"
-                >
-                  <span className="flex min-w-0 items-baseline gap-4">
-                    <span className="font-mono text-2xs text-ink-muted">
-                      {String(i + 4).padStart(2, "0")}
-                    </span>
-                    <span className="truncate text-sm text-ink-secondary transition-colors group-hover:text-ink sm:text-base">
-                      {product.name}
-                    </span>
-                  </span>
-                  <span className="shrink-0 font-mono text-2xs uppercase tracking-wider text-ink-muted">
-                    Coming soon
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-8">
+            <PipelineList products={pipeline} startIndex={available.length + 1} />
+          </div>
         </div>
       </section>
 

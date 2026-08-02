@@ -74,3 +74,23 @@ Three further set-state-in-effect errors fixed at the source rather than suppres
 **README** written: real-vs-stubbed table, the five env vars and what degrades without each, architecture map, trademark rules, phase-2 roadmap, pre-launch checklist. `.env.example` committed (with a `.gitignore` exception) so required keys are self-documenting.
 
 **Flagged honestly:** the dimension callouts in the technical drawings (`148 mm`, `62 mm`, `PITCH 50`) are illustrative, not measured. On a fitment-critical part a wrong published dimension is worse than no dimension — these need real figures or removal before launch. Called out in the README's pre-launch checklist.
+
+## 2026-08-02 · 09:30 — Visual QA + accessibility pass (first full loop)
+
+Set up a repeatable review rig rather than eyeballing: static-export the site, screenshot all 9 routes at 375/768/1440 under Chromium, and run axe-core against every route at two widths. All three scripts live in the session scratchpad and get re-run each loop.
+
+**Also published a live preview** the founder can open any time — the real prerendered pages with real CSS and self-hosted fonts inlined into a single page, with a route rail and a 375/768/1440 switcher. Redeployed to the same URL at each milestone.
+
+**Design fixes found by actually looking at it:**
+
+- **The shop page had its emphasis backwards.** Seven "coming soon" cards visually outweighed the three parts a visitor can actually buy — the pipeline occupied roughly two-thirds of the page. Worse, several pipeline items share a schematic (`clips` used twice, `bracket` twice), so the grid showed literally identical drawings side by side, which reads as a bug rather than a placeholder. Replaced the pipeline cards with a dense `PipelineList` on both home and shop. The page got 27% shorter and the three real products now lead.
+- **Mobile pipeline rows truncated** four of seven part names ("Weatherstrip End Retainers & Clip…") because the per-row "Coming soon" label ate the width. The section heading already establishes the status, so that label is now hidden below `sm` and the names wrap instead.
+- **Product page had a tall empty gap** on the left below the spec table at desktop. Moved the aftermarket/trademark disclaimer there — it's a statement about the part numbers directly above it, so it reads better *and* fills the void.
+- **"Also available" always renders exactly two cards** (there are only three purchasable parts), which left a hole in a three-column grid. Now a constrained two-up.
+
+**Accessibility — WCAG 2.1 AA, clean across all 9 routes at 375 and 1440:**
+
+- axe found one real violation: **inline prose links signalled by colour alone** (amber on grey is 1.12:1, and 1.4.1 wants ≥3:1 or a non-colour cue). Added a `.link-inline` treatment — underline with a tinted decoration colour that solidifies on hover — and applied it to every link sitting inside running text. Nav, card, and button links are deliberately exempt: position already distinguishes those, and axe agrees.
+- Keyboard pass caught something axe cannot: **the skip link didn't skip.** Activating it moved the hash but left focus on `<body>`, so the next Tab restarted at the top of the page — the link was decorative. Added `tabIndex={-1}` to `<main>`; focus now genuinely lands there. Verified tab order across the first 12 stops, every one with a visible amber focus ring, and confirmed the mobile menu toggles `aria-expanded` correctly and closes on navigation.
+
+**Favicon:** `/favicon.ico` was 404ing on every page load — browsers, crawlers, and link unfurlers request it regardless of what `<link rel="icon">` says. Next won't emit a `favicon.ico` route while `icon.svg` sits beside it in `app/`, so the ICO now lives in `public/`. Generated a real 16/32/48px multi-size ICO from the SVG via sharp (830 bytes) rather than shipping a single-size stub.

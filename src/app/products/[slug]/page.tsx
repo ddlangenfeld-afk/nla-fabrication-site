@@ -155,6 +155,16 @@ export default async function ProductPage({
               </div>
             ))}
           </dl>
+
+          {/* Sits with the spec table rather than under the buy column: it's a
+              statement about the part numbers above it, and it fills what was
+              otherwise a tall empty gap beside the description on desktop. */}
+          <p className="mt-6 text-xs leading-relaxed text-ink-muted">
+            Aftermarket reproduction part manufactured by {SITE_NAME}. Not an original
+            manufacturer part and not affiliated with, sponsored by, or endorsed by any
+            vehicle manufacturer. OEM part numbers are referenced solely to identify
+            compatibility.
+          </p>
         </div>
 
         {/* Buy column */}
@@ -254,12 +264,6 @@ export default async function ProductPage({
             )}
           </div>
 
-          <p className="mt-8 border-t border-line pt-6 text-xs leading-relaxed text-ink-muted">
-            Aftermarket reproduction part manufactured by {SITE_NAME}. Not an original
-            manufacturer part and not affiliated with, sponsored by, or endorsed by any
-            vehicle manufacturer. OEM part numbers are referenced solely to identify
-            compatibility.
-          </p>
         </div>
       </div>
 
@@ -272,7 +276,9 @@ export default async function ProductPage({
             >
               Also available
             </h2>
-            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Only three parts are purchasable, so this row is always the
+                other two — a two-up grid rather than a three-up with a hole. */}
+            <div className="mt-6 grid max-w-3xl gap-5 sm:grid-cols-2">
               {related.map((p) => (
                 <ProductCard key={p.slug} product={p} index={allProducts.indexOf(p) + 1} />
               ))}

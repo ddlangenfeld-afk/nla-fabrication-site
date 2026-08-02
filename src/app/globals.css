@@ -97,6 +97,23 @@ body {
   border-radius: 2px;
 }
 
+/* Links sitting inside running text carry an underline, not just a colour
+   shift: WCAG 1.4.1 wants a non-colour cue whenever link and body text are
+   under 3:1 against each other, and amber-on-grey is 1.12:1. Standalone links
+   (nav, cards, buttons) are exempt — position already distinguishes them. */
+.link-inline {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+.link-inline:hover {
+  color: var(--color-accent-bright);
+  text-decoration-color: currentColor;
+}
+
 /* Engineering-drawing hairline grid backdrop for hero sections */
 .blueprint-grid {
   background-image:

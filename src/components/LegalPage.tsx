@@ -41,7 +41,7 @@ export function LegalPage({
         <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
           <p className="text-sm text-ink-secondary">
             Questions about an order?{" "}
-            <Link href="/contact" className="text-accent transition-colors hover:text-accent-bright">
+            <Link href="/contact" className="link-inline">
               Get in touch
             </Link>
             .
