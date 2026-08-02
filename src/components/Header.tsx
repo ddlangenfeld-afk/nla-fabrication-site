@@ -22,7 +22,7 @@ export function Header() {
         <Link
           href="/"
           onClick={() => setMenuOpen(false)}
-          className="font-display text-base font-semibold tracking-tight text-ink transition-colors hover:text-accent"
+          className="py-2 font-display text-base font-semibold tracking-tight text-ink transition-colors hover:text-accent"
         >
           NLA<span className="text-accent">·</span>FABRICATION
         </Link>
@@ -33,7 +33,9 @@ export function Header() {
               key={link.href}
               href={link.href}
               aria-current={pathname === link.href ? "page" : undefined}
-              className={`text-sm transition-colors hover:text-ink ${
+              // py-2 takes the tap target past the 24px WCAG 2.5.8 minimum;
+              // the 17px line box alone was under it.
+              className={`py-2 text-sm transition-colors hover:text-ink ${
                 pathname.startsWith(link.href) ? "text-ink" : "text-ink-secondary"
               }`}
             >
@@ -88,13 +90,21 @@ export function Header() {
 }
 
 function CartLink({ count }: { count: number }) {
+  /*
+   * No aria-label on the link itself. Overriding the whole name broke WCAG
+   * 2.5.3 (Label in Name): the visible text is "Cart" plus the badge digit,
+   * which "Cart, 0 items" doesn't contain, so voice-control users saying
+   * "click Cart 2" could miss. Instead the digit is hidden from the name and
+   * the count is supplied as screen-reader-only text, so the accessible name
+   * ends up "Cart, 2 items" while still containing the visible label.
+   */
   return (
     <Link
       href="/cart"
-      className="group flex items-center gap-2 text-sm text-ink-secondary transition-colors hover:text-ink"
-      aria-label={`Cart, ${count} ${count === 1 ? "item" : "items"}`}
+      className="group flex items-center gap-2 py-2 text-sm text-ink-secondary transition-colors hover:text-ink"
     >
       <span className="hidden sm:inline">Cart</span>
+      <span className="sr-only sm:hidden">Cart</span>
       <svg
         width="18"
         height="18"
@@ -114,6 +124,7 @@ function CartLink({ count }: { count: number }) {
         <circle cx="13" cy="15.5" r="1.1" fill="currentColor" />
       </svg>
       <span
+        aria-hidden="true"
         className={`flex h-5 min-w-5 items-center justify-center px-1 font-mono text-2xs transition-colors ${
           count > 0
             ? "bg-accent text-accent-ink"
@@ -121,6 +132,9 @@ function CartLink({ count }: { count: number }) {
         }`}
       >
         {count}
+      </span>
+      <span className="sr-only">
+        , {count} {count === 1 ? "item" : "items"}
       </span>
     </Link>
   );

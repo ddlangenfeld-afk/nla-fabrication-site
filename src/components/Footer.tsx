@@ -50,12 +50,14 @@ export function Footer() {
               <h2 className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
                 {col.heading}
               </h2>
-              <ul className="mt-4 space-y-3">
+              <ul className="mt-4 space-y-1.5">
                 {col.links.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-ink-secondary transition-colors hover:text-ink"
+                      // inline-block + padding gives a 25px tap target; the
+                      // bare 17px line box failed WCAG 2.5.8.
+                      className="inline-block py-1 text-sm text-ink-secondary transition-colors hover:text-ink"
                     >
                       {link.label}
                     </Link>
@@ -71,7 +73,7 @@ export function Footer() {
           </p>
           <a
             href={`mailto:${CONTACT_EMAIL}`}
-            className="font-mono text-2xs text-ink-muted transition-colors hover:text-ink-secondary"
+            className="inline-block py-1 font-mono text-2xs text-ink-muted transition-colors hover:text-ink-secondary"
           >
             {CONTACT_EMAIL}
           </a>

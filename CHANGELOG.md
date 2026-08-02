@@ -108,3 +108,18 @@ Rewrote it with per-field validation: errors appear on blur or submit, never on 
 **Built a flow test suite** covering what screenshots can't: empty-form submit, bad email, too-short message, error-clearing on fix, the mailto fallback, add-to-cart with a variant, quantity adjustment, totals, persistence across reload, the empty state after removal, and checkout with no Stripe key. All pass with no page errors.
 
 **Accessibility re-audited in interactive states**, not just at rest — contact form with validation errors visible, populated cart, order confirmation, and the mobile menu open. Clean at 375 and 1440.
+
+## 2026-08-02 · 10:50 — Lighthouse pass: 100 across the board
+
+Ran Lighthouse against home, shop, product detail, and contact.
+
+**Final: Performance 100 · Accessibility 100 · Best Practices 100 · SEO 100** on all four. LCP 0.4–0.6 s, CLS 0, TBT 0 ms. The brief asked for 90+; this clears it.
+
+The first run scored 96 on accessibility and best practices, and the two audits behind that were both real — and both invisible to axe, which is a useful reminder that one tool isn't a pass:
+
+- **WCAG 2.5.3, Label in Name.** The cart link carried `aria-label="Cart, 2 items"`, which replaced the accessible name wholesale. The visible text is "Cart" plus the badge digit, and the label doesn't contain that combination — so a voice-control user saying "click Cart 2" could fail to match. Removed the label; the badge digit is now `aria-hidden` with the count supplied as screen-reader-only text, so the name resolves to "Cart, 2 items" while still containing the visible "Cart".
+- **WCAG 2.5.8, Target Size.** Header nav links, the wordmark, and every footer link were 17 px tall against a 24 px minimum — a bare text line box with no padding. Added vertical padding to take them past 24 px and traded the footer's `space-y-3` for `space-y-1.5` so the columns keep the same rhythm now that each link carries its own padding.
+
+Also confirmed the console 500s in the first run were my own workflow, not the site: I had rebuilt while a server was still running, so it was serving HTML that referenced chunk hashes the new build had replaced. Clean on a fresh server.
+
+Re-verified after the changes: 18/18 axe scans clean, all interactive states clean, full flow suite passing.
