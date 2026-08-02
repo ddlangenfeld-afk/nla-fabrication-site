@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCart } from "@/lib/cart";
 
 const navLinks = [
@@ -16,15 +16,12 @@ export function Header() {
   const { count, ready } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
-
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-bg/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
+          onClick={() => setMenuOpen(false)}
           className="font-display text-base font-semibold tracking-tight text-ink transition-colors hover:text-accent"
         >
           NLA<span className="text-accent">·</span>FABRICATION
@@ -77,6 +74,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
+              onClick={() => setMenuOpen(false)}
               aria-current={pathname === link.href ? "page" : undefined}
               className="block border-b border-line px-4 py-4 text-sm text-ink-secondary transition-colors hover:bg-bg-raised hover:text-ink"
             >
@@ -97,7 +95,14 @@ function CartLink({ count }: { count: number }) {
       aria-label={`Cart, ${count} ${count === 1 ? "item" : "items"}`}
     >
       <span className="hidden sm:inline">Cart</span>
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="sm:hidden">
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
+        fill="none"
+        aria-hidden="true"
+        className="sm:hidden"
+      >
         <path
           d="M2 3h2l1.6 8.5a1 1 0 0 0 1 .8h6.9a1 1 0 0 0 1-.8L16 6H5"
           stroke="currentColor"

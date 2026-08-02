@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64" width="240" height="64">
+  <rect width="240" height="64" fill="#0b0c0e"/>
+  <g stroke="#7d848d" stroke-width="2" fill="none">
+    <path d="M8 20V8h12"/>
+    <path d="M220 8h12v12"/>
+    <path d="M232 44v12h-12"/>
+    <path d="M20 56H8V44"/>
+  </g>
+  <text x="28" y="40" font-family="'Space Grotesk', 'Inter', system-ui, sans-serif"
+        font-size="22" font-weight="600" letter-spacing="0.5" fill="#edeef0">NLA</text>
+  <circle cx="83" cy="33" r="3" fill="#f5a524"/>
+  <text x="93" y="40" font-family="'Space Grotesk', 'Inter', system-ui, sans-serif"
+        font-size="22" font-weight="600" letter-spacing="0.5" fill="#edeef0">FABRICATION</text>
+</svg>

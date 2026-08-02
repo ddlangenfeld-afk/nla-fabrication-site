@@ -49,3 +49,28 @@ Work stopped here at the founder's request, mid-build. **The site does not build
 - README
 
 **No API keys were set or fabricated.** Stripe and Resend keys are still needed before checkout or the contact form can work.
+
+## 2026-08-02 · 08:20 — Push blocked, then unblocked
+
+`git push` failed with HTTP 403 from the git proxy on all retries; a fallback push through the GitHub API failed identically (`403 Resource not accessible by integration`) on the first file. Same root cause, not a network problem: the GitHub App install had read but not write access to this repo. Founder fixed the repository scope, and the retry pushed clean on the first attempt. No partial or corrupt state was written in the meantime — the repo had zero branches throughout.
+
+## 2026-08-02 · 08:50 — v1 feature-complete
+
+**Pages finished:** `/contact` (validated form), `/cart`, and the three `/legal` stubs — the routes that were linked but missing, which is exactly what had been breaking the build. Plus `not-found.tsx` (404) and `error.tsx` (error boundary).
+
+**Commerce:**
+- `POST /api/checkout` creates a Stripe hosted Checkout session. **Security decision:** the client sends only slugs, variant IDs, and quantities — never prices. The route re-reads every price from `products.json` server-side and drops any line that isn't an available product. A tampered cart payload therefore can't change what gets charged. Quantities clamp to 1–99.
+- `POST /api/contact` validates server-side, then sends via Resend. With no `RESEND_API_KEY` it returns `not_configured` (HTTP 200, not an error) and the client renders a **prefilled `mailto:` link** carrying whatever the visitor already typed — the brief's required fallback, and it means an unconfigured deploy still lets someone make contact.
+- Same principle for Stripe: with no key, the cart explains that checkout isn't live rather than throwing an error at the buyer.
+
+**SEO:** generated `sitemap.ts` (available parts priority 0.8, pipeline 0.4) and `robots.ts` (`/cart` and `/api/` disallowed — one is per-visitor, the other returns JSON). Generated OG image via `next/og` reusing the site's blueprint grid and amber palette. SVG favicon: corner brackets + amber crosshair — "NLA" is illegible at 16px, a technical-drawing mark isn't. Deleted the `create-next-app` default favicon.
+
+**Cart rewritten on `useSyncExternalStore`.** React 19's `react-hooks/set-state-in-effect` rule flagged the original `useEffect` + `setState` hydration pattern, and it was right to: localStorage is an external store, not React state. The rewrite gives a correct server snapshot (empty) and a real post-hydration one, **plus free cross-tab sync** through the `storage` event — edit the cart in two tabs and both stay honest. Dropped `CartProvider` entirely; the store is module-level, so its mutators are referentially stable and safe as effect dependencies.
+
+Three further set-state-in-effect errors fixed at the source rather than suppressed: the header now closes its mobile menu on link click (the actual triggering event) instead of watching `pathname` in an effect, and the cart reads Stripe's return params via `useSearchParams` at render time behind a Suspense boundary, which keeps `/cart` prerenderable.
+
+**Verified:** `npm run lint` clean, `npm run build` green — 26 routes, product pages SSG via `generateStaticParams`.
+
+**README** written: real-vs-stubbed table, the five env vars and what degrades without each, architecture map, trademark rules, phase-2 roadmap, pre-launch checklist. `.env.example` committed (with a `.gitignore` exception) so required keys are self-documenting.
+
+**Flagged honestly:** the dimension callouts in the technical drawings (`148 mm`, `62 mm`, `PITCH 50`) are illustrative, not measured. On a fitment-critical part a wrong published dimension is worse than no dimension — these need real figures or removal before launch. Called out in the README's pre-launch checklist.

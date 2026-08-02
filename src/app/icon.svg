@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" fill="#0b0c0e"/>
+  <!-- engineering-drawing corner brackets -->
+  <g stroke="#7d848d" stroke-width="2" fill="none">
+    <path d="M4 10V4h6"/>
+    <path d="M22 4h6v6"/>
+    <path d="M28 22v6h-6"/>
+    <path d="M10 28H4v-6"/>
+  </g>
+  <!-- amber center crosshair -->
+  <g stroke="#f5a524" stroke-width="2.5" stroke-linecap="square">
+    <path d="M16 10v12"/>
+    <path d="M10 16h12"/>
+  </g>
+</svg>
