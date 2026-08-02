@@ -60,8 +60,8 @@ export default function OpenGraphImage() {
               maxWidth: 820,
             }}
           >
-            3D-printed reproductions of discontinued interior parts, modeled from
-            original geometry and printed in PETG.
+            Reverse-engineered replacements for discontinued interior components.
+            Validated on the chassis. Produced to order.
           </div>
         </div>
 

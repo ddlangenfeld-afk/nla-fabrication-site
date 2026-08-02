@@ -86,9 +86,19 @@ export function useHeaderScroll(): HeaderState {
 }
 
 /**
- * Adds `data-revealed="true"` to an element the first time it enters the
- * viewport. One observer per element, disconnected after it fires — reveals
- * are a one-way trip, so nothing keeps running after the work is done.
+ * Toggles `data-revealed` as an element enters and leaves the viewport, so the
+ * animation replays every time you scroll back to it rather than firing once
+ * and staying done.
+ *
+ * The observer therefore stays connected for the life of the element. That's
+ * the deliberate cost of replaying: an `IntersectionObserver` callback is
+ * cheap and runs off the main thread's layout path, but "disconnect after
+ * first fire" is no longer available as an optimisation.
+ *
+ * It also records which edge the element left by. Without that, something that
+ * scrolled off the top would slide back up from below on the way back — the
+ * content appears to come from the wrong direction, which is the tell that a
+ * reversible reveal was bolted onto a one-way one.
  */
 export function useReveal<T extends HTMLElement>(enabled = true) {
   const ref = useRef<T>(null);
@@ -102,16 +112,19 @@ export function useReveal<T extends HTMLElement>(enabled = true) {
       return;
     }
 
-    const reveal = () => {
-      node.dataset.revealed = "true";
-      observer.disconnect();
-      window.clearTimeout(fallback);
-    };
+    let fired = false;
 
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) reveal();
+          fired = true;
+          if (entry.isIntersecting) {
+            node.dataset.revealed = "true";
+          } else {
+            // Above the viewport? Then it should go back up, not down.
+            node.dataset.from = entry.boundingClientRect.top < 0 ? "above" : "below";
+            node.dataset.revealed = "false";
+          }
         }
       },
       // Fire slightly before the element's top edge arrives, so content is
@@ -121,11 +134,13 @@ export function useReveal<T extends HTMLElement>(enabled = true) {
 
     observer.observe(node);
 
-    // Safety net: content must never stay invisible indefinitely because one
-    // observer callback didn't fire — a zero-size ancestor at observe-time, a
-    // tab restored from bfcache, a browser quirk. If nothing has revealed
-    // this element after a generous wait, show it anyway.
-    const fallback = window.setTimeout(reveal, 4000);
+    // Safety net: content must never stay invisible indefinitely because the
+    // observer never reported — a zero-size ancestor at observe-time, a tab
+    // restored from bfcache, a browser quirk. If nothing has been heard after
+    // a generous wait, show it and let the observer take over if it wakes up.
+    const fallback = window.setTimeout(() => {
+      if (!fired) node.dataset.revealed = "true";
+    }, 4000);
 
     return () => {
       observer.disconnect();

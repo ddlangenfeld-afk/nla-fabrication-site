@@ -15,31 +15,31 @@ export default function ShippingReturnsPage() {
       <div>
         <h2 className="font-display text-lg font-semibold text-ink">Production time</h2>
         <p className="mt-2">
-          Every part is printed to order in a one-person shop. Typical production is
-          3–5 business days before a part ships, shown on each product page. This is
-          an estimate, not a guarantee.
+          Components are produced against orders rather than held in bulk stock.
+          Typical production is 3–5 business days before dispatch, stated on each
+          product page. This is an estimate, not a guarantee.
         </p>
       </div>
       <div>
         <h2 className="font-display text-lg font-semibold text-ink">Shipping</h2>
         <p className="mt-2">
-          Domestic shipping only at launch. Carrier, rates, and transit times are
-          placeholders pending a real fulfillment setup — nothing here should be
-          treated as final until the shop has shipped real orders.
+          Domestic shipping only at launch. Carrier, rates and transit times are
+          placeholders pending a finalised fulfilment arrangement — nothing here should
+          be treated as final until live orders have shipped.
         </p>
       </div>
       <div>
         <h2 className="font-display text-lg font-semibold text-ink">Returns</h2>
         <p className="mt-2">
-          Because parts are made to order, returns are handled case by case — a
-          misprint or fitment issue gets made right. A firm return window and process
-          still need to be written before launch.
+          Because components are produced to order, returns are assessed case by case.
+          A production defect or fitment failure is remedied at our cost. A firm return
+          window and process still need to be finalised before launch.
         </p>
       </div>
       <div>
         <h2 className="font-display text-lg font-semibold text-ink">Contact</h2>
         <p className="mt-2">
-          For an order issue, reach out at{" "}
+          For order support, contact{" "}
           <a href={`mailto:${CONTACT_EMAIL}`} className="link-inline">
             {CONTACT_EMAIL}
           </a>

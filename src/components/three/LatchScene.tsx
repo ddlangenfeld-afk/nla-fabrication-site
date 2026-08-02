@@ -1,7 +1,6 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Edges, Float } from "@react-three/drei";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
@@ -15,13 +14,79 @@ import * as THREE from "three";
  * Rendered as matte dark plastic with amber CAD edges, so it reads as a
  * working drawing rather than a product beauty shot — honest, given no real
  * part has been photographed yet.
+ *
+ * No drei. It was here for exactly two things — <Edges> and <Float> — and
+ * <Edges> renders through three-stdlib's fat-line stack (Line2 / LineMaterial
+ * / LineSegmentsGeometry), which is a lot of bundle for edges that are drawn
+ * one pixel wide at this scale. Both are reproduced below in about twenty
+ * lines against three itself. Measured effect on the home page: see CHANGELOG.
  */
 
 const INK = "#aeb6c2";
 const AMBER = "#f5a524";
 const BODY = "#191d22";
 
-function Latch() {
+/*
+ * Geometry and materials are built once at module scope rather than per
+ * render. They are immutable and shared across every instance, and this module
+ * is inside the lazily-loaded chunk, so none of it runs until the canvas is
+ * actually being mounted.
+ */
+const EDGE_THRESHOLD = 20;
+
+function edgesOf(geometry: THREE.BufferGeometry) {
+  return new THREE.EdgesGeometry(geometry, EDGE_THRESHOLD);
+}
+
+const GEO = {
+  body: new THREE.BoxGeometry(3.2, 1.75, 0.5),
+  pocket: new THREE.BoxGeometry(2.35, 0.85, 0.16),
+  pullBar: new THREE.BoxGeometry(1.9, 0.3, 0.14),
+  springTab: new THREE.BoxGeometry(0.66, 0.42, 0.28),
+  boss: new THREE.CylinderGeometry(0.17, 0.17, 0.2, 24),
+  centreline: new THREE.BoxGeometry(0.012, 2.6, 0.012),
+};
+
+const EDGES = {
+  body: edgesOf(GEO.body),
+  pocket: edgesOf(GEO.pocket),
+  pullBar: edgesOf(GEO.pullBar),
+  springTab: edgesOf(GEO.springTab),
+  boss: edgesOf(GEO.boss),
+};
+
+const MAT = {
+  body: new THREE.MeshStandardMaterial({ color: BODY, metalness: 0.35, roughness: 0.55 }),
+  pullBar: new THREE.MeshStandardMaterial({ color: BODY, metalness: 0.5, roughness: 0.35 }),
+  springTab: new THREE.MeshStandardMaterial({ color: BODY, metalness: 0.4, roughness: 0.5 }),
+  boss: new THREE.MeshStandardMaterial({ color: BODY, metalness: 0.6, roughness: 0.3 }),
+  centreline: new THREE.MeshBasicMaterial({ color: AMBER, transparent: true, opacity: 0.35 }),
+  edgeInk: new THREE.LineBasicMaterial({ color: INK }),
+  edgeAmber: new THREE.LineBasicMaterial({ color: AMBER }),
+};
+
+/** A mesh with CAD edges drawn over it. The edges are a child, so they inherit
+ *  the mesh's transform and stay welded to it through the rotation sweep. */
+function Part({
+  geometry,
+  edges,
+  material,
+  edgeMaterial = MAT.edgeInk,
+  ...props
+}: {
+  geometry: THREE.BufferGeometry;
+  edges: THREE.BufferGeometry;
+  material: THREE.Material;
+  edgeMaterial?: THREE.Material;
+} & React.ComponentProps<"mesh">) {
+  return (
+    <mesh geometry={geometry} material={material} {...props}>
+      <lineSegments geometry={edges} material={edgeMaterial} />
+    </mesh>
+  );
+}
+
+function Latch({ floating }: { floating: boolean }) {
   const group = useRef<THREE.Group>(null);
   const pointer = useRef({ x: 0, y: 0 });
   const scroll = useRef(0);
@@ -88,75 +153,83 @@ function Latch() {
       (engaged.current - engagedEased.current) * (1 - Math.pow(0.01, delta));
     const k = engagedEased.current;
 
+    /* The float, folded into the transform that was already being computed
+       here. Three sine terms at unrelated periods: a slow tilt on each axis
+       plus the vertical bob, which is what reads as "suspended" rather than
+       "rotating on a spindle". */
+    const floatX = floating ? Math.sin(t * 0.73) * 0.055 : 0;
+    const floatZ = floating ? Math.sin(t * 0.41) * 0.06 : 0;
+    const floatY = floating ? Math.sin(t * 0.6) * 0.05 : 0;
+
     // Idle rotation and scroll always apply; the cursor term is scaled by how
     // engaged the box currently is, so it fades in and out with the hover.
     const targetY =
       t * 0.12 + scroll.current * Math.PI * 0.9 + pointer.current.x * 0.55 * k;
-    const targetX = -0.35 + scroll.current * 0.5 + pointer.current.y * 0.32 * k;
+    const targetX =
+      -0.35 + scroll.current * 0.5 + pointer.current.y * 0.32 * k + floatX;
 
     g.rotation.y += (targetY - g.rotation.y) * ease;
     g.rotation.x += (targetX - g.rotation.x) * ease;
-    g.position.y = Math.sin(t * 0.6) * 0.05 - scroll.current * 0.6;
+    g.rotation.z = floatZ;
+    g.position.y = floatY - scroll.current * 0.6;
     // Leans very slightly toward the viewer while engaged.
     g.scale.setScalar(1.02 + k * 0.05);
   });
 
-  const bodyMaterial = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: BODY,
-        metalness: 0.35,
-        roughness: 0.55,
-      }),
+  // Static composition, so the tree never re-renders once mounted — every
+  // frame's work happens on the refs above rather than through React.
+  const parts = useMemo(
+    () => (
+      <>
+        {/* latch body */}
+        <Part geometry={GEO.body} edges={EDGES.body} material={MAT.body} castShadow />
+
+        {/* recessed handle pocket */}
+        <Part
+          geometry={GEO.pocket}
+          edges={EDGES.pocket}
+          material={MAT.body}
+          position={[0, -0.05, 0.26]}
+        />
+
+        {/* the pull bar — the piece that snaps, so it gets the accent */}
+        <Part
+          geometry={GEO.pullBar}
+          edges={EDGES.pullBar}
+          material={MAT.pullBar}
+          edgeMaterial={MAT.edgeAmber}
+          position={[0, -0.05, 0.4]}
+        />
+
+        {/* spring tab, top centre */}
+        <Part
+          geometry={GEO.springTab}
+          edges={EDGES.springTab}
+          material={MAT.springTab}
+          edgeMaterial={MAT.edgeAmber}
+          position={[0, 1.08, 0]}
+        />
+
+        {/* screw bosses */}
+        {[-1.25, 1.25].map((x) => (
+          <Part
+            key={x}
+            geometry={GEO.boss}
+            edges={EDGES.boss}
+            material={MAT.boss}
+            position={[x, 0.6, 0.28]}
+            rotation={[Math.PI / 2, 0, 0]}
+          />
+        ))}
+
+        {/* centreline, the way a drawing would mark it */}
+        <mesh geometry={GEO.centreline} material={MAT.centreline} position={[0, 0, -0.3]} />
+      </>
+    ),
     []
   );
 
-  // Base scale is set per-frame in useFrame (it leans in on hover), sized to
-  // stay clear of the viewport frame through the full rotation sweep.
-  return (
-    <group ref={group}>
-      {/* latch body */}
-      <mesh material={bodyMaterial} castShadow>
-        <boxGeometry args={[3.2, 1.75, 0.5]} />
-        <Edges threshold={20} color={INK} />
-      </mesh>
-
-      {/* recessed handle pocket */}
-      <mesh position={[0, -0.05, 0.26]} material={bodyMaterial}>
-        <boxGeometry args={[2.35, 0.85, 0.16]} />
-        <Edges threshold={20} color={INK} />
-      </mesh>
-
-      {/* the pull bar — the piece that snaps, so it gets the accent */}
-      <mesh position={[0, -0.05, 0.4]}>
-        <boxGeometry args={[1.9, 0.3, 0.14]} />
-        <meshStandardMaterial color={BODY} metalness={0.5} roughness={0.35} />
-        <Edges threshold={20} color={AMBER} />
-      </mesh>
-
-      {/* spring tab, top centre */}
-      <mesh position={[0, 1.08, 0]}>
-        <boxGeometry args={[0.66, 0.42, 0.28]} />
-        <meshStandardMaterial color={BODY} metalness={0.4} roughness={0.5} />
-        <Edges threshold={20} color={AMBER} />
-      </mesh>
-
-      {/* screw bosses */}
-      {[-1.25, 1.25].map((x) => (
-        <mesh key={x} position={[x, 0.6, 0.28]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.17, 0.17, 0.2, 24]} />
-          <meshStandardMaterial color={BODY} metalness={0.6} roughness={0.3} />
-          <Edges threshold={20} color={INK} />
-        </mesh>
-      ))}
-
-      {/* centreline, the way a drawing would mark it */}
-      <mesh position={[0, 0, -0.3]}>
-        <boxGeometry args={[0.012, 2.6, 0.012]} />
-        <meshBasicMaterial color={AMBER} transparent opacity={0.35} />
-      </mesh>
-    </group>
-  );
+  return <group ref={group}>{parts}</group>;
 }
 
 export default function LatchScene({ reduced = false }: { reduced?: boolean }) {
@@ -179,12 +252,10 @@ export default function LatchScene({ reduced = false }: { reduced?: boolean }) {
 
       {reduced ? (
         <group rotation={[-0.35, 0.6, 0]}>
-          <Latch />
+          <Latch floating={false} />
         </group>
       ) : (
-        <Float speed={1.1} rotationIntensity={0.15} floatIntensity={0.4}>
-          <Latch />
-        </Float>
+        <Latch floating />
       )}
     </Canvas>
   );

@@ -5,7 +5,7 @@ import { Atmosphere } from "@/components/three/Atmosphere";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SoundToggle } from "@/components/SoundToggle";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { MARKETPLACES, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -71,6 +71,11 @@ const organizationJsonLd = {
   url: SITE_URL,
   description: SITE_DESCRIPTION,
   logo: `${SITE_URL}/logo.svg`,
+  /* sameAs is how search engines tie the marketplace storefronts to this
+     entity rather than treating them as unrelated sellers. Omitted entirely
+     when nothing is configured — an empty array is a weaker signal than no
+     property at all. */
+  ...(MARKETPLACES.length > 0 ? { sameAs: MARKETPLACES.map((m) => m.url) } : {}),
 };
 
 export default function RootLayout({

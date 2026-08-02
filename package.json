@@ -16,7 +16,6 @@
     "qa:motion": "node scripts/motion-audio.mjs"
   },
   "dependencies": {
-    "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.7.0",
     "@types/three": "^0.185.3",
     "next": "16.2.12",

@@ -281,3 +281,50 @@ Three reasons this isn't a file: an ambient loop is 2-4 MB, which is more than t
 **Final: home 91, every other page 100**, all four categories, LCP 0.6s and CLS 0 across the board. 18/18 axe scans, 7/7 interactive states, flows, keyboard, and 20/20 motion+audio checks clean. Screenshots now also cover 1920 and 2560 for the width work.
 
 **Follow-up from the 2560 screenshots.** Widening the shell moved the empty space rather than removing it on shop: the pipeline list still carried a 1024px cap (added earlier so "COMING SOON" wouldn't float a metre from the part name), so that section filled a third of the screen. It's two columns past 2xl now — short rows *and* the full width. The shop header splits at xl too, with the counts beside the intro instead of stacked under it. Verified no horizontal overflow at 375 or 2560.
+
+## 2026-08-02 · 21:40 — Reversible reveals, marketplace links, and a company voice
+
+Three requests: replay the scroll animations instead of firing once, add Etsy/eBay storefront links, and take the copy from passion-project to established business.
+
+### Reveals now replay
+
+`useReveal` was built as a one-way trip — it disconnected its observer on first fire, which was the right call when the animation only had to happen once. It now stays connected and toggles `data-revealed` in both directions. That is a deliberate trade: "disconnect after first fire" is no longer available as an optimisation, and the cost is one live `IntersectionObserver` per revealed element for the life of the page. Measured on the pages with the most of them (about, 20 elements), it doesn't register.
+
+The part that isn't obvious: **direction**. A naive reversible reveal slides everything up from below, so content that scrolled off the *top* comes back from the wrong side — the tell that a one-way animation was retrofitted. The observer now records which edge the element left by (`boundingClientRect.top < 0`) and CSS mirrors the transform, so content returns the way it went.
+
+This broke the QA helper in a way worth recording. `settleReveals()` stamped `data-revealed="true"` on every element before scanning; with a live observer, anything off screen was immediately reset to `false`, so axe and the screenshot runner would have gone back to measuring hidden content. It now removes the `.js` class from `<html>` instead, which disables the hiding rules at the stylesheet — the same no-JS state the site already renders correctly. Simpler and it can't be raced.
+
+### Marketplace storefronts
+
+`NEXT_PUBLIC_ETSY_URL`, `NEXT_PUBLIC_EBAY_URL` and `NEXT_PUBLIC_AMAZON_URL` drive a block on the shop page, a footer column, and `sameAs` in the Organization structured data. All three read from one list in `lib/site.ts`.
+
+**No placeholder URLs ship.** A plausible-looking Etsy link that 404s reads as an abandoned business faster than having no link at all, so each entry renders only when its variable is set. Verified by running the site with two of the three configured: both appeared in the shop block, the footer column and `sameAs`, with `target="_blank"` and `rel="noopener noreferrer"`; the unset third appeared nowhere; axe stayed clean at both widths with the block live.
+
+On Amazon: it is set up but recommended against for now. Etsy and eBay accept a three-part catalog with no fixed monthly cost, and eBay in particular is where owners already search for discontinued interior parts — its parts-compatibility system is a genuine advantage for a fitment-driven catalog. Amazon charges a monthly professional plan before the first sale, applies stricter scrutiny to aftermarket parts that reference OEM numbers, and expects structured fitment data. It is worth revisiting when the catalog is deeper.
+
+### Copy
+
+Rewritten across every page, the product data, the OG card, the footer and the shipping policy. Out: "one-person shop", "apartment desk", "the founder restored his own Civic", "pick-a-part luck", "parts you can stop hunting for". In: failure analysis, supply verification, specification, fitment validation as a named release gate.
+
+**Where the line was drawn.** Institutional "we" is ordinary business writing and is used throughout. Invented facts are not, and none were added: no headcount, no square footage, no years in business, no certifications, no units-shipped figures, no testing equipment. Everything the copy claims is either a process that genuinely exists (fitment validation on the chassis, material specified to the cabin environment, build orientation set to the load path) or a disclosure that was already true. The about page's "What we state up front" section keeps every disclosure the old "What this shop is honest about" section carried — aftermarket, not OEM, no manufacturer affiliation, printed ≠ moulded, interior only — because a company claiming reliability that buries its limitations is doing the opposite of what was asked.
+
+### Fixed: four sections with no accessible name
+
+Every `aria-labelledby` on the home page pointed at an ID that didn't exist, so those sections had no accessible name at all. Pre-existing, and the axe runner missed it because `aria-valid-attr-value` is a best-practice rule rather than one of the WCAG tags the runner filters to. The headings now carry the IDs.
+
+### Fixed, by measuring: home page performance
+
+Home had drifted to 87 — below the 90 bar — with 320ms of blocking time, and it was tempting to write off as a busy container. It wasn't.
+
+`@react-three/drei` was in the bundle for exactly two components: `<Edges>` and `<Float>`. `<Edges>` renders through three-stdlib's fat-line stack (`Line2` / `LineMaterial` / `LineSegmentsGeometry`) to draw edges that are one pixel wide at this scale. Both were reproduced against three directly — `EdgesGeometry` + `LineBasicMaterial`, and three sine terms folded into the `useFrame` that was already running — and the dependency removed.
+
+| | Chunk | TBT | Performance |
+| --- | --- | --- | --- |
+| With drei | 892K | 300–320 ms | 87 |
+| Without | 868K | 140–190 ms | **95–97** |
+
+The byte count barely moved; the *parse and evaluate* cost was the real charge, which is exactly the thing a bundle-size number hides. Geometry and materials also moved to module scope — they're immutable and shared, and the module only loads when the canvas mounts — and the part tree is memoised so React never re-renders it; every frame's work happens on refs.
+
+Visual output verified identical against a captured frame of the hero.
+
+**Final: home 95–97, every other page 100**, all four categories, LCP 0.6s, CLS 0. 18/18 axe scans, 7/7 interactive states, flows, keyboard, and 34/34 motion+audio checks including the new replay and direction assertions.

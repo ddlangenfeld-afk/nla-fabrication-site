@@ -82,6 +82,65 @@ for (const path of PAGES) {
   } else {
     fail(`did not settle: ${JSON.stringify(settled)}`);
   }
+
+  // Replay: scroll it back out and it must hide again, ready to re-animate.
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await page.waitForTimeout(600);
+  const reset = await page.evaluate(() => {
+    const node = document.querySelector("[data-probe]");
+    return { revealed: node.dataset.revealed, from: node.dataset.from };
+  });
+  if (reset.revealed === "false") {
+    pass(`re-hides on scroll away (exited ${reset.from})`);
+  } else {
+    fail(`stayed revealed after scrolling away: ${JSON.stringify(reset)}`);
+  }
+
+  await page.evaluate(() =>
+    document.querySelector("[data-probe]")?.scrollIntoView({ block: "center" })
+  );
+  await page.waitForTimeout(3000);
+  const replayed = await page.evaluate(() => {
+    const node = document.querySelector("[data-probe]");
+    const el = node.classList.contains("reveal-lines")
+      ? node.querySelector(".reveal-line-inner")
+      : node;
+    const s = getComputedStyle(el);
+    return { revealed: node.dataset.revealed, opacity: s.opacity, transform: s.transform };
+  });
+  if (
+    replayed.revealed === "true" &&
+    replayed.opacity === "1" &&
+    replayed.transform === "none"
+  ) {
+    pass("replays on the way back");
+  } else {
+    fail(`did not replay: ${JSON.stringify(replayed)}`);
+  }
+}
+
+/* ---- 1b. Direction memory ---------------------------------------------- */
+console.log("\ndirection memory");
+await page.goto(`${BASE}/about`, { waitUntil: "networkidle" });
+await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" }));
+await page.waitForTimeout(900);
+const above = await page.evaluate(() => {
+  const nodes = [...document.querySelectorAll(".reveal, .reveal-lines")];
+  const gone = nodes.find(
+    (n) => n.dataset.revealed === "false" && n.getBoundingClientRect().bottom < 0
+  );
+  if (!gone) return null;
+  const el = gone.classList.contains("reveal-lines")
+    ? gone.querySelector(".reveal-line-inner")
+    : gone;
+  return { from: gone.dataset.from, transform: getComputedStyle(el).transform };
+});
+if (!above) {
+  fail("nothing had scrolled off the top to check");
+} else if (above.from === "above" && /-\d/.test(above.transform)) {
+  pass(`content that left via the top returns from above (${above.transform})`);
+} else {
+  fail(`wrong direction for content above the viewport: ${JSON.stringify(above)}`);
 }
 
 /* ---- 2. Cursor spotlight ------------------------------------------------ */

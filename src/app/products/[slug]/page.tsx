@@ -99,7 +99,7 @@ export default async function ProductPage({
     ["Chassis", product.chassis.join(" / ")],
     ["Material", product.material],
     ...((product.color ? [["Finish", product.color]] : []) as [string, string][]),
-    ["Status", comingSoon ? "In development" : "In stock — made to order"],
+    ["Status", comingSoon ? "In engineering" : "In production — made to order"],
   ];
 
   return (
@@ -138,7 +138,7 @@ export default async function ProductPage({
             <ProductArt art={product.art} title={product.name} className="h-auto w-full" />
           </div>
           <p className="mt-3 font-mono text-2xs uppercase tracking-wider text-ink-muted">
-            Technical drawing — photography and renders coming with first production run
+            Engineering drawing — production photography follows the first release batch
           </p>
 
           <dl className="mt-6 border border-line">
@@ -171,7 +171,7 @@ export default async function ProductPage({
         {/* Buy column */}
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
-            {comingSoon ? "In development" : "Available now"}
+            {comingSoon ? "In engineering" : "In production"}
           </p>
           <h1 className="mt-4 font-display text-3xl font-semibold leading-tight tracking-tight text-ink sm:text-4xl">
             {product.name}
@@ -181,7 +181,7 @@ export default async function ProductPage({
           {comingSoon ? (
             <div className="mt-8 border border-line bg-bg-raised p-6">
               <p className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
-                Not yet purchasable
+                Not yet released
               </p>
               <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
                 {product.oemNote}
@@ -190,7 +190,7 @@ export default async function ProductPage({
                 href="/contact"
                 className="mt-5 inline-block border border-line-strong px-6 py-3 text-sm font-medium text-ink-secondary transition-colors hover:border-accent hover:text-ink"
               >
-                Ask to be told when it ships
+                Request release notification
               </Link>
             </div>
           ) : (
@@ -207,7 +207,7 @@ export default async function ProductPage({
                 <AddToCart product={product} />
               </div>
               <p className="mt-3 font-mono text-2xs uppercase tracking-wider text-ink-muted">
-                Made to order · ships in 3–5 business days
+                Produced to order · dispatch in 3–5 business days
               </p>
             </div>
           )}
@@ -223,7 +223,7 @@ export default async function ProductPage({
           {product.features.length > 0 && (
             <div className="mt-8">
               <h2 className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
-                What you get
+                Specification
               </h2>
               <ul className="mt-4 space-y-1">
                 {product.features.map((feature, i) => (
@@ -244,7 +244,7 @@ export default async function ProductPage({
           <div className="mt-8 space-y-6 border-t border-line pt-8">
             <div>
               <h2 className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
-                Why it&rsquo;s here
+                Why it&rsquo;s in the catalog
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
                 {product.oemNote}
@@ -282,7 +282,7 @@ export default async function ProductPage({
               id="related-heading"
               className="font-mono text-xs uppercase tracking-[0.18em] text-accent"
             >
-              Also available
+              Also in production
             </h2>
             {/* Only three parts are purchasable, so this row is always the
                 other two — a two-up grid rather than a three-up with a hole. */}

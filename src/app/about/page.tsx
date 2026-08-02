@@ -3,51 +3,70 @@ import Link from "next/link";
 import { Reveal, RevealLines } from "@/components/Reveal";
 
 export const metadata: Metadata = {
-  title: "About — A one-person shop for NLA Civic EK/EJ parts",
+  title: "About — Engineering discontinued EK/EJ Civic components",
   description:
-    "NLA Fabrication is a one-person shop run by a hard-surface 3D designer who restored his own 1996 Civic. Every part is a documented failure point with no new replacement available.",
+    "NLA Fabrication reverse-engineers discontinued interior components for the 1996–2000 Civic. Every part is selected from documented failure data, validated on the chassis, and produced to order in engineering-grade PETG.",
   alternates: { canonical: "/about" },
 };
 
 const process = [
   {
     step: "01",
-    title: "Find a real failure",
-    body: "Every part starts as a recurring complaint on owner forums — not a guess about what might sell. If people aren't already breaking it and hunting for it, it doesn't get modeled.",
+    title: "Failure analysis",
+    body: "Candidates come from documented, recurring field failures — not from what is convenient to produce. We identify the specific mode: which section cracks, under what load, and at what point in the component's service life.",
   },
   {
     step: "02",
-    title: "Confirm it's actually gone",
-    body: "Discontinued status gets verified against the manufacturer's own parts catalog, and used-market prices get checked as a demand signal. If a new part is still available, there's no reason for this shop to make one.",
+    title: "Supply verification",
+    body: "Discontinuation is confirmed against the manufacturer's own parts catalog, and secondary-market pricing is reviewed as a demand signal. If a new replacement is available from any source, we do not tool the part.",
   },
   {
     step: "03",
-    title: "Model it properly",
-    body: "Hard-surface CAD from the original geometry, with material and print orientation chosen for how the part is actually loaded. Where the original design was under-built, the reproduction gets more material there.",
+    title: "Design and specification",
+    body: "Hard-surface CAD from original geometry, with material and build orientation specified against the component's actual load path. Where the original section was the limiting factor, the reproduction is reinforced there.",
   },
   {
     step: "04",
-    title: "Fit it to a real car",
-    body: "Nothing goes on sale until it's installed on an actual EK. That's the whole reason the pipeline moves slowly and the catalog is short.",
+    title: "Fitment validation",
+    body: "No component is released for sale until it has been installed on the chassis and checked against original mounting points, clearances and operation. This is the release gate, and nothing bypasses it.",
   },
 ];
 
-const honest: [string, string][] = [
+const standards: [string, string][] = [
+  [
+    "Material specified to the environment",
+    "PETG is selected for cabin components because it retains its properties through dash-top thermal cycling that softens lower-grade filament. It is not specified for underhood use, and we do not sell it into that application.",
+  ],
+  [
+    "Build orientation is an engineering decision",
+    "Layer boundaries are the weak axis in any fused-deposition part. Orientation is set per component so that service loads run along the strongest axis rather than across a layer line.",
+  ],
+  [
+    "Reinforcement where the original failed",
+    "A reproduction that copies the original exactly reproduces the original's failure. Section thickness is increased at documented crack initiation points, within the envelope the factory mounting allows.",
+  ],
+  [
+    "Fitment validated before release",
+    "Every catalog component has been installed on the chassis it is sold for. This is the reason the catalog grows deliberately rather than quickly.",
+  ],
+];
+
+const disclosures: [string, string][] = [
   [
     "These are aftermarket reproductions.",
-    "Not original manufacturer parts, and not affiliated with any vehicle manufacturer. OEM part numbers appear here only to tell you what a part fits.",
+    "They are not original manufacturer parts, and we are not affiliated with, sponsored by, or endorsed by any vehicle manufacturer. OEM part numbers appear on this site solely to identify compatibility.",
   ],
   [
-    "3D-printed is not injection-molded.",
-    "Printed parts have layer lines and different failure behavior than the original. Where that trade-off matters, the material and orientation are chosen to land on the right side of it — and where a printed part would be worse than the original, it doesn't get sold.",
+    "Additive manufacturing is not injection moulding.",
+    "Printed components carry visible layer lines and a different failure behaviour to the original. Where that trade-off is material to the application, specification is chosen to land on the correct side of it — and where a printed part would underperform the original, we do not produce it.",
   ],
   [
-    "Interior parts only, for now.",
-    "PETG is right for the cabin. It is not right for underhood heat. Anything that lives in the engine bay will ship in ASA or nylon, and it isn't ready yet.",
+    "Interior components only, at present.",
+    "Underhood applications require materials with a different thermal and chemical profile. Those components will ship in ASA or nylon once qualified, and are not yet released.",
   ],
   [
-    "The catalog grows slowly.",
-    "Every part is fitment-verified on a real car first. That's the bottleneck, and it isn't going away.",
+    "Lead times reflect made-to-order production.",
+    "Components are produced against orders rather than held in bulk stock. Current dispatch is 3–5 business days.",
   ],
 ];
 
@@ -63,7 +82,7 @@ export default function AboutPage() {
             About
           </p>
           <h1 className="mt-6 max-w-4xl font-display text-3xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-4xl lg:text-5xl 2xl:text-6xl">
-            {[<>One car, one desk, and a list</>, <>of parts nobody makes anymore.</>].map(
+            {[<>We manufacture the components</>, <>the supply chain stopped making.</>].map(
               (line, i) => (
                 <span key={i} className="hero-line">
                   <span style={{ "--hero-delay": `${60 + i * 70}ms` } as React.CSSProperties}>
@@ -82,35 +101,36 @@ export default function AboutPage() {
             as="p"
             className="font-mono text-xs uppercase tracking-[0.18em] text-accent lg:sticky lg:top-32"
           >
-            The shop
+            What we do
           </Reveal>
           <Reveal
             delay={120}
             className="measure space-y-6 text-base leading-relaxed text-ink-secondary sm:text-lg"
           >
             <p>
-              NLA Fabrication is one person. He restored and wrapped his own 1996 Civic, and
-              everything about this shop comes out of that car — the parts list, the
-              material choices, the fact that the catalog is three items long instead of
-              three hundred.
+              NLA Fabrication reverse-engineers and produces discontinued interior
+              components for the 1996–2000 Civic. We operate in a narrow segment on
+              purpose: a short catalog of parts with confirmed supply gaps, each one
+              engineered against a specific documented failure rather than adapted from a
+              generic pattern.
             </p>
             <p>
-              By training he&rsquo;s a 3D designer: hard-surface modeling, environment art,
-              and motion graphics. That&rsquo;s the exact skill this needs. Reproducing a
-              latch mechanism accurately enough that it drops into 25-year-old mounting
-              points is a hard-surface modeling problem, not a sculpting one.
+              The work is hard-surface CAD, materials specification and production
+              engineering. Reproducing a latch mechanism accurately enough to install into
+              25-year-old mounting points without modification is a dimensional problem
+              with a tolerance budget, and it is treated as one — original geometry in,
+              validated fitment out.
             </p>
             <p>
-              The workshop is an apartment desk with a printer on it. No lift, no bay, no
-              spray booth. That constraint is why this business is small functional parts
-              and not body kits — and honestly, it&rsquo;s why the parts are good. A part
-              that has to succeed at this scale gets a lot more attention than one item in a
-              catalog of thousands.
+              We compete on precision and availability, not on breadth. A catalog of three
+              components that install correctly is worth more to an owner mid-repair than a
+              catalog of three hundred that require trimming, shimming or a second order.
             </p>
             <p className="border-l-2 border-accent pl-6 text-ink">
-              The premise is right there in the name. &ldquo;NLA&rdquo; is what the parts
-              catalog says when a part is gone for good: <em>No Longer Available</em>. Every
-              item here is a part that came back.
+              The name states the premise. &ldquo;NLA&rdquo; is the designation a parts
+              catalog applies when a component is out of production permanently:{" "}
+              <em>No Longer Available</em>. Everything we list carried that designation
+              before we brought it back.
             </p>
           </Reveal>
         </div>
@@ -126,7 +146,7 @@ export default function AboutPage() {
             id="process-heading"
             delay={90}
             className="mt-3 font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
-            lines={[<>How a part gets made</>]}
+            lines={[<>From failure report to released part</>]}
           />
           <ol className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
             {process.map((item, i) => (
@@ -144,16 +164,16 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section aria-labelledby="honest-heading" className="border-b border-line">
+      <section aria-labelledby="standards-heading" className="border-b border-line">
         <div className="shell grid gap-10 py-14 sm:py-20 lg:grid-cols-[0.8fr_1.2fr] lg:items-start lg:gap-24">
           <RevealLines
             as="h2"
-            id="honest-heading"
+            id="standards-heading"
             className="font-display text-2xl font-semibold leading-snug tracking-tight text-ink sm:text-3xl lg:sticky lg:top-32"
-            lines={[<>What this shop</>, <>is honest about</>]}
+            lines={[<>Engineering</>, <>standards</>]}
           />
           <dl className="grid gap-x-16 gap-y-8 sm:grid-cols-2">
-            {honest.map(([term, detail], i) => (
+            {standards.map(([term, detail], i) => (
               <Reveal key={term} delay={i * 100}>
                 <dt className="font-display text-base font-semibold text-ink">{term}</dt>
                 <dd className="mt-2 text-sm leading-relaxed text-ink-secondary">{detail}</dd>
@@ -163,19 +183,38 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="glow-band bg-bg-inset">
+      <section aria-labelledby="disclosures-heading" className="border-b border-line bg-bg-inset">
+        <div className="shell grid gap-10 py-14 sm:py-20 lg:grid-cols-[0.8fr_1.2fr] lg:items-start lg:gap-24">
+          <RevealLines
+            as="h2"
+            id="disclosures-heading"
+            className="font-display text-2xl font-semibold leading-snug tracking-tight text-ink sm:text-3xl lg:sticky lg:top-32"
+            lines={[<>What we state</>, <>up front</>]}
+          />
+          <dl className="grid gap-x-16 gap-y-8 sm:grid-cols-2">
+            {disclosures.map(([term, detail], i) => (
+              <Reveal key={term} delay={i * 100}>
+                <dt className="font-display text-base font-semibold text-ink">{term}</dt>
+                <dd className="mt-2 text-sm leading-relaxed text-ink-secondary">{detail}</dd>
+              </Reveal>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      <section className="glow-band">
         <div className="shell flex flex-col items-start gap-6 py-14 sm:flex-row sm:items-center sm:justify-between sm:py-16">
           <RevealLines
             as="p"
             className="font-display text-xl font-semibold tracking-tight text-ink sm:text-2xl"
-            lines={[<>Know a part that belongs on this list?</>]}
+            lines={[<>Have a component that belongs in the catalog?</>]}
           />
           <Reveal delay={120} className="shrink-0">
             <Link
               href="/contact"
               className="btn-accent inline-block bg-accent px-7 py-3.5 font-medium text-accent-ink hover:bg-accent-bright"
             >
-              Get in touch
+              Contact us
             </Link>
           </Reveal>
         </div>

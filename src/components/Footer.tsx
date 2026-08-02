@@ -1,7 +1,10 @@
 import Link from "next/link";
-import { CONTACT_EMAIL, SITE_NAME } from "@/lib/site";
+import { CONTACT_EMAIL, MARKETPLACES, SITE_NAME } from "@/lib/site";
 
-const footerColumns = [
+type FooterLink = { href: string; label: string; external?: boolean };
+type FooterColumn = { heading: string; links: FooterLink[] };
+
+const footerColumns: FooterColumn[] = [
   {
     heading: "Shop",
     links: [
@@ -29,23 +32,37 @@ const footerColumns = [
 ];
 
 export function Footer() {
+  /* The marketplace column only exists once a storefront URL is configured —
+     see MARKETPLACES in lib/site.ts. An empty "Where to buy" heading is worse
+     than no heading. */
+  const columns: FooterColumn[] =
+    MARKETPLACES.length > 0
+      ? [
+          ...footerColumns,
+          {
+            heading: "Where to buy",
+            links: MARKETPLACES.map((m) => ({ href: m.url, label: m.label, external: true })),
+          },
+        ]
+      : footerColumns;
+
   return (
     <footer className="border-t border-line bg-bg-inset">
       <div className="shell py-12 sm:py-16">
-        <div className="grid gap-10 sm:grid-cols-[1.5fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 sm:grid-cols-[1.5fr_repeat(3,1fr)] xl:grid-cols-[1.5fr_repeat(auto-fit,minmax(0,1fr))]">
           <div>
             <p className="font-display text-sm font-semibold tracking-tight text-ink">
               NLA<span className="text-accent">·</span>FABRICATION
             </p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink-muted">
-              Reproduction parts for the 1996–2000 Civic (EK/EJ) that the factory no
-              longer makes. Modeled from original geometry. Printed to fit.
+              Reverse-engineered replacements for discontinued interior components on the
+              1996–2000 Civic (EK/EJ). Validated on the chassis. Produced to order.
             </p>
             <p className="mt-4 font-mono text-2xs uppercase tracking-widest text-ink-muted">
-              Independent shop — not affiliated with any vehicle manufacturer
+              Independent manufacturer — not affiliated with any vehicle manufacturer
             </p>
           </div>
-          {footerColumns.map((col) => (
+          {columns.map((col) => (
             <nav key={col.heading} aria-label={col.heading}>
               <h2 className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
                 {col.heading}
@@ -53,14 +70,18 @@ export function Footer() {
               <ul className="mt-4 space-y-1.5">
                 {col.links.map((link) => (
                   <li key={link.href}>
-                    <Link
+                    {/* Marketplace entries leave the site, so they render as a
+                        plain anchor with rel set rather than a prefetching
+                        <Link> pointed at another origin. */}
+                    <LinkOrAnchor
                       href={link.href}
+                      external={link.external}
                       // inline-block + padding gives a 25px tap target; the
                       // bare 17px line box failed WCAG 2.5.8.
                       className="link-underline inline-block py-1 text-sm text-ink-secondary transition-[color,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-1 hover:text-ink motion-reduce:hover:translate-x-0"
                     >
                       {link.label}
-                    </Link>
+                    </LinkOrAnchor>
                   </li>
                 ))}
               </ul>
@@ -80,5 +101,31 @@ export function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+function LinkOrAnchor({
+  href,
+  external,
+  className,
+  children,
+}: {
+  href: string;
+  external?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  if (external) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+        {children}
+        <span className="sr-only"> (opens in a new tab)</span>
+      </a>
+    );
+  }
+  return (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
   );
 }

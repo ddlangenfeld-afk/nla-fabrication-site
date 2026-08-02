@@ -6,26 +6,26 @@ import { CONTACT_EMAIL } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Get in touch with NLA Fabrication — ask about fitment, suggest a part for the pipeline, or follow up on an order.",
+    "Contact NLA Fabrication for fitment verification, order support, or to submit a discontinued component for engineering assessment.",
   alternates: { canonical: "/contact" },
 };
 
 const whatHelps: [string, string][] = [
   [
-    "Your chassis and year",
-    "EK, EJ, or EM1 and the model year. Some parts changed mid-generation — the 96–98 climate panel is not the 99–00 one.",
+    "Chassis code and model year",
+    "EK, EJ or EM1, with the model year. Several components changed mid-generation — the 96–98 climate panel is not interchangeable with the 99–00 unit.",
   ],
   [
-    "A photo of the broken part",
-    "Especially for fitment questions. The failure point usually identifies the variant faster than a part number does.",
+    "A photograph of the failed component",
+    "Particularly for fitment enquiries. The failure mode usually identifies the variant faster than a part number does.",
   ],
   [
-    "An OEM part number, if you have one",
-    "Off the part itself or a dealer catalog. It settles compatibility immediately.",
+    "An OEM part number where available",
+    "From the component itself or a dealer catalog. It resolves compatibility immediately.",
   ],
   [
-    "For an order, the email you checked out with",
-    "Orders are looked up by the address Stripe has, not by name.",
+    "For order support, the checkout email address",
+    "Orders are retrieved against the address on the payment record rather than by name.",
   ],
 ];
 
@@ -40,7 +40,7 @@ export default function ContactPage() {
             Contact
           </p>
           <h1 className="mt-4 max-w-4xl font-display text-3xl font-semibold leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl">
-            {[<>Fitment question, order issue,</>, <>or a part suggestion — all welcome.</>].map(
+            {[<>Technical enquiries, order support,</>, <>and component submissions.</>].map(
               (line, i) => (
                 <span key={i} className="hero-line">
                   <span style={{ "--hero-delay": `${60 + i * 70}ms` } as React.CSSProperties}>
@@ -54,8 +54,9 @@ export default function ContactPage() {
             className="hero-in mt-4 max-w-xl text-ink-secondary"
             style={{ "--hero-delay": "260ms" } as React.CSSProperties}
           >
-            This is a one-person shop, so replies come from the person who actually
-            modeled and printed the part. Expect a response within a day or two.
+            Technical questions are answered by the people who model and validate the
+            components, not by a scripted support tier. Expect a response within one
+            business day.
           </p>
         </div>
       </section>
@@ -64,7 +65,7 @@ export default function ContactPage() {
         <Reveal>
           <ContactForm />
           <p className="mt-10 border-t border-line pt-6 text-sm text-ink-muted">
-            Prefer email?{" "}
+            Direct enquiries:{" "}
             <a href={`mailto:${CONTACT_EMAIL}`} className="link-inline">
               {CONTACT_EMAIL}
             </a>
@@ -112,9 +113,9 @@ export default function ContactPage() {
             delay={520}
             className="mt-8 border-t border-line pt-6 text-sm leading-relaxed text-ink-muted"
           >
-            Suggesting a part for the pipeline? Say what keeps breaking and how you
-            know it&rsquo;s unavailable — that&rsquo;s exactly how the current catalog
-            got chosen.
+            Submitting a component for assessment? Describe the failure mode and the
+            evidence that no replacement is available. Both are weighted directly in our
+            development queue.
           </Reveal>
         </aside>
       </section>

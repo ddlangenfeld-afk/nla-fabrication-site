@@ -15,9 +15,9 @@ export const metadata: Metadata = {
 
 const shopFacts = [
   "Modeled from original geometry",
-  "Printed in PETG",
-  "Test-fitted on the shop's own EK",
-  "Small-batch, made to order",
+  "Fitment-validated on the chassis",
+  "Engineering-grade PETG",
+  "Produced to order",
 ];
 
 export default function HomePage() {
@@ -54,9 +54,10 @@ export default function HomePage() {
               className="hero-in mt-6 max-w-xl text-base leading-relaxed text-ink-secondary sm:text-lg"
               style={{ "--hero-delay": "280ms" } as React.CSSProperties}
             >
-              Precision 3D-printed reproductions of discontinued interior parts for the
-              96–00 Civic — modeled from original geometry, printed in PETG, and shipped
-              from a one-person shop that drives the same chassis.
+              Precision-manufactured replacements for discontinued interior components
+              on the 96–00 Civic. Every part is modeled from original geometry, produced
+              in engineering-grade PETG, and validated on the chassis before it is
+              released for sale.
             </p>
             <div
               className="hero-in mt-9 flex flex-wrap gap-3"
@@ -72,7 +73,7 @@ export default function HomePage() {
                 href="/about"
                 className="hover-lift inline-block border border-line-strong px-7 py-3.5 font-medium text-ink-secondary hover:border-accent hover:text-ink"
               >
-                Why this exists
+                Our process
               </Link>
             </div>
           </div>
@@ -140,7 +141,8 @@ export default function HomePage() {
                 as="h2"
                 delay={90}
                 className="mt-3 font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
-                lines={[<>Three parts you can stop hunting for</>]}
+                id="available-heading"
+                lines={[<>In production and shipping now</>]}
               />
             </div>
             <Link
@@ -174,37 +176,40 @@ export default function HomePage() {
         <div className="shell grid gap-10 py-20 sm:py-24 lg:grid-cols-[0.85fr_1.15fr] lg:items-start lg:gap-24">
           <div className="lg:sticky lg:top-32">
             <Reveal as="p" className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
-              Why these parts exist
+              The supply problem
             </Reveal>
             <RevealLines
               as="h2"
               delay={90}
               className="mt-3 font-display text-2xl font-semibold leading-snug tracking-tight text-ink sm:text-3xl"
+              id="story-heading"
               lines={[
-                <>This shop exists because a</>,
-                <>glove box wouldn&rsquo;t stay shut.</>,
+                <>Discontinued does not</>,
+                <>have to mean unavailable.</>,
               ]}
             />
           </div>
           <Reveal delay={140} className="space-y-5 text-base leading-relaxed text-ink-secondary">
             <p>
-              The founder restored and wrapped his own 1996 Civic, then hit the wall every
-              EK owner eventually hits: the small plastic parts are gone. The factory
-              marked them{" "}
-              <strong className="font-medium text-ink">NLA — No Longer Available</strong> —
-              years ago, and the used market sells you the same 25-year-old brittle plastic
-              that just broke on your car.
+              The interior components on this chassis were built to a 1990s cost target and
+              have now aged past it. Serviceable assemblies fail at predictable points, and
+              the factory has marked the replacements{" "}
+              <strong className="font-medium text-ink">NLA — No Longer Available</strong>.
+              The remaining supply is salvage: the same 25-year-old plastic, at the same
+              point in its service life as the part it is replacing.
             </p>
             <p>
-              He&rsquo;s a hard-surface 3D designer by trade. So instead of watching parts
-              listings, he started modeling the broken parts from their original geometry
-              and printing them in materials chosen for the job — PETG for the cabin,
-              because it shrugs off the dash-top heat that softens hobby filament.
+              We manufacture the replacements instead. Each component is reverse-engineered
+              from original geometry, re-specified in a material chosen for the cabin
+              environment, and reinforced where the original section was the limiting
+              factor. Print orientation is set so that loads run along the strongest axis
+              rather than across layer boundaries.
             </p>
             <p>
-              Every part in this catalog was picked the same way: a documented, recurring
-              failure on this chassis, confirmed discontinued, with no new replacement on
-              the market. Not merch. Not gadgets. The parts that keep an EK usable.
+              Selection is driven by failure data, not by what is easy to produce. A part
+              enters the catalog only when the failure is documented and recurring, the
+              discontinuation is confirmed against the manufacturer&rsquo;s own parts
+              catalog, and no new replacement exists from any source.
             </p>
           </Reveal>
         </div>
@@ -220,11 +225,12 @@ export default function HomePage() {
             as="h2"
             delay={90}
             className="mt-3 font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
-            lines={[<>The pipeline</>]}
+            id="pipeline-heading"
+            lines={[<>In engineering</>]}
           />
           <p className="mt-3 max-w-xl text-ink-secondary">
-            Each part gets fitment-verified on a real car before it&rsquo;s tooled. These
-            are next in line.
+            Components currently in engineering. Each one is released only after fitment
+            validation on the chassis — which is why the catalog grows deliberately.
           </p>
           <Reveal delay={120} className="mt-8">
             <PipelineList products={pipeline} startIndex={available.length + 1} />
@@ -238,20 +244,21 @@ export default function HomePage() {
           <RevealLines
             as="h2"
             className="mx-auto max-w-2xl font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
+            id="cta-heading"
             lines={[
-              <>Got an EK part that keeps</>,
-              <>breaking and can&rsquo;t be bought?</>,
+              <>Sourcing a discontinued</>,
+              <>component we don&rsquo;t list yet?</>,
             ]}
           />
           <p className="mx-auto mt-4 max-w-xl text-ink-secondary">
-            The pipeline is built from owner complaints, not guesses. If a discontinued
-            part keeps failing on your car, that&rsquo;s exactly what belongs here.
+            Our development queue is prioritised by documented failure rates and confirmed
+            supply gaps. Submit a part and we will assess it against both.
           </p>
           <Link
             href="/contact"
             className="btn-accent mt-8 inline-block bg-accent px-7 py-3.5 font-medium text-accent-ink hover:bg-accent-bright"
           >
-            Suggest a part
+            Submit a part request
           </Link>
         </div>
       </section>

@@ -412,7 +412,10 @@ body {
 .js .reveal[data-revealed="true"] {
   opacity: 1;
   transform: none;
-  will-change: auto;
+}
+/* Left by the top edge: it should return the way it went, from above. */
+.js .reveal[data-from="above"] {
+  transform: translate3d(0, -44px, 0);
 }
 
 /* Blur-in variant: content resolves into focus as it arrives. */
@@ -446,7 +449,11 @@ body {
 }
 .js .reveal-lines[data-revealed="true"] .reveal-line-inner {
   transform: none;
-  will-change: auto;
+}
+/* Same rule as the block reveal: a headline that scrolled off the top slides
+   back up under its own mask rather than rising from below. */
+.js .reveal-lines[data-from="above"] .reveal-line-inner {
+  transform: translate3d(0, -110%, 0);
 }
 
 /* Above-the-fold entrance is CSS-only, with no observer and no JS.

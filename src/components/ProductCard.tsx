@@ -18,11 +18,11 @@ export function ProductCard({ product, index }: { product: Product; index: numbe
         <p className="font-mono text-2xs uppercase tracking-wider text-ink-muted">{refLine}</p>
         {comingSoon ? (
           <p className="border border-line-strong px-2 py-0.5 font-mono text-2xs uppercase tracking-wider text-ink-muted">
-            Coming soon
+            In engineering
           </p>
         ) : (
           <p className="bg-accent/10 px-2 py-0.5 font-mono text-2xs uppercase tracking-wider text-accent">
-            In stock
+            In production
           </p>
         )}
       </div>
@@ -43,7 +43,7 @@ export function ProductCard({ product, index }: { product: Product; index: numbe
         <p className="mt-1 text-sm text-ink-secondary">{product.fitment}</p>
         <div className="mt-auto flex items-baseline justify-between pt-4">
           {comingSoon ? (
-            <p className="font-mono text-sm text-ink-muted">In development</p>
+            <p className="font-mono text-sm text-ink-muted">In engineering</p>
           ) : (
             <p className="font-mono text-base text-accent">
               {formatPrice(product.priceCents!)}

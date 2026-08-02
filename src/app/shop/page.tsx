@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PipelineList } from "@/components/PipelineList";
+import { MarketplaceLinks } from "@/components/MarketplaceLinks";
 import { ProductCard } from "@/components/ProductCard";
 import { Reveal } from "@/components/Reveal";
 import { getAllProducts, getAvailableProducts, getComingSoonProducts } from "@/lib/products";
@@ -7,7 +8,7 @@ import { getAllProducts, getAvailableProducts, getComingSoonProducts } from "@/l
 export const metadata: Metadata = {
   title: "Shop — Discontinued 96–00 Civic EK/EJ Parts",
   description:
-    "Every NLA Fabrication part for the 1996–2000 Civic (EK/EJ): glove box latch, HVAC slider knobs, interior door handle bezel, plus the parts currently in development.",
+    "The full NLA Fabrication catalog for the 1996–2000 Civic (EK/EJ): glove box latch, HVAC slider knobs and interior door handle bezel, plus components currently in engineering.",
   alternates: { canonical: "/shop" },
 };
 
@@ -38,9 +39,10 @@ export default function ShopPage() {
               className="hero-in mt-4 max-w-2xl text-ink-secondary"
               style={{ "--hero-delay": "200ms" } as React.CSSProperties}
             >
-              Every part here was chosen because it&rsquo;s a documented failure point on
-              the 96–00 Civic with no new replacement available. Fitment listed per part;
-              all interior parts print in PETG unless noted.
+              Every component in this catalog was selected against a documented failure
+              on the 96–00 Civic with no new replacement available from any source.
+              Fitment is listed per part; interior components are produced in
+              engineering-grade PETG unless otherwise specified.
             </p>
           </div>
           <dl
@@ -48,8 +50,8 @@ export default function ShopPage() {
             style={{ "--hero-delay": "280ms" } as React.CSSProperties}
           >
             {[
-              [available.length, "available now"],
-              [pipeline.length, "in development"],
+              [available.length, "in production"],
+              [pipeline.length, "in engineering"],
               ["PETG", "standard material"],
             ].map(([value, label]) => (
               <div key={String(label)}>
@@ -82,6 +84,10 @@ export default function ShopPage() {
         </div>
       </section>
 
+      <Reveal className="shell pb-4">
+        <MarketplaceLinks />
+      </Reveal>
+
       <section aria-labelledby="pipeline-heading" className="border-t border-line bg-bg-inset">
         <div className="shell py-14 sm:py-16">
           <Reveal
@@ -89,11 +95,11 @@ export default function ShopPage() {
             id="pipeline-heading"
             className="font-mono text-xs uppercase tracking-[0.18em] text-ink-muted"
           >
-            In development — not yet purchasable
+            In engineering — not yet released
           </Reveal>
           <Reveal as="p" delay={90} className="mt-3 max-w-2xl text-sm text-ink-secondary">
-            Each of these needs fitment verification on a real car before it gets modeled
-            and tooled. No pre-orders — they go live when they fit.
+            Each of these requires fitment validation on the chassis before it is tooled
+            and released. We do not take pre-orders — components list when they pass.
           </Reveal>
           <Reveal delay={160} className="mt-8">
             <PipelineList products={pipeline} startIndex={available.length + 1} showFitment />

@@ -43,10 +43,14 @@ export const launchOptions = () => ({ executablePath: chromeExecutable() });
  * the scan is deterministic and measures what a reader actually reads.
  */
 export async function settleReveals(page) {
-  await page.evaluate(() => {
-    for (const el of document.querySelectorAll(".reveal, .reveal-lines")) {
-      el.dataset.revealed = "true";
-    }
-  });
+  /*
+   * Drops the `.js` flag rather than stamping data-revealed on each element.
+   * Since reveals replay, a live observer would immediately overwrite any
+   * attribute this set for anything off screen. The hiding rules are all
+   * scoped to `.js .reveal`, so removing the class turns the whole mechanism
+   * off at the stylesheet — which is exactly the no-JS state the site is
+   * already built to render correctly.
+   */
+  await page.evaluate(() => document.documentElement.classList.remove("js"));
   await page.waitForTimeout(1200);
 }

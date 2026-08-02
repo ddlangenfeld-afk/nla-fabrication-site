@@ -44,11 +44,11 @@ export function PipelineList({
               )}
             </span>
 
-            {/* The section heading already says these are in development, so the
-                per-row label is redundant on small screens — and dropping it is
-                what stops the longer part names from truncating. */}
+            {/* The section heading already states these are in engineering, so
+                the per-row label is redundant on small screens — and dropping it
+                is what stops the longer part names from truncating. */}
             <span className="hidden shrink-0 font-mono text-2xs uppercase tracking-wider text-ink-muted sm:block">
-              Coming soon
+              In engineering
             </span>
             <span
               aria-hidden="true"

@@ -84,9 +84,30 @@ dimensions on a fitment-critical part is worse than publishing none.
 | `CONTACT_FROM_EMAIL` | Contact form sender | Falls back to Resend's `onboarding@resend.dev` |
 | `CONTACT_EMAIL` | Where mail is delivered | Placeholder `example.com` address |
 | `NEXT_PUBLIC_SITE_URL` | Canonicals, sitemap, OG, Stripe redirects | Placeholder domain in metadata |
+| `NEXT_PUBLIC_ETSY_URL` | Etsy storefront link | Etsy is not shown anywhere |
+| `NEXT_PUBLIC_EBAY_URL` | eBay storefront link | eBay is not shown anywhere |
+| `NEXT_PUBLIC_AMAZON_URL` | Amazon storefront link | Amazon is not shown anywhere |
 
 Use Stripe **test-mode** keys (`sk_test_…`) until the store is genuinely ready
 to take money.
+
+### Marketplace storefronts
+
+The three `NEXT_PUBLIC_*_URL` variables above are the only thing standing
+between the site and a "Also available through" block on the shop page, a
+"Where to buy" column in the footer, and `sameAs` entries in the Organization
+structured data. Set one and all three appear; leave one unset and it renders
+nowhere. Nothing is hard-coded, and no placeholder URL ships — a 404 on a
+storefront link reads as an abandoned business faster than no link at all.
+
+```bash
+NEXT_PUBLIC_ETSY_URL=https://www.etsy.com/shop/YourShopName
+NEXT_PUBLIC_EBAY_URL=https://www.ebay.com/str/your-store-name
+```
+
+On Vercel these go in Project Settings → Environment Variables. They are
+`NEXT_PUBLIC_`, so they are inlined at build time: a redeploy is required
+after changing them.
 
 ---
 
