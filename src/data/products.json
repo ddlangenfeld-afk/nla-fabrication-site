@@ -56,13 +56,13 @@
       "color": "Matte black",
       "description": [
         "Complete set of slider levers and knobs for the 96–98 manual climate control panel. These components crack and detach with age, and the manufacturer never offered them as a serviceable part.",
-        "Supplied as a full set for the manual HVAC panel. Press-fits onto the original lever arms."
+        "Supplied as a full set for the manual HVAC panel. Press-fits onto the original lever arms. The factory face is a single flat line — this reproduction opens that face up as a design choice, at no cost difference, because it is the same print either way."
       ],
       "features": [
         "Complete knob set for the 96–98 manual climate control panel",
         "Press-fit installation — no tools, no adhesive",
         "PETG construction specified for dash-top solar exposure",
-        "Supplied as a set; the manufacturer never offered these individually"
+        "Choice of knob face: classic line, or a designed face at the same price"
       ],
       "installNote": "Press onto the original lever arms by hand. Under a minute per knob, no tools required.",
       "keywords": [
@@ -71,7 +71,8 @@
         "Civic EK heater slider lever"
       ],
       "art": "sliders",
-      "sortOrder": 2
+      "sortOrder": 2,
+      "hasFaceDesigns": true
     },
     {
       "slug": "door-handle-bezel-96-00-civic",

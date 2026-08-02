@@ -6,6 +6,7 @@ import { ProductArt } from "@/components/ProductArt";
 import { ProductCard } from "@/components/ProductCard";
 import { Reveal } from "@/components/Reveal";
 import { COLORS } from "@/lib/colors";
+import { FACE_DESIGNS } from "@/lib/faceDesigns";
 import { formatPrice, getAllProducts, getProduct, type Product } from "@/lib/products";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -102,6 +103,9 @@ export default async function ProductPage({
     // The static "Finish" field is replaced by the palette: the picker in the
     // buy column is the live one, and this states the range on the spec sheet.
     ["Finish", comingSoon ? (product.color ?? "TBC") : `${COLORS.length} standard`],
+    ...((product.hasFaceDesigns
+      ? [["Face design", `Classic + ${FACE_DESIGNS.length - 1} designs`]]
+      : []) as [string, string][]),
     ["Status", comingSoon ? "In engineering" : "In production — made to order"],
   ];
 

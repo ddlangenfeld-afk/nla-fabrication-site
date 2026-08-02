@@ -5,6 +5,8 @@ import { useState } from "react";
 import { ProductArt } from "@/components/ProductArt";
 import { useCart } from "@/lib/cart";
 import { getColor } from "@/lib/colors";
+import { DEFAULT_FACE_DESIGN_ID, getFaceDesign } from "@/lib/faceDesigns";
+import { KnobFaceIcon } from "@/components/KnobFaceIcon";
 import { formatPrice, getProduct } from "@/lib/products";
 
 type CheckoutState = "idle" | "submitting" | "error" | "not-configured";
@@ -83,9 +85,20 @@ export function CartView() {
               (v) => v.id === item.variantId
             )?.label;
             const color = getColor(item.colorId);
-            // Colour is part of the line identity, so it has to be part of the
-            // key too — otherwise React reuses one row for two different lines.
-            const lineKey = `${item.slug}-${item.variantId ?? "base"}-${item.colorId}`;
+            const faceDesign = product.hasFaceDesigns
+              ? getFaceDesign(item.faceDesignId)
+              : null;
+            // Colour and face design are both part of line identity, so both
+            // have to be part of the key — otherwise React reuses one row for
+            // two different lines.
+            const lineKey = `${item.slug}-${item.variantId ?? "base"}-${item.colorId}-${
+              item.faceDesignId ?? DEFAULT_FACE_DESIGN_ID
+            }`;
+            // Spoken form for aria-labels — "Skull face, Matte Black" reads
+            // naturally where the two chips above are separate visual tags.
+            const lineDescription = faceDesign
+              ? `${faceDesign.name} face, ${color.name}`
+              : color.name;
 
             return (
               <li key={lineKey} className="flex gap-4 py-5 sm:gap-6">
@@ -119,6 +132,15 @@ export function CartView() {
                             {variantLabel}
                           </span>
                         )}
+                        {faceDesign && (
+                          <span className="flex items-center gap-1.5 font-mono text-2xs uppercase tracking-wider text-ink-secondary">
+                            <KnobFaceIcon
+                              id={faceDesign.id}
+                              className="h-3.5 w-3.5 shrink-0"
+                            />
+                            {faceDesign.name}
+                          </span>
+                        )}
                         <span className="flex items-center gap-1.5 font-mono text-2xs uppercase tracking-wider text-ink-secondary">
                           <span
                             aria-hidden="true"
@@ -139,8 +161,18 @@ export function CartView() {
                     <div className="flex items-center border border-line">
                       <button
                         type="button"
-                        onClick={() => setQty(item.slug, item.variantId, item.colorId, item.qty - 1)}
-                        aria-label={`Decrease quantity of ${product.name}, ${color.name}`}
+                        onClick={() =>
+                          setQty(
+                            {
+                              slug: item.slug,
+                              variantId: item.variantId,
+                              colorId: item.colorId,
+                              faceDesignId: item.faceDesignId,
+                            },
+                            item.qty - 1
+                          )
+                        }
+                        aria-label={`Decrease quantity of ${product.name}, ${lineDescription}`}
                         className="flex h-9 w-9 items-center justify-center text-ink-secondary transition-colors hover:bg-bg-raised hover:text-ink"
                       >
                         −
@@ -150,8 +182,18 @@ export function CartView() {
                       </span>
                       <button
                         type="button"
-                        onClick={() => setQty(item.slug, item.variantId, item.colorId, item.qty + 1)}
-                        aria-label={`Increase quantity of ${product.name}, ${color.name}`}
+                        onClick={() =>
+                          setQty(
+                            {
+                              slug: item.slug,
+                              variantId: item.variantId,
+                              colorId: item.colorId,
+                              faceDesignId: item.faceDesignId,
+                            },
+                            item.qty + 1
+                          )
+                        }
+                        aria-label={`Increase quantity of ${product.name}, ${lineDescription}`}
                         className="flex h-9 w-9 items-center justify-center text-ink-secondary transition-colors hover:bg-bg-raised hover:text-ink"
                       >
                         +
@@ -159,13 +201,20 @@ export function CartView() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => removeItem(item.slug, item.variantId, item.colorId)}
+                      onClick={() =>
+                        removeItem({
+                          slug: item.slug,
+                          variantId: item.variantId,
+                          colorId: item.colorId,
+                          faceDesignId: item.faceDesignId,
+                        })
+                      }
                       className="font-mono text-2xs uppercase tracking-wider text-ink-muted transition-colors hover:text-error"
                     >
                       Remove
                       <span className="sr-only">
                         {" "}
-                        {product.name}, {color.name}
+                        {product.name}, {lineDescription}
                       </span>
                     </button>
                   </div>

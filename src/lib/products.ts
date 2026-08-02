@@ -13,6 +13,11 @@ export type Product = {
   priceCents: number | null;
   hasVariants?: boolean;
   variants?: ProductVariant[];
+  /** Offers the face-design picker (classic/skull/diamond/spade) alongside
+   *  colour. Set only on the HVAC knob set — the flat knob face is the only
+   *  surface in the catalog that's actually a free canvas; the latch and
+   *  bezel have no equivalent surface to put an icon on. */
+  hasFaceDesigns?: boolean;
   fitment: string;
   fitmentYears: string;
   chassis: string[];

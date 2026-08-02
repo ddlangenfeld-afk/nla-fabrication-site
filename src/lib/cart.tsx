@@ -2,6 +2,7 @@
 
 import { useMemo, useSyncExternalStore } from "react";
 import { DEFAULT_COLOR_ID, isValidColorId } from "@/lib/colors";
+import { DEFAULT_FACE_DESIGN_ID, isValidFaceDesignId } from "@/lib/faceDesigns";
 import { getProduct } from "@/lib/products";
 
 export type CartItem = {
@@ -9,7 +10,23 @@ export type CartItem = {
   variantId?: string;
   /** Always set on write; older saved carts are migrated on read. */
   colorId: string;
+  /** Always set on write; only meaningful for products with hasFaceDesigns. */
+  faceDesignId: string;
   qty: number;
+};
+
+/*
+ * A line's identity, independent of quantity. Every function that mutates the
+ * cart takes one of these rather than four positional arguments — that split
+ * held up fine at slug+variant+colour, but a fourth axis is where a positional
+ * signature (slug, variantId, colorId, faceDesignId, qty) stops being
+ * readable and starts being a place to swap two arguments by mistake.
+ */
+export type LineKey = {
+  slug: string;
+  variantId?: string;
+  colorId?: string;
+  faceDesignId?: string;
 };
 
 const STORAGE_KEY = "nla-cart-v1";
@@ -36,15 +53,16 @@ let loaded = false;
 const listeners = new Set<() => void>();
 
 /*
- * Colour is a third axis alongside part and side, so it is part of the line
- * identity: a black bezel and a red bezel are two lines, not one line with a
- * quantity of two. Every mutation therefore has to key on all three.
+ * Colour and face design are each a fourth/fifth axis alongside part and
+ * side, so both are part of line identity: a black classic-face knob set and
+ * a black skull-face knob set are two lines, not one line with quantity two.
  */
-function sameLine(item: CartItem, slug: string, variantId?: string, colorId?: string) {
+function sameLine(item: CartItem, key: LineKey) {
   return (
-    item.slug === slug &&
-    (item.variantId ?? null) === (variantId ?? null) &&
-    item.colorId === (colorId ?? DEFAULT_COLOR_ID)
+    item.slug === key.slug &&
+    (item.variantId ?? null) === (key.variantId ?? null) &&
+    item.colorId === (key.colorId ?? DEFAULT_COLOR_ID) &&
+    item.faceDesignId === (key.faceDesignId ?? DEFAULT_FACE_DESIGN_ID)
   );
 }
 
@@ -65,13 +83,16 @@ function parseCart(raw: string | null): CartItem[] {
           // since the cart was saved.
           getProduct((i as CartItem).slug)?.status === "available"
       )
-      // Carts saved before colours existed have no colorId, and an unknown id
-      // could survive a palette change. Both resolve to the default rather
-      // than dropping the line — a cart that silently loses items is worse
-      // than one that quietly picks black.
+      // Carts saved before colours/face designs existed are missing those
+      // fields, and an unknown id could survive a palette change. Both
+      // resolve to the default rather than dropping the line — a cart that
+      // silently loses items is worse than one that quietly picks black.
       .map((i) => ({
         ...i,
         colorId: isValidColorId(i.colorId) ? i.colorId : DEFAULT_COLOR_ID,
+        faceDesignId: isValidFaceDesignId(i.faceDesignId)
+          ? i.faceDesignId
+          : DEFAULT_FACE_DESIGN_ID,
       }));
   } catch {
     return [];
@@ -138,36 +159,36 @@ function subscribe(listener: () => void) {
 }
 
 // Module-level and therefore referentially stable — safe as effect dependencies.
-export function addItem(slug: string, variantId?: string, colorId: string = DEFAULT_COLOR_ID) {
+export function addItem(key: LineKey) {
   update((prev) => {
-    const existing = prev.find((i) => sameLine(i, slug, variantId, colorId));
+    const existing = prev.find((i) => sameLine(i, key));
     if (existing) {
       return prev.map((i) =>
-        sameLine(i, slug, variantId, colorId)
-          ? { ...i, qty: Math.min(i.qty + 1, MAX_QTY) }
-          : i
+        sameLine(i, key) ? { ...i, qty: Math.min(i.qty + 1, MAX_QTY) } : i
       );
     }
-    return [...prev, { slug, variantId, colorId, qty: 1 }];
+    return [
+      ...prev,
+      {
+        slug: key.slug,
+        variantId: key.variantId,
+        colorId: key.colorId ?? DEFAULT_COLOR_ID,
+        faceDesignId: key.faceDesignId ?? DEFAULT_FACE_DESIGN_ID,
+        qty: 1,
+      },
+    ];
   });
 }
 
-export function removeItem(slug: string, variantId?: string, colorId?: string) {
-  update((prev) => prev.filter((i) => !sameLine(i, slug, variantId, colorId)));
+export function removeItem(key: LineKey) {
+  update((prev) => prev.filter((i) => !sameLine(i, key)));
 }
 
-export function setQty(
-  slug: string,
-  variantId: string | undefined,
-  colorId: string | undefined,
-  qty: number
-) {
+export function setQty(key: LineKey, qty: number) {
   update((prev) =>
     qty <= 0
-      ? prev.filter((i) => !sameLine(i, slug, variantId, colorId))
-      : prev.map((i) =>
-          sameLine(i, slug, variantId, colorId) ? { ...i, qty: Math.min(qty, MAX_QTY) } : i
-        )
+      ? prev.filter((i) => !sameLine(i, key))
+      : prev.map((i) => (sameLine(i, key) ? { ...i, qty: Math.min(qty, MAX_QTY) } : i))
   );
 }
 

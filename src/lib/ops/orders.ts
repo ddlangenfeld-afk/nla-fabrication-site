@@ -7,6 +7,7 @@ import {
   type OrderEconomics,
   type OrderLine,
 } from "@/lib/economics";
+import { DEFAULT_FACE_DESIGN_ID, getFaceDesign } from "@/lib/faceDesigns";
 import { getProduct } from "@/lib/products";
 
 /*
@@ -34,6 +35,8 @@ export type OpsLine = {
   colorName: string;
   colorHex: string;
   variantId: string | null;
+  /** Only set for products with hasFaceDesigns — null for everything else. */
+  faceDesignId: string | null;
   name: string;
   qty: number;
   grossCents: number;
@@ -57,17 +60,25 @@ export type OpsData =
   | { configured: true; orders: OpsOrder[]; livemode: boolean };
 
 /*
- * The checkout route writes a manifest of `slug:variant:color:qty` onto the
- * session. Parsing that is exact, where parsing the human-readable line item
- * name would break the first time a product is renamed. Line items remain the
- * fallback for any order placed before the manifest existed.
+ * The checkout route writes a manifest of `slug:variant:color:face:qty` onto
+ * the session. Parsing that is exact, where parsing the human-readable line
+ * item name would break the first time a product is renamed. Line items
+ * remain the fallback for any order placed before the manifest existed.
+ *
+ * Orders placed before face designs shipped wrote a 4-field manifest
+ * (`slug:variant:color:qty`) — those are read as "-" (no face recorded)
+ * rather than discarded, so a real order from last week doesn't vanish from
+ * the queue just because the schema grew a column.
  */
 function parseManifest(manifest: string | undefined): Map<string, OpsLine> | null {
   if (!manifest) return null;
   const map = new Map<string, OpsLine>();
 
   for (const entry of manifest.split(",")) {
-    const [slug, variantRaw, colorId, qtyRaw] = entry.split(":");
+    const parts = entry.split(":");
+    const [slug, variantRaw, colorId] = parts;
+    const [faceRaw, qtyRaw] =
+      parts.length >= 5 ? [parts[3], parts[4]] : (["-", parts[3]] as const);
     const qty = Number(qtyRaw);
     if (!slug || !Number.isFinite(qty) || qty <= 0) continue;
 
@@ -76,13 +87,21 @@ function parseManifest(manifest: string | undefined): Map<string, OpsLine> | nul
     const variantId = variantRaw === "-" ? null : (variantRaw ?? null);
     const variantLabel = product?.variants?.find((v) => v.id === variantId)?.label;
 
-    map.set(`${slug}:${variantId ?? "-"}:${color.id}`, {
+    const faceDesignId = product?.hasFaceDesigns
+      ? (faceRaw === "-" ? DEFAULT_FACE_DESIGN_ID : faceRaw)
+      : null;
+    const faceDesignLabel = faceDesignId ? getFaceDesign(faceDesignId).name : undefined;
+
+    map.set(`${slug}:${variantId ?? "-"}:${color.id}:${faceDesignId ?? "-"}`, {
       slug,
       colorId: color.id,
       colorName: color.name,
       colorHex: color.hex,
       variantId,
-      name: [product?.name ?? slug, variantLabel].filter(Boolean).join(" — "),
+      faceDesignId,
+      name: [product?.name ?? slug, variantLabel, faceDesignLabel]
+        .filter(Boolean)
+        .join(" — "),
       qty,
       grossCents: 0,
     });
@@ -149,6 +168,7 @@ export async function getOrders(limit = 100): Promise<OpsData> {
             colorName: fallbackColor.name,
             colorHex: fallbackColor.hex,
             variantId: null,
+            faceDesignId: null,
             name,
             qty,
             grossCents,
@@ -229,7 +249,15 @@ export type QueueGroup = {
   colorId: string;
   colorName: string;
   colorHex: string;
-  items: { name: string; slug: string | null; qty: number; orderIds: string[] }[];
+  items: {
+    name: string;
+    slug: string | null;
+    /** For the face icon next to the item — a colour switch groups items,
+     *  a face switch is free and just needs to be visibly distinct here. */
+    faceDesignId: string | null;
+    qty: number;
+    orderIds: string[];
+  }[];
   totalUnits: number;
   printMinutes: number;
 };
@@ -253,6 +281,9 @@ export function buildQueue(orders: OpsOrder[]): QueueGroup[] {
         byColor.set(line.colorId, group);
       }
 
+      // Keyed on name, which already carries the face design label for
+      // products that have one — so "Skull" and "Diamond" land as separate
+      // rows within the same colour group without any extra grouping key.
       const existing = group.items.find((i) => i.name === line.name);
       if (existing) {
         existing.qty += line.qty;
@@ -261,6 +292,7 @@ export function buildQueue(orders: OpsOrder[]): QueueGroup[] {
         group.items.push({
           name: line.name,
           slug: line.slug,
+          faceDesignId: line.faceDesignId,
           qty: line.qty,
           orderIds: [order.id],
         });

@@ -12,6 +12,10 @@ const PAGES = [
   "/",
   "/shop",
   "/products/glove-box-latch-96-00-civic",
+  // The only page with the face-design picker (a second radio group plus the
+  // knob-face glyphs) alongside the colour picker — worth its own line rather
+  // than trusting the latch page to stand in for it.
+  "/products/hvac-slider-knob-set-96-98-civic",
   "/products/armrest-lid-latch-96-00-civic",
   "/about",
   "/contact",

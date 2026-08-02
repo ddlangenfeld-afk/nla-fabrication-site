@@ -153,6 +153,18 @@ price of PETG, so the real constraint is how many spools you want to own and
 hold. Custom colours are handled as a quote with a minimum order rather than a
 checkout option — the terms live in the same file.
 
+### Knob face designs
+
+The HVAC Slider Lever & Knob Set additionally offers a choice of knob face —
+Classic Line, Skull, Diamond, Ace of Spades — defined in
+`src/lib/faceDesigns.ts`. Unlike colour, this genuinely costs nothing extra:
+it's the same material and the same print time, just a different model
+loaded before hitting print. `hasFaceDesigns: true` on a product in
+`products.json` is what turns the picker on; no other product has a flat face
+suited to it, so it isn't offered anywhere else. Add a design by appending to
+the array in that file and adding a matching glyph case in
+`src/components/KnobFaceIcon.tsx`.
+
 ---
 
 ## Architecture

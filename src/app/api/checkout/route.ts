@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { DEFAULT_COLOR_ID, getColor, isValidColorId } from "@/lib/colors";
+import { DEFAULT_FACE_DESIGN_ID, getFaceDesign, isValidFaceDesignId } from "@/lib/faceDesigns";
 import { getProduct } from "@/lib/products";
 import { SITE_URL } from "@/lib/site";
 
@@ -8,6 +9,7 @@ type CheckoutItem = {
   slug?: unknown;
   variantId?: unknown;
   colorId?: unknown;
+  faceDesignId?: unknown;
   qty?: unknown;
 };
 
@@ -31,10 +33,10 @@ export async function POST(request: Request) {
 
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   /* A compact manifest of what was actually bought, stored on the session.
-     The ops dashboard reads this back to know which part and which colour to
-     print — Stripe's own line item is a display name, and parsing production
-     instructions out of a display string is how you end up printing the wrong
-     thing the first time someone renames a product. */
+     The ops dashboard reads this back to know which part, colour and face
+     design to print — Stripe's own line item is a display name, and parsing
+     production instructions out of a display string is how you end up
+     printing the wrong thing the first time someone renames a product. */
   const manifest: string[] = [];
 
   for (const raw of rawItems) {
@@ -57,8 +59,19 @@ export async function POST(request: Request) {
     const colorId = isValidColorId(raw.colorId) ? raw.colorId : DEFAULT_COLOR_ID;
     const color = getColor(colorId);
 
+    // Face design likewise never affects price — same print, different model
+    // loaded first — and only matters for products that actually offer it.
+    const faceDesignId =
+      product.hasFaceDesigns && isValidFaceDesignId(raw.faceDesignId)
+        ? raw.faceDesignId
+        : DEFAULT_FACE_DESIGN_ID;
+    const faceDesign = getFaceDesign(faceDesignId);
+
     const nameParts = [product.name];
     if (variantLabel) nameParts.push(variantLabel);
+    // Only stated in the name when the product actually offers a choice —
+    // otherwise every non-knob line would carry a meaningless "Classic Line".
+    if (product.hasFaceDesigns) nameParts.push(faceDesign.name);
     nameParts.push(color.name);
 
     lineItems.push({
@@ -71,12 +84,21 @@ export async function POST(request: Request) {
           description: product.fitment,
           // Survives onto the Stripe Product, so it is visible in Stripe's own
           // dashboard as well as ours.
-          metadata: { slug, colorId, variantId: variantId ?? "" },
+          metadata: {
+            slug,
+            colorId,
+            variantId: variantId ?? "",
+            faceDesignId: product.hasFaceDesigns ? faceDesignId : "",
+          },
         },
       },
     });
 
-    manifest.push([slug, variantId ?? "-", colorId, qty].join(":"));
+    manifest.push(
+      [slug, variantId ?? "-", colorId, product.hasFaceDesigns ? faceDesignId : "-", qty].join(
+        ":"
+      )
+    );
   }
 
   if (lineItems.length === 0) {

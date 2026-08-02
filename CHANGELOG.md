@@ -386,3 +386,21 @@ Basic auth in `middleware.ts`, constant-time comparison, `no-store`, `X-Robots-T
 Also fixed while in the product UI: the colour swatches had `hover-lift`, so a 24px chip translated and scaled as the pointer approached it. Fine on a nav link, wrong on a control you aim at precisely — a moving target. Hover is carried by colour and border now; nothing moves.
 
 **Final: home 95, every other page 100**, all four categories, LCP 0.6s, CLS 0. 18/18 axe scans with the new controls, 7/7 states, flows, keyboard, 34/34 motion+audio, 16/16 ops gate.
+
+## 2026-08-03 · 00:40 — Knob face designs
+
+Grounded in an actual teardown: a spare 96–97 climate control unit was pulled apart and the slider knobs pulled off to look at what's actually on the face — a single flat molded line, nothing else. That's a free canvas, and it's specific to this one part: the latch and bezel have no equivalent flat surface, which is why this ships only on the HVAC Slider Lever & Knob Set.
+
+**Why it costs nothing, and colour does.** Colour is a real changeover — a different spool, a hotend purge, inventory sitting on a shelf. A face design is none of that: same material, same colour, same print time to the minute, just a different model loaded before hitting print. It's priced identically to Classic Line because there is no cost difference to charge for. This is the one place "customisable" doesn't fight the small-batch cost model in `costs.json`, because the customisation is geometry, not inventory.
+
+**Four designs to start: Classic Line, Skull, Diamond, Ace of Spades.** Each renders as the knob's own circular outline with the design inscribed in the centre — a small technical-drawing glyph, not a literal photo, consistent with how every other schematic on this site is drawn. `src/lib/faceDesigns.ts` holds the list; `KnobFaceIcon.tsx` holds the glyphs. Adding a fifth is two edits, no cost-model change.
+
+**One design for the whole set, not per-knob.** The set has three physical knobs (fan, temperature, mode); this assumption treats the set as one themed purchase — "the skull set" — rather than a per-knob mix-and-match builder. Matches how colour already works and is the sellable interpretation of "people could buy them." Flagged as an assumption, not a decision made silently.
+
+**Cart identity gained a fourth axis, and that's where the API got refactored.** `addItem`/`removeItem`/`setQty` took slug, then +variant, then +colour as positional arguments; a fifth positional parameter (face design) was the point where that stopped being readable and started being a place to transpose two arguments by mistake. They now take a single `LineKey` object (`{ slug, variantId, colorId, faceDesignId }`) instead. Every call site — `AddToCart`, `CartView` — updated to match. Carts saved before face designs existed migrate to Classic Line on read, same pattern as the colour migration before it.
+
+**Checkout manifest went from 4 fields to 5** (`slug:variant:color:face:qty`), with the parser reading either shape — a 4-field entry (any order placed before this shipped) is read as `face: "-"`, which resolves to Classic Line for a product that has designs and to nothing for a product that doesn't. A real order from last week doesn't fall out of the queue because the schema grew a column.
+
+**Ops queue groups by colour only, and now demonstrates why in one screenshot.** The sample data has Skull and Ace of Spades both in the Matte Black group — merged for the changeover count — while Diamond sits in a genuinely separate Graphite group. That's the whole point made visible: two design switches cost nothing, one colour switch costs a purge, and the queue's grouping already reflected that correctly the moment `line.name` started carrying the design label — no changes needed to the changeover math itself.
+
+Verified: two different designs of the same part, same colour, land as two distinct cart lines (not one line, quantity two); the product spec sheet states the design count; the ledger and queue both show the correct face icon per line; axe clean on the HVAC page specifically (now a permanent line in `qa:a11y` rather than trusting the latch page to stand in for every product); ops gate still 16/16 after `orders.ts` changed.

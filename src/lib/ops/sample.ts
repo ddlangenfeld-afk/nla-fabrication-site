@@ -1,6 +1,7 @@
 import "server-only";
 import { getColor } from "@/lib/colors";
 import { orderEconomics } from "@/lib/economics";
+import { getFaceDesign } from "@/lib/faceDesigns";
 import type { OpsData, OpsLine, OpsOrder } from "@/lib/ops/orders";
 
 /*
@@ -40,15 +41,24 @@ const UNIT_CENTS: Record<string, number> = {
   [BEZEL]: 1800,
 };
 
-function line(slug: string, colorId: string, qty: number, variantLabel?: string): OpsLine {
+function line(
+  slug: string,
+  colorId: string,
+  qty: number,
+  variantLabel?: string,
+  faceDesignId?: string
+): OpsLine {
   const color = getColor(colorId);
+  const faceDesign = faceDesignId ? getFaceDesign(faceDesignId) : null;
+  const nameParts = [NAMES[slug], variantLabel, faceDesign?.name].filter(Boolean);
   return {
     slug,
     colorId: color.id,
     colorName: color.name,
     colorHex: color.hex,
     variantId: variantLabel ? variantLabel.toLowerCase() : null,
-    name: variantLabel ? `${NAMES[slug]} — ${variantLabel}` : NAMES[slug],
+    faceDesignId: faceDesign?.id ?? null,
+    name: nameParts.join(" — "),
     qty,
     grossCents: UNIT_CENTS[slug] * qty,
   };
@@ -68,13 +78,17 @@ type Draft = {
 
 /* A spread chosen to exercise the interesting cases rather than to look busy:
    a multi-colour order, a repeat colour across two orders (so the queue has
-   something to batch), a shipped order, a refund, and one unfulfilled order
-   old enough to look overdue. */
+   something to batch), a shipped order, a refund, one unfulfilled order old
+   enough to look overdue, and three of the four knob face designs so the
+   queue shows what a colour-changeover-free design switch actually looks
+   like: Skull and Ace of Spades both sit inside the one "Matte Black" queue
+   group (no extra changeover between them), while Diamond sits in a
+   genuinely separate "Graphite" group (a real one). */
 const DRAFTS: Draft[] = [
   {
     id: "cs_sample_01",
     hours: 2,
-    lines: [line(LATCH, "black", 1), line(KNOBS, "black", 1)],
+    lines: [line(LATCH, "black", 1), line(KNOBS, "black", 1, undefined, "skull")],
     shippingCents: 600,
     fulfilled: false,
     status: "paid",
@@ -95,6 +109,17 @@ const DRAFTS: Draft[] = [
   },
   {
     id: "cs_sample_03",
+    hours: 12,
+    lines: [line(KNOBS, "black", 1, undefined, "spade")],
+    shippingCents: 600,
+    fulfilled: false,
+    status: "paid",
+    name: "Sample Buyer H",
+    email: "h@example.invalid",
+    shipTo: "8 Example Terrace, Nashville, TN, 37201",
+  },
+  {
+    id: "cs_sample_04",
     hours: 21,
     lines: [line(LATCH, "black", 3)],
     shippingCents: 600,
@@ -105,9 +130,9 @@ const DRAFTS: Draft[] = [
     shipTo: "3 Example Road, Austin, TX, 78701",
   },
   {
-    id: "cs_sample_04",
+    id: "cs_sample_05",
     hours: 34,
-    lines: [line(KNOBS, "graphite", 1), line(BEZEL, "graphite", 1, "RH")],
+    lines: [line(KNOBS, "graphite", 1, undefined, "diamond"), line(BEZEL, "graphite", 1, "RH")],
     shippingCents: 600,
     fulfilled: false,
     status: "paid",
@@ -116,7 +141,7 @@ const DRAFTS: Draft[] = [
     shipTo: "4 Example Lane, Denver, CO, 80202",
   },
   {
-    id: "cs_sample_05",
+    id: "cs_sample_06",
     hours: 74,
     lines: [line(LATCH, "sand", 1)],
     shippingCents: 600,
@@ -127,7 +152,7 @@ const DRAFTS: Draft[] = [
     shipTo: "5 Example Court, Miami, FL, 33101",
   },
   {
-    id: "cs_sample_06",
+    id: "cs_sample_07",
     hours: 120,
     lines: [line(BEZEL, "blue", 1, "LH")],
     shippingCents: 600,
@@ -138,9 +163,9 @@ const DRAFTS: Draft[] = [
     shipTo: "6 Example Way, Seattle, WA, 98101",
   },
   {
-    id: "cs_sample_07",
+    id: "cs_sample_08",
     hours: 200,
-    lines: [line(LATCH, "black", 2), line(KNOBS, "black", 2)],
+    lines: [line(LATCH, "black", 2), line(KNOBS, "black", 2, undefined, "classic")],
     shippingCents: 600,
     fulfilled: true,
     status: "paid",

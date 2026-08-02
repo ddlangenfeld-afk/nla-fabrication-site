@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { KnobFaceIcon } from "@/components/KnobFaceIcon";
 import {
   changeoverCostCents,
   COST_ASSUMPTIONS,
@@ -176,7 +177,15 @@ export function OpsDashboard({
                         key={item.name}
                         className="flex items-center justify-between gap-4 px-4 py-2.5"
                       >
-                        <span className="text-sm text-ink">{item.name}</span>
+                        <span className="flex items-center gap-2 text-sm text-ink">
+                          {item.faceDesignId && (
+                            <KnobFaceIcon
+                              id={item.faceDesignId}
+                              className="h-4 w-4 shrink-0 text-ink-muted"
+                            />
+                          )}
+                          {item.name}
+                        </span>
                         <span className="shrink-0 font-mono text-sm text-accent">
                           ×{item.qty}
                         </span>
@@ -313,6 +322,12 @@ export function OpsDashboard({
                               className="h-3 w-3 shrink-0 border border-line-strong"
                               style={{ background: line.colorHex }}
                             />
+                            {line.faceDesignId && (
+                              <KnobFaceIcon
+                                id={line.faceDesignId}
+                                className="h-3.5 w-3.5 shrink-0 text-ink-muted"
+                              />
+                            )}
                             <span className="text-ink-secondary">
                               {line.qty}× {line.name}
                             </span>
