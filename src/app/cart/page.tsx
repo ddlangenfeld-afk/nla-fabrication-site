@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { CartSkeleton, CartView } from "@/components/CartView";
+import { CartView } from "@/components/CartView";
 
 export const metadata: Metadata = {
   title: "Cart",
@@ -21,11 +20,7 @@ export default function CartPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-14">
-        {/* CartView reads Stripe's ?success / ?canceled params, so it needs a
-            Suspense boundary to keep this route prerenderable. */}
-        <Suspense fallback={<CartSkeleton />}>
-          <CartView />
-        </Suspense>
+        <CartView />
       </section>
     </>
   );

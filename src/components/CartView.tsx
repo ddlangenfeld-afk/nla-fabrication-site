@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ProductArt } from "@/components/ProductArt";
-import { clearCart, useCart } from "@/lib/cart";
+import { useCart } from "@/lib/cart";
 import { formatPrice, getProduct } from "@/lib/products";
 
 type CheckoutState = "idle" | "submitting" | "error" | "not-configured";
@@ -29,17 +28,6 @@ export function CartView() {
   const { items, ready, setQty, removeItem, subtotalCents, count } = useCart();
   const [checkout, setCheckout] = useState<CheckoutState>("idle");
 
-  // Stripe redirects back to /cart?success=1 or ?canceled=1.
-  const searchParams = useSearchParams();
-  const succeeded = searchParams.get("success") !== null;
-  const canceled = searchParams.get("canceled") !== null;
-
-  // The order is Stripe's now — drop the local copy so a refresh doesn't
-  // re-offer parts that were just bought.
-  useEffect(() => {
-    if (succeeded) clearCart();
-  }, [succeeded]);
-
   async function handleCheckout() {
     setCheckout("submitting");
     try {
@@ -60,26 +48,6 @@ export function CartView() {
     }
   }
 
-  if (succeeded) {
-    return (
-      <div className="border border-success/40 bg-success/10 p-8" role="status">
-        <p className="font-display text-2xl font-semibold tracking-tight text-ink">
-          Order received.
-        </p>
-        <p className="mt-3 max-w-lg text-ink-secondary">
-          Thanks — a confirmation is on its way to the email you gave Stripe. Parts are
-          printed to order, so expect 3–5 business days before yours ships.
-        </p>
-        <Link
-          href="/shop"
-          className="mt-6 inline-block bg-accent px-7 py-3.5 font-medium text-accent-ink transition-colors hover:bg-accent-bright"
-        >
-          Back to the catalog
-        </Link>
-      </div>
-    );
-  }
-
   // The cart lives in localStorage, so the prerendered HTML can't know what's
   // in it — show a skeleton rather than flashing "empty".
   if (!ready) return <CartSkeleton />;
@@ -93,11 +61,6 @@ export function CartView() {
         <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-ink-secondary">
           Three parts are available now, with more in fitment verification.
         </p>
-        {canceled && (
-          <p className="mx-auto mt-5 max-w-sm text-sm text-ink-muted">
-            Checkout was canceled — nothing was charged.
-          </p>
-        )}
         <Link
           href="/shop"
           className="mt-7 inline-block bg-accent px-7 py-3.5 font-medium text-accent-ink transition-colors hover:bg-accent-bright"
@@ -111,15 +74,6 @@ export function CartView() {
   return (
     <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr] lg:gap-14">
       <div>
-        {canceled && (
-          <p
-            role="status"
-            className="mb-5 border border-line-strong bg-bg-raised px-4 py-3 text-sm text-ink-secondary"
-          >
-            Checkout was canceled — nothing was charged, and your cart is untouched.
-          </p>
-        )}
-
         <ul className="divide-y divide-line border-y border-line">
           {items.map((item) => {
             const product = getProduct(item.slug);

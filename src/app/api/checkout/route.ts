@@ -65,8 +65,11 @@ export async function POST(request: Request) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: lineItems,
-      success_url: `${SITE_URL}/cart?success=1`,
-      cancel_url: `${SITE_URL}/cart?canceled=1`,
+      // A dedicated confirmation route, not a query flag on /cart: it keeps the
+      // cart page free of a Suspense boundary, and gives the order a real URL.
+      // Cancelling just returns them to their cart, which is left untouched.
+      success_url: `${SITE_URL}/cart/success`,
+      cancel_url: `${SITE_URL}/cart`,
       shipping_address_collection: { allowed_countries: ["US"] },
     });
 
