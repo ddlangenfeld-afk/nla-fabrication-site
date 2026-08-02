@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction C — Industrial Catalog</title>
+<style>
+  :root{--bg:#0e1116;--card:#151a21;--line:#232a34;--ink:#e8ecf1;--ink2:#9aa5b1;--acc:#4d9fff}
+  *{margin:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font:15px/1.6 "Inter",system-ui,sans-serif}
+  header{display:flex;justify-content:space-between;align-items:center;padding:16px 40px;background:var(--card);border-bottom:1px solid var(--line)}
+  .logo{font-weight:700;font-size:16px}
+  .logo b{color:var(--acc)}
+  .search{flex:1;max-width:480px;margin:0 40px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 16px;color:var(--ink2)}
+  nav a{color:var(--ink2);text-decoration:none;margin-left:24px;font-size:14px}
+  .hero{display:flex;align-items:center;gap:48px;padding:56px 40px;border-bottom:1px solid var(--line)}
+  .hero h1{font-size:34px;line-height:1.15;letter-spacing:-.01em;max-width:18ch}
+  .hero p{color:var(--ink2);max-width:52ch;margin-top:16px}
+  .btn{display:inline-block;margin-top:24px;background:var(--acc);color:#fff;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none}
+  .stat{display:flex;gap:32px;margin-top:32px}
+  .stat div b{display:block;font-size:22px}
+  .stat div span{color:var(--ink2);font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:40px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .img{aspect-ratio:1;background:var(--bg);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#5b6572;font-size:12px}
+  .card h3{font-size:15px;margin-top:14px}
+  .card .fit{color:var(--ink2);font-size:12.5px;margin-top:4px}
+  .card .row{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .card .pr{font-weight:700}
+  .card .add{background:var(--acc);color:#fff;border:0;border-radius:6px;padding:7px 12px;font-size:12.5px;font-weight:600}
+  .soon{opacity:.55}
+  .soon .badge{font-size:11px;color:var(--acc);border:1px solid var(--acc);border-radius:4px;padding:2px 8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">NLA <b>Fabrication</b></div>
+  <div class="search">Search by part name or OEM number…</div>
+  <nav><a href="#">Catalog</a><a href="#">About</a><a href="#">Cart (0)</a></nav>
+</header>
+<section class="hero">
+  <div>
+    <h1>Discontinued 96–00 Civic parts, back in stock.</h1>
+    <p>3D-printed functional reproductions of NLA interior parts for the EK/EJ chassis. Searchable by OEM part number. Ships in days, not "check back never."</p>
+    <a class="btn" href="#">Browse catalog</a>
+    <div class="stat"><div><b>3</b><span>parts available now</span></div><div><b>7</b><span>in development</span></div><div><b>PETG</b><span>standard material</span></div></div>
+  </div>
+</section>
+<section class="grid">
+  <div class="card"><div class="img">[ img ]</div><h3>Glove Box Latch &amp; Handle</h3><div class="fit">96–00 Civic EK/EJ · ref 77540-S04-003ZA</div><div class="row"><span class="pr">$22.00</span><button class="add">Add to cart</button></div></div>
+  <div class="card"><div class="img">[ img ]</div><h3>HVAC Slider Knob Set</h3><div class="fit">96–98 Civic EK/EJ · manual climate</div><div class="row"><span class="pr">$14.00</span><button class="add">Add to cart</button></div></div>
+  <div class="card"><div class="img">[ img ]</div><h3>Door Handle Bezel (LH/RH)</h3><div class="fit">96–00 Civic EK/EJ</div><div class="row"><span class="pr">$18.00</span><button class="add">Add to cart</button></div></div>
+  <div class="card soon"><div class="img">[ img ]</div><h3>Armrest Lid Latch</h3><div class="fit">96–00 Civic EK/EJ</div><div class="row"><span class="badge">COMING SOON</span></div></div>
+</section>
+</body>
+</html>

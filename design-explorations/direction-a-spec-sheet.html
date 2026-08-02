@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction A — Spec Sheet</title>
+<style>
+  :root{--bg:#0b0c0e;--raised:#121417;--line:#24272c;--line2:#34383f;--ink:#edeef0;--ink2:#a6acb4;--mut:#7d848d;--acc:#f5a524}
+  *{margin:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font:16px/1.6 "Inter",system-ui,sans-serif}
+  .mono{font-family:"IBM Plex Mono",monospace}
+  .grid-bg{background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px}
+  header{display:flex;justify-content:space-between;align-items:center;padding:20px 48px;border-bottom:1px solid var(--line)}
+  .logo{font-family:"Space Grotesk";font-weight:600;letter-spacing:-.02em}
+  .logo span{color:var(--acc)}
+  nav a{color:var(--ink2);text-decoration:none;margin-left:32px;font-size:14px}
+  .hero{padding:96px 48px 72px;border-bottom:1px solid var(--line);position:relative}
+  .kicker{font-family:"IBM Plex Mono";font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:24px}
+  h1{font-family:"Space Grotesk";font-size:clamp(40px,6vw,72px);line-height:1.02;letter-spacing:-.03em;font-weight:600;max-width:15ch}
+  .hero p{color:var(--ink2);max-width:52ch;margin-top:24px}
+  .btn{display:inline-block;margin-top:36px;background:var(--acc);color:#0b0c0e;padding:14px 28px;font-weight:600;font-size:15px;text-decoration:none}
+  .dims{position:absolute;right:48px;top:96px;width:340px;border:1px solid var(--line2);background:var(--raised);padding:0}
+  .dims .tb{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+  .dims .tb div{padding:8px 12px;font-family:"IBM Plex Mono";font-size:11px;color:var(--mut)}
+  .dims .tb div+div{border-left:1px solid var(--line);color:var(--ink2)}
+  .dwg{height:200px;display:flex;align-items:center;justify-content:center}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-bottom:1px solid var(--line)}
+  .card{border-right:1px solid var(--line);padding:32px;position:relative}
+  .card:last-child{border-right:0}
+  .pn{font-family:"IBM Plex Mono";font-size:11px;color:var(--mut);letter-spacing:.08em}
+  .card h3{font-family:"Space Grotesk";font-size:20px;margin:12px 0 4px}
+  .fit{font-size:13px;color:var(--ink2)}
+  .price{font-family:"IBM Plex Mono";color:var(--acc);margin-top:16px}
+  .ph{height:150px;border:1px dashed var(--line2);margin:20px 0;display:flex;align-items:center;justify-content:center;color:var(--mut);font-family:"IBM Plex Mono";font-size:11px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">NLA<span>·</span>FABRICATION</div>
+  <nav><a href="#">Shop</a><a href="#">About</a><a href="#">Contact</a><a href="#" style="color:var(--acc)">Cart (0)</a></nav>
+</header>
+<section class="hero grid-bg">
+  <div class="kicker">EK · EJ · 1996–2000 CIVIC</div>
+  <h1>The parts marked “No Longer Available.” Made available.</h1>
+  <p>Precision 3D-printed reproductions of discontinued interior parts — modeled from original geometry, printed in PETG, shipped from a one-person shop that drives the same chassis.</p>
+  <a class="btn" href="#">Browse parts</a>
+  <aside class="dims">
+    <div class="dwg mono" style="color:#7d848d">[ technical line drawing ]</div>
+    <div class="tb"><div>PART NO.</div><div>77540-S04-003ZA</div></div>
+    <div class="tb"><div>STATUS</div><div>DISCONTINUED · REPRODUCED</div></div>
+    <div class="tb"><div>MATERIAL</div><div>PETG</div></div>
+  </aside>
+</section>
+<section class="cards">
+  <div class="card"><div class="pn">NLA-001 · REF 77540-S04-003ZA</div><h3>Glove Box Latch &amp; Handle</h3><div class="fit">Fits 1996–2000 Civic EK/EJ</div><div class="ph">LINE-ART PLACEHOLDER</div><div class="price">$22</div></div>
+  <div class="card"><div class="pn">NLA-002 · SET OF 4</div><h3>HVAC Slider Knob Set</h3><div class="fit">Fits 1996–1998 Civic EK/EJ</div><div class="ph">LINE-ART PLACEHOLDER</div><div class="price">$14</div></div>
+  <div class="card"><div class="pn">NLA-003 · LH / RH</div><h3>Door Handle Bezel</h3><div class="fit">Fits 1996–2000 Civic EK/EJ</div><div class="ph">LINE-ART PLACEHOLDER</div><div class="price">$18</div></div>
+</section>
+</body>
+</html>

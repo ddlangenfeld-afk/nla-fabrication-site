@@ -1,0 +1,270 @@
+{
+  "products": [
+    {
+      "slug": "glove-box-latch-96-00-civic",
+      "name": "Glove Box Latch & Handle",
+      "shortName": "Glove Box Latch",
+      "status": "available",
+      "priceCents": 2200,
+      "fitment": "Fits 1996–2000 Civic (EK/EJ chassis)",
+      "fitmentYears": "1996–2000",
+      "chassis": ["EK", "EJ"],
+      "oemRef": "77540-S04-003ZA",
+      "oemNote": "Replaces OEM part 77540-S04-003ZA, discontinued by the manufacturer. Used units run ~$15 when they surface at all.",
+      "material": "PETG",
+      "materialNote": "Printed in PETG for impact resistance and interior heat tolerance. Layer orientation chosen so the latch spring tab loads along the strongest axis.",
+      "color": "Matte black",
+      "description": [
+        "The glove box latch is the single most common interior failure point on this generation: the spring tab fatigues, the handle snaps, and the glove box either won't stay shut or won't open. The original part is no longer available new — this is a direct-fit replacement modeled from the original geometry.",
+        "Drop-in installation with the original screws. No trimming, no adapters."
+      ],
+      "features": [
+        "Direct replacement for discontinued OEM part 77540-S04-003ZA",
+        "Drop-in fit — reuses original hardware",
+        "PETG construction, stronger than the original brittle ABS in the failure zone",
+        "Matte black finish to match the factory dash"
+      ],
+      "installNote": "Two screws from the glove box lid interior. 5–10 minutes with a Phillips screwdriver.",
+      "keywords": [
+        "96-00 Civic glove box latch replacement",
+        "EK Civic glovebox handle discontinued",
+        "77540-S04-003ZA replacement",
+        "Civic EK NLA parts"
+      ],
+      "art": "latch",
+      "sortOrder": 1
+    },
+    {
+      "slug": "hvac-slider-knob-set-96-98-civic",
+      "name": "HVAC Slider Lever & Knob Set",
+      "shortName": "HVAC Knob Set",
+      "status": "available",
+      "priceCents": 1400,
+      "fitment": "Fits 1996–1998 Civic (EK/EJ chassis, manual climate control)",
+      "fitmentYears": "1996–1998",
+      "chassis": ["EK", "EJ"],
+      "oemRef": null,
+      "oemNote": "Individual knobs were never sold separately — the only new option is a complete climate control unit that costs far more than a knob justifies. Used knobs are pick-a-part luck.",
+      "material": "PETG",
+      "materialNote": "PETG holds up to dash-top sun exposure that softens PLA. Sliders are dimensioned to the original track with a light friction fit.",
+      "color": "Matte black",
+      "description": [
+        "Complete set of slider levers and knobs for the 96–98 manual climate control panel. These crack and go missing constantly, and there has never been a way to buy just the knob — until now.",
+        "Set includes all slider knobs for the manual HVAC panel. Press-fit onto the original lever arms."
+      ],
+      "features": [
+        "Full knob set for the 96–98 manual climate control panel",
+        "Press-fit installation — no tools, no adhesive",
+        "PETG construction rated for dash-top sun exposure",
+        "Sold as a complete set; singles never existed even from the factory"
+      ],
+      "installNote": "Press onto the original lever arms by hand. Under a minute per knob.",
+      "keywords": [
+        "EK Civic HVAC slider knob replacement",
+        "96-98 Civic climate control knob",
+        "Civic EK heater slider lever"
+      ],
+      "art": "sliders",
+      "sortOrder": 2
+    },
+    {
+      "slug": "door-handle-bezel-96-00-civic",
+      "name": "Interior Door Handle Bezel",
+      "shortName": "Door Handle Bezel",
+      "status": "available",
+      "priceCents": 1800,
+      "hasVariants": true,
+      "variants": [
+        { "id": "lh", "label": "Driver side (LH)" },
+        { "id": "rh", "label": "Passenger side (RH)" }
+      ],
+      "fitment": "Fits 1996–2000 Civic (EK/EJ chassis)",
+      "fitmentYears": "1996–2000",
+      "chassis": ["EK", "EJ"],
+      "oemRef": null,
+      "oemNote": "The original bezel is a documented weak point — the thin plastic around the handle cup cracks with age and door slams. New replacements are gone; the used market sells you the same 25-year-old brittle plastic.",
+      "material": "PETG",
+      "materialNote": "PETG with added wall thickness in the crack-prone corner radius — the one place the original design was under-built.",
+      "color": "Matte black",
+      "description": [
+        "The surround that frames the interior door release handle. On this generation the original plastic goes brittle and cracks at the corner radius — a known issue documented across owner forums for years.",
+        "This reproduction keeps the original mounting and visual profile but thickens the section that fails. Sold per side."
+      ],
+      "features": [
+        "Direct-fit reproduction of the discontinued interior handle bezel",
+        "Reinforced corner radius at the documented crack point",
+        "Available in left-hand and right-hand versions",
+        "Retains factory clip mounting"
+      ],
+      "installNote": "Unclips from the door card around the release handle. Trim tool recommended.",
+      "keywords": [
+        "Civic EK door handle bezel",
+        "96-00 Civic interior door handle surround",
+        "EK Civic door handle trim cracked"
+      ],
+      "art": "bezel",
+      "sortOrder": 3
+    },
+    {
+      "slug": "armrest-lid-latch-96-00-civic",
+      "name": "Armrest Lid Latch Mechanism",
+      "shortName": "Armrest Latch",
+      "status": "coming-soon",
+      "priceCents": null,
+      "fitment": "1996–2000 Civic (EK/EJ chassis) — fitment verification in progress",
+      "fitmentYears": "1996–2000",
+      "chassis": ["EK", "EJ"],
+      "oemRef": null,
+      "oemNote": "In development. Verifying that the EK console uses a discrete, replaceable latch before tooling.",
+      "material": "PETG",
+      "materialNote": null,
+      "color": null,
+      "description": [
+        "Replacement latch mechanism for the center console armrest lid. Currently in fitment verification — the console needs to come apart before this one gets modeled."
+      ],
+      "features": [],
+      "installNote": null,
+      "keywords": ["EK Civic armrest latch", "96-00 Civic console lid latch"],
+      "art": "console",
+      "sortOrder": 4
+    },
+    {
+      "slug": "hatch-pull-handle-96-00-civic",
+      "name": "Rear Hatch Interior Pull Handle",
+      "shortName": "Hatch Pull Handle",
+      "status": "coming-soon",
+      "priceCents": null,
+      "fitment": "1996–2000 Civic hatchback (EK chassis) — part number confirmation in progress",
+      "fitmentYears": "1996–2000",
+      "chassis": ["EK"],
+      "oemRef": null,
+      "oemNote": "In development. Confirming the exact OEM part number and discontinued status before modeling.",
+      "material": "PETG",
+      "materialNote": null,
+      "color": null,
+      "description": [
+        "Interior pull handle for closing the rear hatch. In research — OEM part number and NLA status being confirmed."
+      ],
+      "features": [],
+      "installNote": null,
+      "keywords": ["EK Civic hatch pull handle", "96-00 Civic tailgate handle"],
+      "art": "handle",
+      "sortOrder": 5
+    },
+    {
+      "slug": "door-panel-backing-bracket",
+      "name": "Door Panel Reinforcement Bracket",
+      "shortName": "Door Panel Bracket",
+      "status": "coming-soon",
+      "priceCents": null,
+      "fitment": "1996–2000 Civic (EK/EJ chassis)",
+      "fitmentYears": "1996–2000",
+      "chassis": ["EK", "EJ"],
+      "oemRef": null,
+      "oemNote": "A repair aid, not an OEM clone — backing bracket for door cards with torn-out clip mounts.",
+      "material": "PETG",
+      "materialNote": null,
+      "color": null,
+      "description": [
+        "A backing bracket that rescues door cards whose clip mounting points have torn out of the fiberboard — a repair aid of our own design, not a reproduction."
+      ],
+      "features": [],
+      "installNote": null,
+      "keywords": ["Civic door panel clip repair", "EK Civic door card repair bracket"],
+      "art": "bracket",
+      "sortOrder": 6
+    },
+    {
+      "slug": "weatherstrip-retainers-clips",
+      "name": "Weatherstrip End Retainers & Clips",
+      "shortName": "Weatherstrip Clips",
+      "status": "coming-soon",
+      "priceCents": null,
+      "fitment": "1996–2000 Civic (EK/EJ chassis)",
+      "fitmentYears": "1996–2000",
+      "chassis": ["EK", "EJ"],
+      "oemRef": null,
+      "oemNote": "In development. The small clips that vanish every time a door seal comes off.",
+      "material": "PETG",
+      "materialNote": null,
+      "color": null,
+      "description": [
+        "The small retainers and clips that anchor weatherstrip ends — the parts that crumble on removal and were never sold in useful quantities."
+      ],
+      "features": [],
+      "installNote": null,
+      "keywords": ["EK Civic weatherstrip clips", "96-00 Civic door seal retainer"],
+      "art": "clips",
+      "sortOrder": 7
+    },
+    {
+      "slug": "cowl-hood-clip-assortment",
+      "name": "Cowl, Wiper & Hood-Prop Clip Assortment",
+      "shortName": "Clip Assortment",
+      "status": "coming-soon",
+      "priceCents": null,
+      "fitment": "1996–2000 Civic (EK/EJ chassis)",
+      "fitmentYears": "1996–2000",
+      "chassis": ["EK", "EJ"],
+      "oemRef": null,
+      "oemNote": "In development. One bag of every engine-bay plastic clip that's brittle by now.",
+      "material": "PETG",
+      "materialNote": null,
+      "color": null,
+      "description": [
+        "An assortment pack of the engine-bay clips — cowl fasteners, wiper trim clips, the hood-prop retainer — that snap on a car this age the moment you touch them."
+      ],
+      "features": [],
+      "installNote": null,
+      "keywords": ["EK Civic cowl clips", "Civic hood prop clip"],
+      "art": "clips",
+      "sortOrder": 8
+    },
+    {
+      "slug": "dash-cradle-modern-hardware",
+      "name": "Modern Hardware Dash Cradles",
+      "shortName": "Dash Cradles",
+      "status": "coming-soon",
+      "priceCents": null,
+      "fitment": "1996–2000 Civic (EK/EJ chassis)",
+      "fitmentYears": "1996–2000",
+      "chassis": ["EK", "EJ"],
+      "oemRef": null,
+      "oemNote": "In development. Dash-integrated cradles for lap timers, data displays and wideband gauges.",
+      "material": "PETG",
+      "materialNote": null,
+      "color": null,
+      "description": [
+        "Dash-integrated mounting cradles for modern track hardware — lap timers, data-logging displays, wideband gauges — shaped to the EK dash instead of a suction cup."
+      ],
+      "features": [],
+      "installNote": null,
+      "keywords": ["EK Civic lap timer mount", "Civic EK gauge dash mount"],
+      "art": "cradle",
+      "sortOrder": 9
+    },
+    {
+      "slug": "underhood-guides-k-swap",
+      "name": "K-Swap Underhood Plastic Guides",
+      "shortName": "Underhood Guides",
+      "status": "coming-soon",
+      "priceCents": null,
+      "fitment": "1996–2000 Civic (EK/EJ chassis) with K-series swap",
+      "fitmentYears": "1996–2000",
+      "chassis": ["EK", "EJ"],
+      "oemRef": null,
+      "oemNote": "In development. Printed in ASA or nylon — underhood heat rules out standard filaments.",
+      "material": "ASA / Nylon",
+      "materialNote": "Underhood parts will ship in ASA or nylon only. PETG does not survive engine-bay heat soak.",
+      "color": null,
+      "description": [
+        "Small plastic routing guides and brackets for K-series swaps — the fiddly bits the swap kits skip. High-temperature materials only."
+      ],
+      "features": [],
+      "installNote": null,
+      "keywords": ["K swap Civic EK brackets", "K series swap plastic guides"],
+      "art": "bracket",
+      "sortOrder": 10
+    }
+  ]
+}
