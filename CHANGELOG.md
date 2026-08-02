@@ -133,3 +133,16 @@ Reviewed the contact page at 1440 and it was the weakest page on the site: a sin
 - **Aligned the hero to `max-w-6xl`** so both sections share a left edge.
 
 Re-verified after: 18/18 axe scans clean, all interactive states clean, flows passing, Lighthouse still 100/100/100/100.
+
+## 2026-08-02 · 11:50 — QA scripts moved into the repo
+
+The five checks driving this build lived in a session scratchpad, which meant they'd vanish with the container and the founder couldn't re-run any of the numbers in the README. Moved them to `scripts/` behind `npm run qa:*`, with `axe-core`, `lighthouse`, and `playwright` as devDependencies.
+
+Two portability fixes were needed to make them run anywhere rather than just here:
+
+- **Browser resolution.** The project's Playwright expects browser build 1234; this container ships 1194 pre-installed, and the environment forbids `playwright install`. `scripts/browser.mjs` now honours `CHROME_PATH`, then looks for a pre-installed build under `PLAYWRIGHT_BROWSERS_PATH`, then falls back to Playwright's own managed build — so it works in a sandbox, in CI, and on a laptop.
+- **Lighthouse debug port.** It was hardcoded to 9222, which silently reconnects to a Chrome left over from a previous run and reports every score as 0. Now binds a free port per run.
+
+Also worth recording: a Lighthouse run that reported all zeros turned out to be `CHROME_INTERSTITIAL_ERROR` because the server under test had died, not a site problem. Third time this session that a red result was the harness rather than the code — hence `scripts/README.md`, which documents each script's purpose and the `innerText`/`text-transform` trap that produced two earlier false failures.
+
+`BASE_URL` retargets any script at a deployment.

@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "qa:a11y": "node scripts/a11y.mjs",
+    "qa:states": "node scripts/axe-states.mjs",
+    "qa:keyboard": "node scripts/keyboard.mjs",
+    "qa:flows": "node scripts/flows.mjs",
+    "qa:lighthouse": "node scripts/lh.mjs",
+    "qa:shots": "node scripts/shoot.mjs"
   },
   "dependencies": {
     "next": "16.2.12",
@@ -17,6 +23,9 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "axe-core": "^4.12.1",
+    "lighthouse": "^13.4.1",
+    "playwright": "^1.62.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

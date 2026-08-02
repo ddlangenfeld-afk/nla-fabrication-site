@@ -50,7 +50,7 @@ npm run lint
 | Keyboard | Skip link, tab order, focus rings, mobile menu |
 | Flows | Validation, cart, variants, persistence, keyless checkout |
 
-Re-run them with the scripts described in "Testing" below.
+Re-run them yourself — see [Testing](#testing).
 
 ### Stubbed — needs real input before launch
 
@@ -127,6 +127,28 @@ Components reference tokens (`text-ink-secondary`, `border-line`), never raw
 hex.
 
 ---
+
+## Testing
+
+The checks above are scripts in `scripts/`, driving a real browser against a
+running build. Start one, then run them:
+
+```bash
+npm run build && npx next start -p 3000
+
+# in another shell
+npm run qa:a11y        # axe-core, WCAG 2.1 AA, 9 routes at 375 and 1440
+npm run qa:states      # axe against interactive states (form errors, full cart)
+npm run qa:keyboard    # skip link, tab order, focus rings, mobile menu
+npm run qa:flows       # validation, cart, variants, keyless checkout
+npm run qa:lighthouse
+npm run qa:shots       # full-page screenshots at 375/768/1440 -> ./.shots
+```
+
+`BASE_URL` points them at a deployment instead; `CHROME_PATH` overrides browser
+resolution. See `scripts/README.md` for why each one exists — briefly, axe alone
+was not enough: the skip link failure came from the keyboard script, and both
+WCAG 2.5.x failures came from Lighthouse.
 
 ## Trademark rules (non-negotiable)
 
