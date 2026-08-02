@@ -17,9 +17,16 @@ export function PipelineList({
   showFitment?: boolean;
 }) {
   return (
-    <ul className="max-w-5xl divide-y divide-line border-y border-line">
+    /*
+     * The 5xl cap exists because at full width "COMING SOON" ended up a metre
+     * from the part name. On a 2560 display that cap becomes the opposite
+     * problem — the section fills a third of the screen and leaves the rest
+     * empty. Two columns past 2xl solves both: the rows stay short enough to
+     * scan, and the section uses the width it's given.
+     */
+    <ul className="max-w-5xl border-t border-line 2xl:grid 2xl:max-w-none 2xl:grid-cols-2 2xl:gap-x-16">
       {products.map((product, i) => (
-        <li key={product.slug}>
+        <li key={product.slug} className="border-b border-line">
           <Link
             href={`/products/${product.slug}`}
             className="group flex items-baseline gap-3 py-4 transition-colors hover:bg-bg-raised/60 sm:gap-4 sm:px-4"
