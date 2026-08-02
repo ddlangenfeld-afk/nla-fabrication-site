@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { chromeExecutable } from "./browser.mjs";
+import { chromeExecutable, settleReveals } from "./browser.mjs";
 import fs from "node:fs";
 
 const OUT = process.env.SHOTS_DIR || "./.shots";
@@ -25,6 +25,11 @@ const viewports = [
   { label: "375", width: 375, height: 812 },
   { label: "768", width: 768, height: 1024 },
   { label: "1440", width: 1440, height: 900 },
+  // The wide pair exists to check the shell actually fills a real desktop —
+  // a fixed max-width container looks fine at 1440 and leaves half a 2560
+  // display empty.
+  { label: "1920", width: 1920, height: 1080 },
+  { label: "2560", width: 2560, height: 1440 },
 ];
 
 const browser = await chromium.launch({ executablePath: chromeExecutable() });
@@ -41,7 +46,10 @@ for (const vp of viewports) {
 
   for (const p of pages) {
     await page.goto(BASE + p.path, { waitUntil: "networkidle" });
-    await page.waitForTimeout(350);
+    // A full-page screenshot captures everything at once, including sections
+    // whose reveal observer will never fire because they were never scrolled
+    // to. Without this the shots are mostly blank below the fold.
+    await settleReveals(page);
     await page.screenshot({
       path: `${OUT}/${p.name}-${vp.label}.png`,
       fullPage: true,

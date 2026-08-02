@@ -57,7 +57,7 @@ export function Footer() {
                       href={link.href}
                       // inline-block + padding gives a 25px tap target; the
                       // bare 17px line box failed WCAG 2.5.8.
-                      className="inline-block py-1 text-sm text-ink-secondary transition-colors hover:text-ink"
+                      className="link-underline inline-block py-1 text-sm text-ink-secondary transition-[color,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-1 hover:text-ink motion-reduce:hover:translate-x-0"
                     >
                       {link.label}
                     </Link>

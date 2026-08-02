@@ -12,7 +12,8 @@
     "qa:keyboard": "node scripts/keyboard.mjs",
     "qa:flows": "node scripts/flows.mjs",
     "qa:lighthouse": "node scripts/lh.mjs",
-    "qa:shots": "node scripts/shoot.mjs"
+    "qa:shots": "node scripts/shoot.mjs",
+    "qa:motion": "node scripts/motion-audio.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

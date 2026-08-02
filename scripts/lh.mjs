@@ -8,6 +8,7 @@ const PAGES = [
   ["home", "/"],
   ["shop", "/shop"],
   ["product", "/products/glove-box-latch-96-00-civic"],
+  ["about", "/about"],
   ["contact", "/contact"],
 ];
 

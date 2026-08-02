@@ -142,7 +142,7 @@ export function ContactForm() {
     `mt-2 w-full border bg-bg-raised px-4 py-3 text-sm text-ink outline-none transition-colors ${
       errors[field] && touched[field]
         ? "border-error focus:border-error"
-        : "border-line focus:border-accent"
+        : "border-line hover:border-line-strong focus:border-accent"
     }`;
 
   return (
@@ -167,7 +167,7 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full bg-accent px-6 py-4 font-medium text-accent-ink transition-all hover:bg-accent-bright active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:px-10"
+        className="btn-accent w-full bg-accent px-6 py-4 font-medium text-accent-ink hover:bg-accent-bright active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:px-10"
       >
         {status === "submitting" ? "Sending…" : "Send message"}
       </button>

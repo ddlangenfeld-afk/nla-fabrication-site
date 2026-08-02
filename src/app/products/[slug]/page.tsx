@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { AddToCart } from "@/components/AddToCart";
 import { ProductArt } from "@/components/ProductArt";
 import { ProductCard } from "@/components/ProductCard";
+import { Reveal } from "@/components/Reveal";
 import { formatPrice, getAllProducts, getProduct, type Product } from "@/lib/products";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -111,13 +112,13 @@ export default async function ProductPage({
       <nav aria-label="Breadcrumb" className="border-b border-line">
         <ol className="shell flex items-center gap-2 py-3 font-mono text-2xs uppercase tracking-wider text-ink-muted">
           <li>
-            <Link href="/" className="transition-colors hover:text-accent">
+            <Link href="/" className="link-underline inline-block transition-colors hover:text-accent">
               Home
             </Link>
           </li>
           <li aria-hidden="true">/</li>
           <li>
-            <Link href="/shop" className="transition-colors hover:text-accent">
+            <Link href="/shop" className="link-underline inline-block transition-colors hover:text-accent">
               Shop
             </Link>
           </li>
@@ -212,8 +213,10 @@ export default async function ProductPage({
           )}
 
           <div className="mt-10 space-y-4 border-t border-line pt-8 text-base leading-relaxed text-ink-secondary">
-            {product.description.map((para) => (
-              <p key={para.slice(0, 24)}>{para}</p>
+            {product.description.map((para, i) => (
+              <Reveal as="p" key={para.slice(0, 24)} delay={i * 90}>
+                {para}
+              </Reveal>
             ))}
           </div>
 
@@ -222,12 +225,17 @@ export default async function ProductPage({
               <h2 className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
                 What you get
               </h2>
-              <ul className="mt-4 space-y-2.5">
-                {product.features.map((feature) => (
-                  <li key={feature} className="flex gap-3 text-sm text-ink-secondary">
+              <ul className="mt-4 space-y-1">
+                {product.features.map((feature, i) => (
+                  <Reveal
+                    as="li"
+                    key={feature}
+                    delay={i * 80}
+                    className="-mx-2 flex gap-3 px-2 py-1.5 text-sm text-ink-secondary transition-colors hover:text-ink"
+                  >
                     <span aria-hidden="true" className="mt-2 h-1 w-1 shrink-0 bg-accent" />
                     {feature}
-                  </li>
+                  </Reveal>
                 ))}
               </ul>
             </div>
@@ -279,8 +287,10 @@ export default async function ProductPage({
             {/* Only three parts are purchasable, so this row is always the
                 other two — a two-up grid rather than a three-up with a hole. */}
             <div className="mt-6 grid max-w-3xl gap-5 sm:grid-cols-2">
-              {related.map((p) => (
-                <ProductCard key={p.slug} product={p} index={allProducts.indexOf(p) + 1} />
+              {related.map((p, i) => (
+                <Reveal key={p.slug} delay={i * 110} className="flex">
+                  <ProductCard product={p} index={allProducts.indexOf(p) + 1} />
+                </Reveal>
               ))}
             </div>
           </div>

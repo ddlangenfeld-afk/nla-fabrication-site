@@ -4,6 +4,7 @@ import Script from "next/script";
 import { Atmosphere } from "@/components/three/Atmosphere";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { SoundToggle } from "@/components/SoundToggle";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -117,6 +118,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <SoundToggle />
       </body>
     </html>
   );

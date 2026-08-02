@@ -34,3 +34,19 @@ export function chromeExecutable() {
 }
 
 export const launchOptions = () => ({ executablePath: chromeExecutable() });
+
+/*
+ * Reveals start at opacity 0 and take up to ~1.5s (stagger + transition) to
+ * arrive. axe measures whatever colour is on screen when it runs, so scanning
+ * mid-transition reports amber-at-5%-opacity as a 1.05:1 contrast failure —
+ * an artefact of timing, not a defect. Snap every reveal to its end state so
+ * the scan is deterministic and measures what a reader actually reads.
+ */
+export async function settleReveals(page) {
+  await page.evaluate(() => {
+    for (const el of document.querySelectorAll(".reveal, .reveal-lines")) {
+      el.dataset.revealed = "true";
+    }
+  });
+  await page.waitForTimeout(1200);
+}

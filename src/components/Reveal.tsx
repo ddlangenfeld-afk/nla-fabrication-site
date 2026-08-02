@@ -2,12 +2,13 @@
 
 import { usePrefersReducedMotion, useReveal } from "@/lib/motion";
 
-type As = "div" | "section" | "p" | "span" | "li";
+type As = "div" | "section" | "p" | "span" | "li" | "h2";
 
 /* The rendered tag is a prop, so the ref can't be narrowed to one element
    type. This is the shape we actually pass; React 19 takes ref as a prop. */
 type TagProps = {
   ref?: React.Ref<HTMLElement>;
+  id?: string;
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
@@ -35,11 +36,13 @@ export function Reveal({
   className = "",
   delay = 0,
   as = "div",
+  id,
 }: {
   children: React.ReactNode;
   className?: string;
   delay?: number;
   as?: As;
+  id?: string;
 }) {
   const reduced = usePrefersReducedMotion();
   const ref = useReveal<HTMLElement>(!reduced);
@@ -48,6 +51,7 @@ export function Reveal({
   return (
     <Tag
       ref={ref}
+      id={id}
       className={`reveal ${className}`}
       style={delay ? ({ "--reveal-delay": `${delay}ms` } as React.CSSProperties) : undefined}
     >
@@ -72,6 +76,7 @@ export function RevealLines({
   delay = 0,
   stagger = 90,
   as = "h1",
+  id,
 }: {
   lines: React.ReactNode[];
   className?: string;
@@ -79,13 +84,14 @@ export function RevealLines({
   delay?: number;
   stagger?: number;
   as?: "h1" | "h2" | "p";
+  id?: string;
 }) {
   const reduced = usePrefersReducedMotion();
   const ref = useReveal<HTMLElement>(!reduced);
   const Tag = TAGS[as];
 
   return (
-    <Tag ref={ref} className={`reveal-lines ${className}`}>
+    <Tag ref={ref} id={id} className={`reveal-lines ${className}`}>
       {lines.map((line, i) => (
         <span key={i} className={`reveal-line ${lineClassName}`}>
           <span

@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { chromeExecutable } from "./browser.mjs";
+import { chromeExecutable, settleReveals } from "./browser.mjs";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 
@@ -31,6 +31,7 @@ for (const width of [375, 1440]) {
 
   for (const path of PAGES) {
     await page.goto(BASE + path, { waitUntil: "networkidle" });
+    await settleReveals(page);
     await page.addScriptTag({ content: axeSource });
     const results = await page.evaluate(async () => {
       return await globalThis.axe.run(document, {

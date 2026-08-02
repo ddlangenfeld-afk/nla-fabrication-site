@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { chromeExecutable } from "./browser.mjs";
+import { chromeExecutable, settleReveals } from "./browser.mjs";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 const axeSource = fs.readFileSync(createRequire(import.meta.url).resolve("axe-core/axe.min.js"), "utf8");
@@ -7,6 +7,7 @@ const BASE = process.env.BASE_URL || "http://localhost:3000";
 const b = await chromium.launch({ executablePath: chromeExecutable() });
 
 async function scan(page, label) {
+  await settleReveals(page);
   await page.addScriptTag({ content: axeSource });
   const r = await page.evaluate(async () =>
     await globalThis.axe.run(document, { runOnly: { type: "tag", values: ["wcag2a","wcag2aa","wcag21a","wcag21aa"] } }));
