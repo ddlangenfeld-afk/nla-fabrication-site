@@ -191,6 +191,11 @@ worse than good technical line art.
 - [ ] Real inbox → `CONTACT_EMAIL`, verified sending domain in Resend
 - [ ] Stripe live keys + shipping rates + tax settings
 - [ ] Product photography to replace line art
+- [ ] *Nice-to-have:* set the OG card headline in Space Grotesk. `next/og`
+      runs outside the `next/font` pipeline, and satori rejects both the WOFF2
+      subset and its TTF conversion because Space Grotesk is a variable font.
+      Needs a static instance committed to the repo. The card renders correctly
+      in a fallback sans today — cosmetic, not broken.
 - [ ] Submit `sitemap.xml` to Google Search Console
 - [ ] Validate JSON-LD in Google's Rich Results Test
 - [ ] `npm audit` — 3 high-severity advisories sit in Next's bundled

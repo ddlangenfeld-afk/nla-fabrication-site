@@ -154,3 +154,16 @@ The confirmation page was a lone green panel floating in space — thin treatmen
 Added a **"What happens next"** sequence: confirmation email (now), part gets printed (3–5 business days), shipped with tracking (after printing). Numbered, because this genuinely is a sequence where each step waits on the one before — not decoration. The right-hand timing column reads as a spec-sheet table, consistent with the rest of the site.
 
 The second step does real work: "nothing is sitting on a shelf — every part is printed to order" explains a lead time that would otherwise look like slow fulfilment, and reframes it as the thing that makes the parts good.
+
+## 2026-08-02 · 12:25 — Attempted: custom font in the OG image (reverted)
+
+The Open Graph card renders its headline in a generic sans rather than Space Grotesk, because `next/og` runs outside the `next/font` pipeline and `ImageResponse` needs the font handed to it as a buffer. On the site's most-shared asset that undercuts a typographic direction the brief treats as central, so it was worth a try.
+
+It didn't work, and the attempt is recorded rather than quietly dropped:
+
+1. Committed the Latin subset `next/font` already generates → satori rejects WOFF2 outright (`Unsupported OpenType signature wOF2`).
+2. Decompressed it to TTF with `wawoff2` → satori then failed parsing it (`Cannot read properties of undefined (reading '256')`). Space Grotesk is a variable font, and satori's parser doesn't handle this subset.
+
+Getting there properly means sourcing a static (non-variable) Space Grotesk instance rather than reusing the site's subset. That's a small, self-contained task, but not one to leave half-finished — **reverted entirely; the build is green and the card still renders correctly** in a fallback sans that is visually close and fully on-brand in colour, grid, and layout.
+
+Logged as a nice-to-have in the README, not a defect.
