@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Inter, Space_Grotesk } from "next/font/google";
+import Script from "next/script";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
@@ -81,6 +82,21 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        {/*
+         * Scroll reveals (see Reveal.tsx / globals.css) hide content until an
+         * IntersectionObserver reveals it. Gating that solely on the .reveal
+         * class is a real hazard: if a visitor's JS is slow, blocked, or
+         * errors before this runs, that content stays invisible forever —
+         * and a couple of below-the-fold sections did exactly that. Standard
+         * fix: hiding only takes effect once this script stamps `.js` on
+         * <html>. beforeInteractive runs synchronously before first paint, so
+         * JS-enabled visitors never see a flash; anyone without JS running
+         * (including a script-stripped static preview) gets the content
+         * fully visible by default instead of permanently hidden.
+         */}
+        <Script id="js-flag" strategy="beforeInteractive">
+          {`document.documentElement.classList.add("js")`}
+        </Script>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

@@ -115,7 +115,12 @@ body {
    reduced-motion block below neutralises all of it.
 --------------------------------------------------------------------------- */
 
-.reveal {
+/* Hiding is opt-in, gated on the .js class the layout's beforeInteractive
+   script stamps on <html> before first paint (see layout.tsx). Without that
+   class — JS blocked, slow, erroring, or simply not run, as in a
+   script-stripped static preview — content stays fully visible rather than
+   hidden forever behind an observer that never gets the chance to fire. */
+.js .reveal {
   opacity: 0;
   transform: translate3d(0, 18px, 0);
   transition:
@@ -125,7 +130,7 @@ body {
       var(--reveal-delay, 0ms);
   will-change: opacity, transform;
 }
-.reveal[data-revealed="true"] {
+.js .reveal[data-revealed="true"] {
   opacity: 1;
   transform: none;
   will-change: auto;
@@ -139,14 +144,16 @@ body {
   padding-bottom: 0.08em;
   margin-bottom: -0.08em;
 }
-.reveal-line-inner {
-  display: block;
+.js .reveal-line-inner {
   transform: translate3d(0, 110%, 0);
   transition: transform var(--reveal-duration, 0.9s) cubic-bezier(0.16, 1, 0.3, 1)
     var(--reveal-delay, 0ms);
   will-change: transform;
 }
-.reveal-lines[data-revealed="true"] .reveal-line-inner {
+.reveal-line-inner {
+  display: block;
+}
+.js .reveal-lines[data-revealed="true"] .reveal-line-inner {
   transform: none;
   will-change: auto;
 }

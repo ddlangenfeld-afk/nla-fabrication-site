@@ -188,3 +188,18 @@ Fixed by splitting the two cases: **above-the-fold entrance is now CSS-only keyf
 **Final: home 97–98, every other page 100**, all four categories. The residual is ~130ms TBT from three.js parse, gated behind the `load` event and then idle. Accessibility stayed at 100 and all 18 axe scans stayed clean — the canvas is `aria-hidden` decoration and never enters the tab order.
 
 **Not shipped to phones.** Coarse pointer under 768px skips WebGL entirely and keeps the drawing; no-WebGL browsers do the same. A continuously rendering canvas is the wrong trade for a battery, and the fallback is a real design, not a blank box.
+
+## 2026-08-02 · 13:35 — Fixed: scroll-revealed content invisible without a live observer
+
+Founder reported phone view broken. Root cause, found by testing rather than guessing: the scroll reveals added in the Three.js pass (`.reveal` / `.reveal-lines`) hid content by default and only showed it once an `IntersectionObserver` fired via client JS. **The live preview link redeploys a script-stripped static export** — by design, so the artifact renders without a server — which meant every one of that observer's targets stayed at `opacity: 0` forever there: the product-card grid, "Three parts you can stop hunting for," the whole story section, the pipeline heading. That's almost certainly what showed up as "broken" on a phone.
+
+This wasn't only a preview-tool problem. The same architecture would permanently hide that content for any real visitor whose JS is slow, blocked, or throws before the observer attaches — a genuine regression versus the plain server-rendered HTML this site had until this pass.
+
+**Fix — standard progressive-enhancement pattern:**
+- `layout.tsx` gets a `next/script` `beforeInteractive` snippet that stamps `.js` on `<html>`, running synchronously before first paint.
+- `globals.css`: the reveal-hiding rules now live under `.js .reveal` / `.js .reveal-line-inner` instead of applying unconditionally. No `.js` class — JS never ran, was blocked, or is a script-stripped export — and the content is simply visible, full stop.
+- `useReveal` gets a 4-second fallback timer alongside the observer, so even a real JS-enabled visitor is protected against an edge case where the observer callback never fires (element inside a zero-size ancestor at observe-time, bfcache restore, browser quirk).
+
+**Verified with the strongest test available**: a Playwright context with `javaScriptEnabled: false` — no JS runs at all, not even the flag script. Every section renders correctly. Re-ran with JS enabled and confirmed the animations still play exactly as before. Full regression suite (axe, states, flows, Lighthouse) stayed green: home 98, all other pages 100.
+
+Every other page and flow checked at 375px against the fix was unaffected — product, about, contact, cart, the mobile menu, and the header retract/reveal all worked correctly before this change too; the bug was scoped to the home page's below-the-fold sections that used the new `Reveal`/`RevealLines` components.

@@ -102,14 +102,16 @@ export function useReveal<T extends HTMLElement>(enabled = true) {
       return;
     }
 
-    // Already on screen at mount (above the fold): reveal on the next frame so
-    // the transition still plays rather than snapping.
+    const reveal = () => {
+      node.dataset.revealed = "true";
+      observer.disconnect();
+      window.clearTimeout(fallback);
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          (entry.target as HTMLElement).dataset.revealed = "true";
-          observer.disconnect();
+          if (entry.isIntersecting) reveal();
         }
       },
       // Fire slightly before the element's top edge arrives, so content is
@@ -118,7 +120,17 @@ export function useReveal<T extends HTMLElement>(enabled = true) {
     );
 
     observer.observe(node);
-    return () => observer.disconnect();
+
+    // Safety net: content must never stay invisible indefinitely because one
+    // observer callback didn't fire — a zero-size ancestor at observe-time, a
+    // tab restored from bfcache, a browser quirk. If nothing has revealed
+    // this element after a generous wait, show it anyway.
+    const fallback = window.setTimeout(reveal, 4000);
+
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(fallback);
+    };
   }, [enabled]);
 
   return ref;
