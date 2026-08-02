@@ -34,8 +34,23 @@ npm run lint
 - **SEO** — per-page metadata, canonical URLs, `Organization` JSON-LD sitewide,
   `Product` JSON-LD on product pages, generated `sitemap.xml` and `robots.txt`,
   generated OG image, SVG favicon.
-- **Error paths** — 404, error boundary, empty cart, canceled checkout, failed
-  checkout, and failed form submission all have designed states.
+- **Error paths** — 404, error boundary, empty cart, failed checkout, and
+  failed form submission all have designed states.
+- **Form validation** — per-field, on blur or submit (never on first
+  keystroke), clearing as the field is fixed; `aria-invalid` +
+  `aria-describedby`, and focus moves to the first problem on submit.
+
+### Verified
+
+| Check | Result |
+| --- | --- |
+| Lighthouse (home, shop, product, contact) | **100 / 100 / 100 / 100** — perf, a11y, best practices, SEO |
+| Core Web Vitals | LCP 0.4–0.6 s · CLS 0 · TBT 0 ms |
+| axe-core, WCAG 2.1 AA | Clean on 9 routes × 2 widths, plus interactive states |
+| Keyboard | Skip link, tab order, focus rings, mobile menu |
+| Flows | Validation, cart, variants, persistence, keyless checkout |
+
+Re-run them with the scripts described in "Testing" below.
 
 ### Stubbed — needs real input before launch
 
@@ -84,7 +99,8 @@ src/
     page.tsx                Home
     shop/                   Catalog
     products/[slug]/        Product detail — SSG + Product JSON-LD
-    cart/                   Cart (Suspense-wrapped, reads Stripe return params)
+    cart/                   Cart
+    cart/success/           Order confirmation (Stripe success_url)
     contact/                Contact form
     legal/                  Privacy · Terms · Shipping & Returns (placeholders)
     api/checkout/           Stripe Checkout session

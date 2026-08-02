@@ -123,3 +123,13 @@ The first run scored 96 on accessibility and best practices, and the two audits 
 Also confirmed the console 500s in the first run were my own workflow, not the site: I had rebuilt while a server was still running, so it was serving HTML that referenced chunk hashes the new build had replaced. Clean on a fresh server.
 
 Re-verified after the changes: 18/18 axe scans clean, all interactive states clean, full flow suite passing.
+
+## 2026-08-02 · 11:20 — Contact page redesign
+
+Reviewed the contact page at 1440 and it was the weakest page on the site: a single column of 720px-wide inputs (a first name stretched across the full column), the whole right half empty, and the hero's left edge sitting inboard of the form because the hero used `max-w-3xl` while the body used `max-w-6xl`.
+
+- **Paired name and email** into a two-up row. Short fields at sensible widths instead of one very wide column.
+- **Added a "What helps" rail** rather than just narrowing the form — space that does work instead of space that's merely empty. It asks for the chassis and year, a photo of the failure, an OEM number if they have one, and the checkout email for order questions. All four exist so the first reply can answer the question instead of asking for details, and it closes with a nudge on how to suggest a pipeline part.
+- **Aligned the hero to `max-w-6xl`** so both sections share a left edge.
+
+Re-verified after: 18/18 axe scans clean, all interactive states clean, flows passing, Lighthouse still 100/100/100/100.

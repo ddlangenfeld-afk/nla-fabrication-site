@@ -13,9 +13,11 @@ export default function ContactPage() {
   return (
     <>
       <section className="blueprint-grid border-b border-line">
-        <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-20">
+        {/* max-w-6xl to match the section below — at max-w-3xl the hero's left
+            edge sat inboard of the form and the two sections didn't line up. */}
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">Contact</p>
-          <h1 className="mt-4 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          <h1 className="mt-4 max-w-3xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             Fitment question, order issue, or a part suggestion — all welcome.
           </h1>
           <p className="mt-4 max-w-xl text-ink-secondary">
@@ -25,14 +27,58 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-3xl px-4 py-14 sm:px-6 sm:py-16">
-        <ContactForm />
-        <p className="mt-10 border-t border-line pt-6 text-sm text-ink-muted">
-          Prefer email?{" "}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="link-inline">
-            {CONTACT_EMAIL}
-          </a>
-        </p>
+      <section className="mx-auto grid max-w-6xl gap-12 px-4 py-14 sm:px-6 sm:py-16 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
+        <div>
+          <ContactForm />
+          <p className="mt-10 border-t border-line pt-6 text-sm text-ink-muted">
+            Prefer email?{" "}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="link-inline">
+              {CONTACT_EMAIL}
+            </a>
+          </p>
+        </div>
+
+        {/* A rail that earns the space: what to include so the first reply can
+            actually answer the question instead of asking for details. */}
+        <aside aria-labelledby="what-helps" className="lg:pt-1">
+          <h2
+            id="what-helps"
+            className="font-mono text-2xs uppercase tracking-widest text-ink-muted"
+          >
+            What helps
+          </h2>
+          <dl className="mt-5 space-y-6 border-t border-line pt-6">
+            {[
+              [
+                "Your chassis and year",
+                "EK, EJ, or EM1 and the model year. Some parts changed mid-generation — the 96–98 climate panel is not the 99–00 one.",
+              ],
+              [
+                "A photo of the broken part",
+                "Especially for fitment questions. The failure point usually identifies the variant faster than a part number does.",
+              ],
+              [
+                "An OEM part number, if you have one",
+                "Off the part itself or a dealer catalog. It settles compatibility immediately.",
+              ],
+              [
+                "For an order, the email you checked out with",
+                "Orders are looked up by the address Stripe has, not by name.",
+              ],
+            ].map(([term, detail]) => (
+              <div key={term}>
+                <dt className="text-sm font-medium text-ink">{term}</dt>
+                <dd className="mt-1.5 text-sm leading-relaxed text-ink-secondary">{detail}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <p className="mt-8 border-t border-line pt-6 text-sm leading-relaxed text-ink-muted">
+            Suggesting a part for the pipeline? Say what keeps breaking and how you
+            know it&rsquo;s unavailable — that&rsquo;s exactly how the current catalog
+            got chosen.
+          </p>
+        </aside>
       </section>
     </>
   );

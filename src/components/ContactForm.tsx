@@ -147,7 +147,34 @@ export function ContactForm() {
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-5">
-      {(["name", "email", "message"] as Field[]).map((field) => {
+      {/* Name and email are short fields — pairing them keeps them at a
+          sensible width instead of stretching a first name across the column. */}
+      <div className="grid gap-5 sm:grid-cols-2">
+        {(["name", "email"] as Field[]).map((field) => renderField(field))}
+      </div>
+      {renderField("message")}
+
+      {status === "error" && (
+        <p role="alert" className="border border-error/40 bg-error/10 px-4 py-3 text-sm text-ink">
+          Something went wrong sending that. Try again, or email{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`} className="link-inline">
+            {CONTACT_EMAIL}
+          </a>{" "}
+          directly.
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={status === "submitting"}
+        className="w-full bg-accent px-6 py-4 font-medium text-accent-ink transition-all hover:bg-accent-bright active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:px-10"
+      >
+        {status === "submitting" ? "Sending…" : "Send message"}
+      </button>
+    </form>
+  );
+
+  function renderField(field: Field) {
         const showError = Boolean(errors[field] && touched[field]);
         const label =
           field === "name" ? "Name" : field === "email" ? "Email" : "Message";
@@ -195,25 +222,5 @@ export function ContactForm() {
             )}
           </div>
         );
-      })}
-
-      {status === "error" && (
-        <p role="alert" className="border border-error/40 bg-error/10 px-4 py-3 text-sm text-ink">
-          Something went wrong sending that. Try again, or email{" "}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="link-inline">
-            {CONTACT_EMAIL}
-          </a>{" "}
-          directly.
-        </p>
-      )}
-
-      <button
-        type="submit"
-        disabled={status === "submitting"}
-        className="w-full bg-accent px-6 py-4 font-medium text-accent-ink transition-all hover:bg-accent-bright active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:px-10"
-      >
-        {status === "submitting" ? "Sending…" : "Send message"}
-      </button>
-    </form>
-  );
+  }
 }
