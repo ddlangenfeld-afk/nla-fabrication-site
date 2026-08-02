@@ -29,15 +29,15 @@ export default function HomePage() {
     <>
       {/* Hero — WebGL part behind, type in front. The canvas is decorative and
           loads after mount, so the headline stays the LCP element. */}
-      <section className="blueprint-grid relative isolate overflow-hidden border-b border-line">
-        <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
+      <section className="glow-band relative isolate overflow-hidden border-b border-line">
+        <div className="relative shell grid gap-12 py-20 sm:py-28 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-20">
           <div>
             {/* CSS-only entrance — see .hero-in in globals.css. These are the
                 first things painted, so they must not wait on hydration. */}
             <p className="hero-in font-mono text-xs uppercase tracking-[0.18em] text-accent">
               EK · EJ · 1996–2000 Civic
             </p>
-            <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.04] tracking-tight text-ink sm:text-5xl lg:text-6xl">
+            <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.04] tracking-tight text-ink sm:text-5xl lg:text-6xl 2xl:text-7xl">
               {[
                 <>The parts marked</>,
                 <>&ldquo;No&nbsp;Longer Available.&rdquo;</>,
@@ -64,13 +64,13 @@ export default function HomePage() {
             >
               <Link
                 href="/shop"
-                className="bg-accent px-7 py-3.5 font-medium text-accent-ink transition-colors hover:bg-accent-bright"
+                className="btn-accent bg-accent px-7 py-3.5 font-medium text-accent-ink hover:bg-accent-bright"
               >
                 Browse parts
               </Link>
               <Link
                 href="/about"
-                className="border border-line-strong px-7 py-3.5 font-medium text-ink-secondary transition-colors hover:border-accent hover:text-ink"
+                className="hover-lift inline-block border border-line-strong px-7 py-3.5 font-medium text-ink-secondary hover:border-accent hover:text-ink"
               >
                 Why this exists
               </Link>
@@ -115,7 +115,7 @@ export default function HomePage() {
 
       {/* Shop facts strip */}
       <section aria-label="How parts are made" className="border-b border-line bg-bg-inset">
-        <ul className="mx-auto flex max-w-6xl flex-wrap gap-x-10 gap-y-2 px-4 py-4 sm:px-6">
+        <ul className="shell flex flex-wrap gap-x-10 gap-y-2 py-4">
           {shopFacts.map((fact) => (
             <li
               key={fact}
@@ -130,7 +130,7 @@ export default function HomePage() {
 
       {/* Featured products */}
       <section aria-labelledby="available-heading" className="border-b border-line">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <div className="shell py-16 sm:py-20">
           <div className="flex items-end justify-between gap-4">
             <div>
               <Reveal as="p" className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
@@ -171,8 +171,8 @@ export default function HomePage() {
 
       {/* Story */}
       <section aria-labelledby="story-heading" className="border-b border-line bg-bg-raised">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-2 lg:gap-16">
-          <div>
+        <div className="shell grid gap-10 py-20 sm:py-24 lg:grid-cols-[0.85fr_1.15fr] lg:items-start lg:gap-24">
+          <div className="lg:sticky lg:top-32">
             <Reveal as="p" className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
               Why these parts exist
             </Reveal>
@@ -212,7 +212,7 @@ export default function HomePage() {
 
       {/* Pipeline */}
       <section aria-labelledby="pipeline-heading" className="border-b border-line">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <div className="shell py-16 sm:py-20">
           <Reveal as="p" className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
             In development
           </Reveal>
@@ -233,8 +233,8 @@ export default function HomePage() {
       </section>
 
       {/* Request-a-part CTA */}
-      <section aria-labelledby="cta-heading" className="blueprint-grid">
-        <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 sm:py-24">
+      <section aria-labelledby="cta-heading" className="glow-band">
+        <div className="shell py-16 text-center sm:py-24">
           <RevealLines
             as="h2"
             className="mx-auto max-w-2xl font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
@@ -249,7 +249,7 @@ export default function HomePage() {
           </p>
           <Link
             href="/contact"
-            className="mt-8 inline-block bg-accent px-7 py-3.5 font-medium text-accent-ink transition-colors hover:bg-accent-bright"
+            className="btn-accent mt-8 inline-block bg-accent px-7 py-3.5 font-medium text-accent-ink hover:bg-accent-bright"
           >
             Suggest a part
           </Link>

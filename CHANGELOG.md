@@ -211,3 +211,28 @@ Founder connected the repo to Vercel and got a plain `404: NOT_FOUND` — Vercel
 Not a code bug, though — a clean-room check (fresh clone, `npm ci`, `npm run build`, identical to what Vercel runs) built the current `HEAD` without any errors. Every one of the 10 commits since that checkpoint had actually built successfully on Vercel too — each showed "Ready" in the deployments list. **The real fault: only that first commit was tagged `Production`.** All 10 since had been landing as `Preview` deployments, invisible from the live domain, because Project Settings → Environments → Production had **Branch Tracking set to `main`** — a branch that has never existed in this repo. It started empty and `claude/new-session-gc5iwg` became its default branch by necessity; Vercel's import flow guessed the conventional name instead of reading the repo's actual `HEAD` ref.
 
 Fixed by the founder in the dashboard: Branch Tracking → `claude/new-session-gc5iwg`, saved. Every push here now promotes straight to Production instead of stacking up unpromoted Previews.
+
+## 2026-08-02 · 17:20 — New theme, full-width layout, contained cursor control
+
+Founder's review of the live site: not enough 3D, wanted hover scale on nav, scroll-position/opacity animation, cursor rotation confined to the NLA-001 box, a different background theme, and the desktop layout was "only utilizing the middle of the screen."
+
+**Layout.** The old container was `max-w-6xl` — 1152px. On a 1920 display that left ~770px of empty margin, which is exactly what he was seeing. New `.shell` runs to 1600px with padding that scales to 3.5rem at xl. Running text keeps a sane measure inside it rather than stretching to 1600px, and the hero headline steps up again at 2xl. Three width-related layout faults surfaced once things were wide: a void under the hero CTAs (fixed by centring the two hero columns against each other), a half-empty story heading column (now sticky, so it holds position while the prose scrolls past), and pipeline rows so wide that "COMING SOON" floated a metre from the part name (list capped at 5xl).
+
+**Theme.** The hairline blueprint grid is gone everywhere, including the 3D scene's backdrop and the OG card. Replaced by an atmospheric treatment: deeper ground (`#07080a`), two volumetric glows in amber and steel-blue, a vignette, and a fine SVG-noise grain so the large dark fields don't band. Surfaces became glass — translucent, blurred, with a lit top edge. The steel-blue is deliberately confined to lighting and glow so amber stays the only brand accent.
+
+**Interaction.** Nav links and the wordmark scale and lift on hover with an underline that draws in from the left; product cards rise out of the page with a warm cast beneath; accent buttons take a travelling sheen. Scroll reveals got a longer throw and a blur-in variant.
+
+**Cursor control, as asked.** The hero part was reading `pointermove` in window coordinates, so it reacted to the cursor anywhere on the page. It now measures against the canvas's own bounding box and only responds while the cursor is inside it, with the influence eased in and out so it settles back to its idle spin rather than snapping. It also leans very slightly toward the viewer while engaged.
+
+**The sitewide ambient WebGL layer: built, measured, cut.** "More 3D" was read as a full-viewport particle-and-volume canvas behind every page. Built it, then measured it:
+
+| | Performance | TBT (home) |
+| --- | --- | --- |
+| Ambient canvas on | 61–64 | 37,120 ms |
+| Ambient canvas off | 95–100 | 180 ms |
+
+That was *after* moving the per-particle drift out of a per-frame JS loop into a vertex shader, capping DPR to 1, and pausing the loop on tab-hide — the first CPU-driven version measured ~16s on home and ~7.5s on pages that previously had no canvas at all. The test rig has no GPU so software rasterisation inflates it, but this is a permanent every-page cost for what amounted to a faint drifting haze, and it would land hardest on exactly the low-end hardware least able to absorb it.
+
+Cut it. The CSS atmosphere carries the depth on its own, and every page went back to 95–100. **WebGL stays where it earns the cost: the hero viewport** — one contained canvas, one page, showing the actual product. If more 3D is wanted, the place to spend it is a rotatable viewer on each product page, which needs the other two parts modelled first; a background haze was the expensive way to buy less.
+
+Final: home 95, every other page 100, all four categories. 18/18 axe scans, interactive states, flows, and keyboard all still clean.

@@ -12,10 +12,8 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
-      <section className="blueprint-grid border-b border-line">
-        {/* max-w-6xl to match the section below — at max-w-3xl the hero's left
-            edge sat inboard of the form and the two sections didn't line up. */}
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <section className="glow-band border-b border-line">
+        <div className="shell py-16 sm:py-20">
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">Contact</p>
           <h1 className="mt-4 max-w-3xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             Fitment question, order issue, or a part suggestion — all welcome.
@@ -27,7 +25,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-6xl gap-12 px-4 py-14 sm:px-6 sm:py-16 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
+      <section className="shell grid gap-12 py-14 sm:py-16 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
         <div>
           <ContactForm />
           <p className="mt-10 border-t border-line pt-6 text-sm text-ink-muted">

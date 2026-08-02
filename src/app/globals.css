@@ -2,30 +2,35 @@
 
 /* ---------------------------------------------------------------------------
    NLA Fabrication design tokens
-   Direction: "Spec Sheet" — dark industrial, engineering-drawing language.
-   One deliberate dark theme (no toggle) — decision logged in CHANGELOG.
+   Direction: "Machined atmosphere" — deep near-black with volumetric amber and
+   steel-blue light, glass surfaces, and depth from layered blur rather than
+   from a drawn grid. One deliberate dark theme, no toggle.
 --------------------------------------------------------------------------- */
 
 :root {
-  /* Surfaces */
-  --color-bg: #0b0c0e;
-  --color-bg-raised: #121417;
-  --color-bg-overlay: #1a1d21;
-  --color-bg-inset: #08090a;
+  /* Surfaces — deeper than the previous set so glows have somewhere to sit */
+  --color-bg: #07080a;
+  --color-bg-raised: #0e1114;
+  --color-bg-overlay: #161a1f;
+  --color-bg-inset: #050608;
 
-  /* Lines */
-  --color-line: #24272c;
-  --color-line-strong: #34383f;
+  /* Lines — slightly luminous so edges catch the ambient light */
+  --color-line: #1e2228;
+  --color-line-strong: #2f353d;
 
   /* Text — all AA on --color-bg */
-  --color-ink: #edeef0;
-  --color-ink-secondary: #a6acb4;
-  --color-ink-muted: #7d848d;
+  --color-ink: #f2f4f6;
+  --color-ink-secondary: #aab2bc;
+  --color-ink-muted: #7e868f;
 
   /* Accent — amber, "CNC warning tape" */
   --color-accent: #f5a524;
-  --color-accent-bright: #ffb84d;
-  --color-accent-ink: #0b0c0e;
+  --color-accent-bright: #ffc25c;
+  --color-accent-ink: #07080a;
+
+  /* Secondary light — cool steel, used only in lighting and glows so the
+     amber always reads as the single brand accent */
+  --color-cool: #5b9dd9;
 
   /* Status */
   --color-success: #5cd685;
@@ -34,6 +39,9 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-space-grotesk), var(--font-inter), ui-sans-serif, sans-serif;
   --font-mono: var(--font-ibm-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
@@ -49,6 +57,7 @@
   --color-accent: var(--color-accent);
   --color-accent-bright: var(--color-accent-bright);
   --color-accent-ink: var(--color-accent-ink);
+  --color-cool: var(--color-cool);
   --color-success: var(--color-success);
   --color-error: var(--color-error);
 
@@ -63,30 +72,6 @@
 
 html {
   scroll-behavior: smooth;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-
-  /* Scroll reveals resolve to their finished state rather than animating.
-     The hooks also skip observing entirely, so this is belt and braces. */
-  .reveal,
-  .reveal-line-inner,
-  .hero-in,
-  .hero-line > span {
-    opacity: 1 !important;
-    transform: none !important;
-    animation: none !important;
-  }
 }
 
 body {
@@ -109,31 +94,219 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
-   Scroll motion
-   Elements start in their "before" state and transition once the observer
-   stamps data-revealed. Everything is opt-in per element, and the
-   reduced-motion block below neutralises all of it.
+   Layout shell
+   The old 1152px container left most of a desktop display empty. These give
+   the page the full width while keeping running text at a readable measure.
 --------------------------------------------------------------------------- */
 
-/* Hiding is opt-in, gated on the .js class the layout's beforeInteractive
-   script stamps on <html> before first paint (see layout.tsx). Without that
-   class — JS blocked, slow, erroring, or simply not run, as in a
-   script-stripped static preview — content stays fully visible rather than
-   hidden forever behind an observer that never gets the chance to fire. */
+.shell {
+  width: 100%;
+  max-width: 1600px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 640px) {
+  .shell { padding-inline: 2rem; }
+}
+@media (min-width: 1280px) {
+  .shell { padding-inline: 3.5rem; }
+}
+
+/* Reading column — prose stays at a sane measure inside the wide shell. */
+.measure { max-width: 68ch; }
+
+/* ---------------------------------------------------------------------------
+   Atmosphere
+   Depth comes from layered volumetric light rather than a drawn grid: two
+   soft glows, a vignette, and a fine grain to keep the large dark fields from
+   banding on cheap panels.
+--------------------------------------------------------------------------- */
+
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      70rem 45rem at 78% -10%,
+      color-mix(in srgb, var(--color-accent) 11%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      55rem 40rem at 8% 12%,
+      color-mix(in srgb, var(--color-cool) 9%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      60rem 40rem at 50% 108%,
+      color-mix(in srgb, var(--color-cool) 6%, transparent),
+      transparent 65%
+    );
+}
+
+/* Grain, as a data-URI so it costs no request. */
+.atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* Section-level glow, for hero and CTA bands. */
+.glow-band {
+  position: relative;
+  isolation: isolate;
+}
+.glow-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    48rem 26rem at 65% 40%,
+    color-mix(in srgb, var(--color-accent) 8%, transparent),
+    transparent 70%
+  );
+}
+
+/* Glass surface — translucent, blurred, with a lit top edge. */
+.surface {
+  background: color-mix(in srgb, var(--color-bg-raised) 72%, transparent);
+  backdrop-filter: blur(14px) saturate(1.1);
+  border: 1px solid var(--color-line);
+  position: relative;
+}
+.surface::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-ink) 14%, transparent),
+    transparent
+  );
+}
+
+/* ---------------------------------------------------------------------------
+   Interaction
+--------------------------------------------------------------------------- */
+
+/* Nav / control hover: lifts and scales slightly. */
+.hover-lift {
+  transition:
+    transform 0.28s var(--ease-out-expo),
+    color 0.2s ease,
+    opacity 0.2s ease;
+  will-change: transform;
+}
+.hover-lift:hover {
+  transform: translateY(-2px) scale(1.06);
+}
+.hover-lift:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* Card hover: rises out of the page with a warm cast under it. */
+.card-rise {
+  transition:
+    transform 0.45s var(--ease-out-expo),
+    border-color 0.3s ease,
+    box-shadow 0.45s var(--ease-out-expo);
+  will-change: transform;
+}
+.card-rise:hover {
+  transform: translateY(-6px);
+  border-color: var(--color-line-strong);
+  box-shadow:
+    0 22px 50px -20px rgba(0, 0, 0, 0.9),
+    0 0 40px -18px color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+/* Buttons get a travelling sheen on hover. */
+.btn-accent {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s var(--ease-out-expo), background-color 0.2s ease;
+}
+.btn-accent::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.42),
+    transparent 80%
+  );
+  transition: transform 0.7s var(--ease-out-expo);
+}
+.btn-accent:hover {
+  transform: translateY(-2px);
+}
+.btn-accent:hover::after {
+  transform: translateX(120%);
+}
+
+/* Underline that draws in from the left on hover. */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 1px;
+  width: 100%;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-out-expo);
+}
+.link-underline:hover::after,
+.link-underline[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+/* ---------------------------------------------------------------------------
+   Scroll motion
+   Hiding is gated on the .js class the layout's beforeInteractive script
+   stamps on <html> before first paint. Without that class — JS blocked,
+   slow, erroring, or a script-stripped export — content stays fully visible
+   rather than hidden behind an observer that never fires.
+--------------------------------------------------------------------------- */
+
 .js .reveal {
   opacity: 0;
-  transform: translate3d(0, 18px, 0);
+  transform: translate3d(0, 26px, 0);
   transition:
-    opacity var(--reveal-duration, 0.7s) cubic-bezier(0.16, 1, 0.3, 1)
-      var(--reveal-delay, 0ms),
-    transform var(--reveal-duration, 0.7s) cubic-bezier(0.16, 1, 0.3, 1)
-      var(--reveal-delay, 0ms);
+    opacity var(--reveal-duration, 0.85s) var(--ease-out-expo) var(--reveal-delay, 0ms),
+    transform var(--reveal-duration, 0.85s) var(--ease-out-expo) var(--reveal-delay, 0ms);
   will-change: opacity, transform;
 }
 .js .reveal[data-revealed="true"] {
   opacity: 1;
   transform: none;
   will-change: auto;
+}
+
+/* Blur-in variant: content resolves into focus as it arrives. */
+.js .reveal-blur {
+  filter: blur(10px);
+  transition:
+    opacity var(--reveal-duration, 0.85s) var(--ease-out-expo) var(--reveal-delay, 0ms),
+    transform var(--reveal-duration, 0.85s) var(--ease-out-expo) var(--reveal-delay, 0ms),
+    filter var(--reveal-duration, 0.85s) var(--ease-out-expo) var(--reveal-delay, 0ms);
+}
+.js .reveal-blur[data-revealed="true"] {
+  filter: none;
 }
 
 /* Masked line reveal: the track clips, the inner span slides out from under it. */
@@ -144,14 +317,14 @@ body {
   padding-bottom: 0.08em;
   margin-bottom: -0.08em;
 }
-.js .reveal-line-inner {
-  transform: translate3d(0, 110%, 0);
-  transition: transform var(--reveal-duration, 0.9s) cubic-bezier(0.16, 1, 0.3, 1)
-    var(--reveal-delay, 0ms);
-  will-change: transform;
-}
 .reveal-line-inner {
   display: block;
+}
+.js .reveal-line-inner {
+  transform: translate3d(0, 110%, 0);
+  transition: transform var(--reveal-duration, 0.95s) var(--ease-out-expo)
+    var(--reveal-delay, 0ms);
+  will-change: transform;
 }
 .js .reveal-lines[data-revealed="true"] .reveal-line-inner {
   transform: none;
@@ -160,13 +333,10 @@ body {
 
 /* Above-the-fold entrance is CSS-only, with no observer and no JS.
    The scroll reveals above wait for hydration before they can un-hide their
-   element, and the hero headline is the LCP element — so gating it on JS
-   pushed LCP from 0.6s to 1.1s under Lighthouse's throttling. These keyframes
-   start at parse time instead, so the hero paints and animates on the
-   critical path rather than behind it. Content further down the page still
-   uses the observer: it has hydrated long before anyone scrolls to it. */
+   element, and the hero headline is the LCP element — gating it on JS pushed
+   LCP from 0.6s to 1.1s. These keyframes start at parse time instead. */
 .hero-in {
-  animation: hero-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: hero-rise 0.5s var(--ease-out-expo) both;
   animation-delay: var(--hero-delay, 0ms);
 }
 @keyframes hero-rise {
@@ -184,7 +354,7 @@ body {
 }
 .hero-line > span {
   display: block;
-  animation: hero-line 0.62s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: hero-line 0.62s var(--ease-out-expo) both;
   animation-delay: var(--hero-delay, 0ms);
 }
 @keyframes hero-line {
@@ -195,8 +365,7 @@ body {
 
 /* Links sitting inside running text carry an underline, not just a colour
    shift: WCAG 1.4.1 wants a non-colour cue whenever link and body text are
-   under 3:1 against each other, and amber-on-grey is 1.12:1. Standalone links
-   (nav, cards, buttons) are exempt — position already distinguishes them. */
+   under 3:1 against each other, and amber-on-grey is 1.12:1. */
 .link-inline {
   color: var(--color-accent);
   text-decoration: underline;
@@ -210,32 +379,32 @@ body {
   text-decoration-color: currentColor;
 }
 
-/* Engineering-drawing hairline grid backdrop for hero sections */
-.blueprint-grid {
-  background-image:
-    linear-gradient(var(--color-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
-  background-size: 48px 48px;
-}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 
-.crosshair {
-  position: relative;
-}
-.crosshair::before,
-.crosshair::after {
-  content: "";
-  position: absolute;
-  background: var(--color-line-strong);
-}
-.crosshair::before {
-  width: 9px;
-  height: 1px;
-  left: -4px;
-  top: 0;
-}
-.crosshair::after {
-  width: 1px;
-  height: 9px;
-  left: 0;
-  top: -4px;
+  /* Reveals resolve to their finished state rather than animating. The hooks
+     also skip observing entirely, so this is belt and braces. */
+  .reveal,
+  .reveal-line-inner,
+  .hero-in,
+  .hero-line > span {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    animation: none !important;
+  }
+  .hover-lift:hover,
+  .card-rise:hover,
+  .btn-accent:hover {
+    transform: none;
+  }
 }

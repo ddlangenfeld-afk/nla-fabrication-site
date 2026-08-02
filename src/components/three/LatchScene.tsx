@@ -36,18 +36,44 @@ function Latch() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const { size } = useThree();
+  const { gl } = useThree();
+  // 0 while the cursor is outside the viewport box, 1 while it's inside.
+  // Eased rather than switched so the part settles back to its idle spin
+  // instead of snapping when the cursor leaves.
+  const engaged = useRef(0);
 
   useEffect(() => {
+    // Bounds come from the canvas element itself, so the rotation answers to
+    // the cursor's position *within the box* rather than within the window.
+    // Tracking window coordinates meant the part reacted to the cursor
+    // anywhere on the page, including far away from the viewport it lives in.
+    const el = gl.domElement;
+
     const onMove = (e: PointerEvent) => {
-      pointer.current = {
-        x: (e.clientX / size.width) * 2 - 1,
-        y: (e.clientY / size.height) * 2 - 1,
-      };
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = (e.clientY - r.top) / r.height;
+      const inside = x >= 0 && x <= 1 && y >= 0 && y <= 1;
+
+      engaged.current = inside ? 1 : 0;
+      if (inside) {
+        pointer.current = { x: x * 2 - 1, y: y * 2 - 1 };
+      }
     };
+
+    const onLeave = () => {
+      engaged.current = 0;
+    };
+
     window.addEventListener("pointermove", onMove, { passive: true });
-    return () => window.removeEventListener("pointermove", onMove);
-  }, [size.width, size.height]);
+    document.addEventListener("pointerleave", onLeave);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerleave", onLeave);
+    };
+  }, [gl]);
+
+  const engagedEased = useRef(0);
 
   useFrame((state, delta) => {
     const g = group.current;
@@ -55,16 +81,24 @@ function Latch() {
 
     const t = state.clock.elapsedTime;
 
-    // Idle rotation, plus scroll drives it further round, plus pointer parallax.
-    const targetY = t * 0.12 + scroll.current * Math.PI * 0.9 + pointer.current.x * 0.35;
-    const targetX = -0.35 + scroll.current * 0.5 + pointer.current.y * 0.2;
-
     // Frame-rate independent easing; without the delta term this drifts
     // between a 60Hz and a 120Hz display.
     const ease = 1 - Math.pow(0.0015, delta);
+    engagedEased.current +=
+      (engaged.current - engagedEased.current) * (1 - Math.pow(0.01, delta));
+    const k = engagedEased.current;
+
+    // Idle rotation and scroll always apply; the cursor term is scaled by how
+    // engaged the box currently is, so it fades in and out with the hover.
+    const targetY =
+      t * 0.12 + scroll.current * Math.PI * 0.9 + pointer.current.x * 0.55 * k;
+    const targetX = -0.35 + scroll.current * 0.5 + pointer.current.y * 0.32 * k;
+
     g.rotation.y += (targetY - g.rotation.y) * ease;
     g.rotation.x += (targetX - g.rotation.x) * ease;
     g.position.y = Math.sin(t * 0.6) * 0.05 - scroll.current * 0.6;
+    // Leans very slightly toward the viewer while engaged.
+    g.scale.setScalar(1.02 + k * 0.05);
   });
 
   const bodyMaterial = useMemo(
@@ -77,10 +111,10 @@ function Latch() {
     []
   );
 
-  // Scaled to stay clear of the viewport frame through the full rotation
-  // sweep, not just at rest.
+  // Base scale is set per-frame in useFrame (it leans in on hover), sized to
+  // stay clear of the viewport frame through the full rotation sweep.
   return (
-    <group ref={group} scale={1.02}>
+    <group ref={group}>
       {/* latch body */}
       <mesh material={bodyMaterial} castShadow>
         <boxGeometry args={[3.2, 1.75, 0.5]} />
@@ -125,28 +159,6 @@ function Latch() {
   );
 }
 
-/** Hairline grid receding behind the part — the blueprint backdrop, in depth. */
-function GridBackdrop() {
-  const geometry = useMemo(() => {
-    const points: number[] = [];
-    const span = 14;
-    const step = 1;
-    for (let i = -span; i <= span; i += step) {
-      points.push(-span, i, 0, span, i, 0);
-      points.push(i, -span, 0, i, span, 0);
-    }
-    const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.Float32BufferAttribute(points, 3));
-    return g;
-  }, []);
-
-  return (
-    <lineSegments geometry={geometry} position={[0, 0, -6]}>
-      <lineBasicMaterial color={INK} transparent opacity={0.16} />
-    </lineSegments>
-  );
-}
-
 export default function LatchScene({ reduced = false }: { reduced?: boolean }) {
   return (
     <Canvas
@@ -158,15 +170,12 @@ export default function LatchScene({ reduced = false }: { reduced?: boolean }) {
       // A still frame when reduced motion is requested: the object is composed
       // and lit, it simply doesn't move.
       frameloop={reduced ? "demand" : "always"}
-      style={{ pointerEvents: "none" }}
     >
       <ambientLight intensity={0.8} />
       <directionalLight position={[4, 6, 5]} intensity={2.4} />
       {/* Amber rim from behind — the light that makes edges read on near-black. */}
       <pointLight position={[-3, -1, -4]} intensity={55} distance={20} color={AMBER} />
       <pointLight position={[5, 2, -3]} intensity={26} distance={22} color="#7cc7ff" />
-
-      <GridBackdrop />
 
       {reduced ? (
         <group rotation={[-0.35, 0.6, 0]}>

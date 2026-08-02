@@ -26,13 +26,13 @@ export function OrderConfirmation() {
       <div className="mt-8 flex flex-wrap gap-3">
         <Link
           href="/shop"
-          className="bg-accent px-7 py-3.5 font-medium text-accent-ink transition-colors hover:bg-accent-bright"
+          className="btn-accent bg-accent px-7 py-3.5 font-medium text-accent-ink hover:bg-accent-bright"
         >
           Back to the catalog
         </Link>
         <Link
           href="/contact"
-          className="border border-line-strong px-7 py-3.5 font-medium text-ink-secondary transition-colors hover:border-accent hover:text-ink"
+          className="hover-lift inline-block border border-line-strong px-7 py-3.5 font-medium text-ink-secondary hover:border-accent hover:text-ink"
         >
           Question about this order
         </Link>

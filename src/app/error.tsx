@@ -16,7 +16,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <section className="blueprint-grid">
+    <section className="glow-band">
       <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6 sm:py-28">
         <p className="font-mono text-xs uppercase tracking-[0.18em] text-error">
           Unexpected fault
@@ -33,13 +33,13 @@ export default function Error({
           <button
             type="button"
             onClick={reset}
-            className="bg-accent px-7 py-3.5 font-medium text-accent-ink transition-colors hover:bg-accent-bright"
+            className="btn-accent bg-accent px-7 py-3.5 font-medium text-accent-ink hover:bg-accent-bright"
           >
             Try again
           </button>
           <Link
             href="/contact"
-            className="border border-line-strong px-7 py-3.5 font-medium text-ink-secondary transition-colors hover:border-accent hover:text-ink"
+            className="hover-lift inline-block border border-line-strong px-7 py-3.5 font-medium text-ink-secondary hover:border-accent hover:text-ink"
           >
             Report it
           </Link>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
+import { Atmosphere } from "@/components/three/Atmosphere";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
@@ -107,6 +108,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        <Atmosphere />
         <Header />
         {/* tabIndex={-1} lets the skip link actually move focus here. Without
             it the hash changes but focus stays on <body>, so the next Tab

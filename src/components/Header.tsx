@@ -29,15 +29,15 @@ export function Header() {
         retracted ? "-translate-y-full" : "translate-y-0"
       } ${
         stuck || menuOpen
-          ? "border-line bg-bg/90 backdrop-blur-md"
+          ? "border-line bg-bg/70 backdrop-blur-xl"
           : "border-transparent bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+      <div className="shell flex h-[72px] items-center justify-between">
         <Link
           href="/"
           onClick={() => setMenuOpen(false)}
-          className="py-2 font-display text-base font-semibold tracking-tight text-ink transition-colors hover:text-accent"
+          className="hover-lift inline-block py-2 font-display text-base font-semibold tracking-tight text-ink hover:text-accent"
         >
           NLA<span className="text-accent">·</span>FABRICATION
         </Link>
@@ -50,7 +50,7 @@ export function Header() {
               aria-current={pathname === link.href ? "page" : undefined}
               // py-2 takes the tap target past the 24px WCAG 2.5.8 minimum;
               // the 17px line box alone was under it.
-              className={`py-2 text-sm transition-colors hover:text-ink ${
+              className={`hover-lift link-underline inline-block py-2 text-sm hover:text-ink ${
                 pathname.startsWith(link.href) ? "text-ink" : "text-ink-secondary"
               }`}
             >
@@ -116,7 +116,7 @@ function CartLink({ count }: { count: number }) {
   return (
     <Link
       href="/cart"
-      className="group flex items-center gap-2 py-2 text-sm text-ink-secondary transition-colors hover:text-ink"
+      className="hover-lift group flex items-center gap-2 py-2 text-sm text-ink-secondary hover:text-ink"
     >
       <span className="hidden sm:inline">Cart</span>
       <span className="sr-only sm:hidden">Cart</span>

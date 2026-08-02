@@ -5,7 +5,7 @@ export default function NotFound() {
   const available = getAvailableProducts();
 
   return (
-    <section className="blueprint-grid">
+    <section className="glow-band">
       <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6 sm:py-28">
         <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
           Error 404
@@ -22,13 +22,13 @@ export default function NotFound() {
         <div className="mt-9 flex flex-wrap gap-3">
           <Link
             href="/shop"
-            className="bg-accent px-7 py-3.5 font-medium text-accent-ink transition-colors hover:bg-accent-bright"
+            className="btn-accent bg-accent px-7 py-3.5 font-medium text-accent-ink hover:bg-accent-bright"
           >
             Browse all parts
           </Link>
           <Link
             href="/"
-            className="border border-line-strong px-7 py-3.5 font-medium text-ink-secondary transition-colors hover:border-accent hover:text-ink"
+            className="hover-lift inline-block border border-line-strong px-7 py-3.5 font-medium text-ink-secondary hover:border-accent hover:text-ink"
           >
             Home
           </Link>

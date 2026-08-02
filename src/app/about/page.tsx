@@ -34,7 +34,7 @@ const process = [
 export default function AboutPage() {
   return (
     <>
-      <section className="blueprint-grid border-b border-line">
+      <section className="glow-band border-b border-line">
         <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24">
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">About</p>
           <h1 className="mt-6 font-display text-3xl font-semibold leading-tight tracking-tight text-ink sm:text-4xl lg:text-5xl">
@@ -138,7 +138,7 @@ export default function AboutPage() {
           </p>
           <Link
             href="/contact"
-            className="shrink-0 bg-accent px-7 py-3.5 font-medium text-accent-ink transition-colors hover:bg-accent-bright"
+            className="btn-accent shrink-0 bg-accent px-7 py-3.5 font-medium text-accent-ink hover:bg-accent-bright"
           >
             Get in touch
           </Link>

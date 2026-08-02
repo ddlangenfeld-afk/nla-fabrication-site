@@ -17,12 +17,12 @@ export function PipelineList({
   showFitment?: boolean;
 }) {
   return (
-    <ul className="divide-y divide-line border-y border-line">
+    <ul className="max-w-5xl divide-y divide-line border-y border-line">
       {products.map((product, i) => (
         <li key={product.slug}>
           <Link
             href={`/products/${product.slug}`}
-            className="group flex items-baseline gap-3 py-4 transition-colors hover:bg-bg-raised sm:gap-4 sm:px-4"
+            className="group flex items-baseline gap-3 py-4 transition-colors hover:bg-bg-raised/60 sm:gap-4 sm:px-4"
           >
             <span className="font-mono text-2xs text-ink-muted">
               {String(startIndex + i).padStart(3, "0")}

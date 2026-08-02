@@ -18,7 +18,7 @@ export default function ShopPage() {
   return (
     <>
       <section className="border-b border-line bg-bg-inset">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+        <div className="shell py-12 sm:py-16">
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
             Catalog
           </p>
@@ -48,7 +48,7 @@ export default function ShopPage() {
       </section>
 
       <section aria-labelledby="available-heading">
-        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+        <div className="shell py-14 sm:py-16">
           <h2
             id="available-heading"
             className="font-mono text-xs uppercase tracking-[0.18em] text-accent"
@@ -68,7 +68,7 @@ export default function ShopPage() {
       </section>
 
       <section aria-labelledby="pipeline-heading" className="border-t border-line bg-bg-inset">
-        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+        <div className="shell py-14 sm:py-16">
           <h2
             id="pipeline-heading"
             className="font-mono text-xs uppercase tracking-[0.18em] text-ink-muted"

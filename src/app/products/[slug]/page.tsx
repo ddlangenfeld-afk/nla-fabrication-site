@@ -109,7 +109,7 @@ export default async function ProductPage({
       />
 
       <nav aria-label="Breadcrumb" className="border-b border-line">
-        <ol className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-3 font-mono text-2xs uppercase tracking-wider text-ink-muted sm:px-6">
+        <ol className="shell flex items-center gap-2 py-3 font-mono text-2xs uppercase tracking-wider text-ink-muted">
           <li>
             <Link href="/" className="transition-colors hover:text-accent">
               Home
@@ -126,11 +126,11 @@ export default async function ProductPage({
         </ol>
       </nav>
 
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-2 lg:gap-16">
+      <div className="shell grid gap-10 py-10 sm:py-14 lg:grid-cols-2 lg:gap-16">
         {/* Drawing + spec table */}
         <div className="lg:sticky lg:top-24 lg:self-start">
           <div
-            className={`blueprint-grid border border-line-strong bg-bg-raised p-6 ${
+            className={`surface border-line-strong p-6 ${
               comingSoon ? "opacity-50" : ""
             }`}
           >
@@ -269,7 +269,7 @@ export default async function ProductPage({
 
       {related.length > 0 && (
         <section aria-labelledby="related-heading" className="border-t border-line bg-bg-inset">
-          <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+          <div className="shell py-14 sm:py-16">
             <h2
               id="related-heading"
               className="font-mono text-xs uppercase tracking-[0.18em] text-accent"

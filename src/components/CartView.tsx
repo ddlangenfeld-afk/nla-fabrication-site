@@ -63,7 +63,7 @@ export function CartView() {
         </p>
         <Link
           href="/shop"
-          className="mt-7 inline-block bg-accent px-7 py-3.5 font-medium text-accent-ink transition-colors hover:bg-accent-bright"
+          className="btn-accent mt-7 inline-block bg-accent px-7 py-3.5 font-medium text-accent-ink hover:bg-accent-bright"
         >
           Browse parts
         </Link>

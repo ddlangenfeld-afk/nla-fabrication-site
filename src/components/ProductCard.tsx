@@ -13,7 +13,7 @@ export function ProductCard({ product, index }: { product: Product; index: numbe
     .join(" · ");
 
   return (
-    <article className="group relative flex flex-col border border-line bg-bg-raised transition-colors hover:border-line-strong">
+    <article className="card-rise surface group relative flex w-full flex-col">
       <div className="flex items-center justify-between border-b border-line px-5 py-3">
         <p className="font-mono text-2xs uppercase tracking-wider text-ink-muted">{refLine}</p>
         {comingSoon ? (

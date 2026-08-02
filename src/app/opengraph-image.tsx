@@ -15,11 +15,10 @@ export default function OpenGraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#0b0c0e",
-          // Hairline blueprint grid, matching the site's .blueprint-grid backdrop.
+          background: "#07080a",
+          // Volumetric glows, matching the site's .atmosphere layer.
           backgroundImage:
-            "linear-gradient(#24272c 1px, transparent 1px), linear-gradient(90deg, #24272c 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
+            "radial-gradient(60% 70% at 78% 0%, rgba(245,165,36,0.20), transparent 60%), radial-gradient(55% 65% at 5% 15%, rgba(91,157,217,0.16), transparent 60%)",
           padding: "72px 80px",
         }}
       >
