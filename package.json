@@ -15,22 +15,26 @@
     "qa:shots": "node scripts/shoot.mjs"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.7.0",
+    "@types/three": "^0.185.3",
     "next": "16.2.12",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "resend": "^6.18.1",
-    "stripe": "^22.4.0"
+    "stripe": "^22.4.0",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "axe-core": "^4.12.1",
-    "lighthouse": "^13.4.1",
-    "playwright": "^1.62.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "axe-core": "^4.12.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
+    "lighthouse": "^13.4.1",
+    "playwright": "^1.62.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

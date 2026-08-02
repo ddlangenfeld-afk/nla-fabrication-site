@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PipelineList } from "@/components/PipelineList";
-import { ProductArt } from "@/components/ProductArt";
 import { ProductCard } from "@/components/ProductCard";
+import { Reveal, RevealLines } from "@/components/Reveal";
+import { HeroCanvas } from "@/components/three/HeroCanvas";
 import { getAllProducts, getAvailableProducts, getComingSoonProducts } from "@/lib/products";
 import { SITE_DESCRIPTION } from "@/lib/site";
 
@@ -26,22 +27,41 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Hero */}
-      <section className="blueprint-grid relative overflow-hidden border-b border-line">
-        <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
+      {/* Hero — WebGL part behind, type in front. The canvas is decorative and
+          loads after mount, so the headline stays the LCP element. */}
+      <section className="blueprint-grid relative isolate overflow-hidden border-b border-line">
+        <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
+            {/* CSS-only entrance — see .hero-in in globals.css. These are the
+                first things painted, so they must not wait on hydration. */}
+            <p className="hero-in font-mono text-xs uppercase tracking-[0.18em] text-accent">
               EK · EJ · 1996–2000 Civic
             </p>
             <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.04] tracking-tight text-ink sm:text-5xl lg:text-6xl">
-              The parts marked &ldquo;No&nbsp;Longer Available.&rdquo; Made&nbsp;available.
+              {[
+                <>The parts marked</>,
+                <>&ldquo;No&nbsp;Longer Available.&rdquo;</>,
+                <>Made&nbsp;available.</>,
+              ].map((line, i) => (
+                <span key={i} className="hero-line">
+                  <span style={{ "--hero-delay": `${60 + i * 70}ms` } as React.CSSProperties}>
+                    {line}
+                  </span>
+                </span>
+              ))}
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-ink-secondary sm:text-lg">
+            <p
+              className="hero-in mt-6 max-w-xl text-base leading-relaxed text-ink-secondary sm:text-lg"
+              style={{ "--hero-delay": "280ms" } as React.CSSProperties}
+            >
               Precision 3D-printed reproductions of discontinued interior parts for the
               96–00 Civic — modeled from original geometry, printed in PETG, and shipped
               from a one-person shop that drives the same chassis.
             </p>
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div
+              className="hero-in mt-9 flex flex-wrap gap-3"
+              style={{ "--hero-delay": "360ms" } as React.CSSProperties}
+            >
               <Link
                 href="/shop"
                 className="bg-accent px-7 py-3.5 font-medium text-accent-ink transition-colors hover:bg-accent-bright"
@@ -57,17 +77,17 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Spec title-block card */}
+          {/* Spec title-block card. The drawing area is a live CAD viewport:
+              the same part in 3D, with the title block beneath it — so the
+              geometry and its data stay one object rather than two competing
+              focal points. Falls back to the 2D drawing everywhere WebGL
+              isn't used. */}
           <aside
             aria-label="Featured part specification"
             className="hidden self-start border border-line-strong bg-bg-raised lg:block"
           >
-            <div className="border-b border-line p-6">
-              <ProductArt
-                art="latch"
-                title="the glove box latch replacement"
-                className="h-auto w-full"
-              />
+            <div className="relative aspect-[4/3] border-b border-line">
+              <HeroCanvas />
             </div>
             <dl>
               {[
@@ -113,15 +133,15 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
+              <Reveal as="p" className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
                 Available now
-              </p>
-              <h2
-                id="available-heading"
+              </Reveal>
+              <RevealLines
+                as="h2"
+                delay={90}
                 className="mt-3 font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
-              >
-                Three parts you can stop hunting for
-              </h2>
+                lines={[<>Three parts you can stop hunting for</>]}
+              />
             </div>
             <Link
               href="/shop"
@@ -131,12 +151,13 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {available.map((product) => (
-              <ProductCard
-                key={product.slug}
-                product={product}
-                index={allProducts.indexOf(product) + 1}
-              />
+            {available.map((product, i) => (
+              <Reveal key={product.slug} delay={i * 110} className="flex">
+                <ProductCard
+                  product={product}
+                  index={allProducts.indexOf(product) + 1}
+                />
+              </Reveal>
             ))}
           </div>
           <Link
@@ -152,17 +173,20 @@ export default function HomePage() {
       <section aria-labelledby="story-heading" className="border-b border-line bg-bg-raised">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-2 lg:gap-16">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
+            <Reveal as="p" className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
               Why these parts exist
-            </p>
-            <h2
-              id="story-heading"
+            </Reveal>
+            <RevealLines
+              as="h2"
+              delay={90}
               className="mt-3 font-display text-2xl font-semibold leading-snug tracking-tight text-ink sm:text-3xl"
-            >
-              This shop exists because a glove box wouldn&rsquo;t stay shut.
-            </h2>
+              lines={[
+                <>This shop exists because a</>,
+                <>glove box wouldn&rsquo;t stay shut.</>,
+              ]}
+            />
           </div>
-          <div className="space-y-5 text-base leading-relaxed text-ink-secondary">
+          <Reveal delay={140} className="space-y-5 text-base leading-relaxed text-ink-secondary">
             <p>
               The founder restored and wrapped his own 1996 Civic, then hit the wall every
               EK owner eventually hits: the small plastic parts are gone. The factory
@@ -182,41 +206,43 @@ export default function HomePage() {
               failure on this chassis, confirmed discontinued, with no new replacement on
               the market. Not merch. Not gadgets. The parts that keep an EK usable.
             </p>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Pipeline */}
       <section aria-labelledby="pipeline-heading" className="border-b border-line">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-          <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
+          <Reveal as="p" className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
             In development
-          </p>
-          <h2
-            id="pipeline-heading"
+          </Reveal>
+          <RevealLines
+            as="h2"
+            delay={90}
             className="mt-3 font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
-          >
-            The pipeline
-          </h2>
+            lines={[<>The pipeline</>]}
+          />
           <p className="mt-3 max-w-xl text-ink-secondary">
             Each part gets fitment-verified on a real car before it&rsquo;s tooled. These
             are next in line.
           </p>
-          <div className="mt-8">
+          <Reveal delay={120} className="mt-8">
             <PipelineList products={pipeline} startIndex={available.length + 1} />
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Request-a-part CTA */}
       <section aria-labelledby="cta-heading" className="blueprint-grid">
         <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 sm:py-24">
-          <h2
-            id="cta-heading"
+          <RevealLines
+            as="h2"
             className="mx-auto max-w-2xl font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
-          >
-            Got an EK part that keeps breaking and can&rsquo;t be bought?
-          </h2>
+            lines={[
+              <>Got an EK part that keeps</>,
+              <>breaking and can&rsquo;t be bought?</>,
+            ]}
+          />
           <p className="mx-auto mt-4 max-w-xl text-ink-secondary">
             The pipeline is built from owner complaints, not guesses. If a discontinued
             part keeps failing on your car, that&rsquo;s exactly what belongs here.

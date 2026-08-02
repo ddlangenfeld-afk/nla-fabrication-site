@@ -167,3 +167,24 @@ It didn't work, and the attempt is recorded rather than quietly dropped:
 Getting there properly means sourcing a static (non-variable) Space Grotesk instance rather than reusing the site's subset. That's a small, self-contained task, but not one to leave half-finished — **reverted entirely; the build is green and the card still renders correctly** in a fallback sans that is visually close and fully on-brand in colour, grid, and layout.
 
 Logged as a nice-to-have in the README, not a defect.
+
+## 2026-08-02 · 13:10 — Three.js hero, scroll motion, scroll-aware header
+
+Founder overrode the brief's phase-2 scoping and asked for the 3D layer, a retracting header, and scroll-triggered text — referencing what award-winning WebGL sites do. Implemented the techniques those sites are built on rather than copying any particular one: sticky scroll-linked geometry, pointer parallax, rim lighting on near-black, masked line reveals, and a hide-on-scroll bar.
+
+**The hero object is the latch, not an abstraction.** The temptation with a WebGL hero is a particle field or a floating blob. Neither says anything about this business. The object is the glove box latch modelled from primitives — the same part the 2D drawings show, in the medium the shop actually works in — rendered as matte dark plastic with CAD edges, amber on the two pieces that actually fail (pull bar, spring tab). It's the founder's hard-surface skill stated as the hero rather than described in copy.
+
+**It lives inside the spec card.** The first attempt put a full-bleed canvas behind the whole hero. It read as mud — near-black geometry on a near-black ground — and it collided with the spec title-block card, two focal points fighting. Moving the canvas *into* the card's drawing area made it a live CAD viewport with the title block beneath: one object with its data attached, corner ticks framing it, and the existing 2D drawing as the natural fallback in the very same box.
+
+**Motion, and what it costs:**
+- `useHeaderScroll` retracts the bar going down and returns it going up, with a 6px movement threshold so trackpad jitter doesn't flicker it, an always-visible zone near the top so it can't get stuck after an anchor jump, and a hard rule never to retract while the mobile menu is open.
+- Scroll reveals via one `IntersectionObserver` per element, disconnected after firing — reveals are one-way, so nothing keeps running afterwards.
+- `usePrefersReducedMotion` rewritten onto `useSyncExternalStore` (the lint rule caught the effect+setState pattern again, and was right again — a media query is an external store, same as localStorage).
+
+**The performance lesson, measured rather than assumed.** Adding the 3D dropped home from 100 to 97, LCP 0.6s → 1.1s. My first guess was the WebGL bundle. Measuring the actual LCP entry showed the element was `span.reveal-line-inner` — the headline — and the real cause was that a JS-driven reveal can't un-hide its element until hydration, so the LCP element was gated behind the whole bundle.
+
+Fixed by splitting the two cases: **above-the-fold entrance is now CSS-only keyframes** that start at parse time, while below-the-fold content keeps the observer (it has hydrated long before anyone scrolls to it). LCP back to 0.6s.
+
+**Final: home 97–98, every other page 100**, all four categories. The residual is ~130ms TBT from three.js parse, gated behind the `load` event and then idle. Accessibility stayed at 100 and all 18 axe scans stayed clean — the canvas is `aria-hidden` decoration and never enters the tab order.
+
+**Not shipped to phones.** Coarse pointer under 768px skips WebGL entirely and keeps the drawing; no-WebGL browsers do the same. A continuously rendering canvas is the wrong trade for a battery, and the fallback is a real design, not a blank box.

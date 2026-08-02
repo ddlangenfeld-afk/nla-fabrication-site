@@ -76,6 +76,17 @@ html {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+  /* Scroll reveals resolve to their finished state rather than animating.
+     The hooks also skip observing entirely, so this is belt and braces. */
+  .reveal,
+  .reveal-line-inner,
+  .hero-in,
+  .hero-line > span {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
 }
 
 body {
@@ -95,6 +106,84 @@ body {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Scroll motion
+   Elements start in their "before" state and transition once the observer
+   stamps data-revealed. Everything is opt-in per element, and the
+   reduced-motion block below neutralises all of it.
+--------------------------------------------------------------------------- */
+
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity var(--reveal-duration, 0.7s) cubic-bezier(0.16, 1, 0.3, 1)
+      var(--reveal-delay, 0ms),
+    transform var(--reveal-duration, 0.7s) cubic-bezier(0.16, 1, 0.3, 1)
+      var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal[data-revealed="true"] {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* Masked line reveal: the track clips, the inner span slides out from under it. */
+.reveal-line {
+  display: block;
+  overflow: hidden;
+  /* Descenders get clipped by overflow:hidden without a little breathing room. */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.reveal-line-inner {
+  display: block;
+  transform: translate3d(0, 110%, 0);
+  transition: transform var(--reveal-duration, 0.9s) cubic-bezier(0.16, 1, 0.3, 1)
+    var(--reveal-delay, 0ms);
+  will-change: transform;
+}
+.reveal-lines[data-revealed="true"] .reveal-line-inner {
+  transform: none;
+  will-change: auto;
+}
+
+/* Above-the-fold entrance is CSS-only, with no observer and no JS.
+   The scroll reveals above wait for hydration before they can un-hide their
+   element, and the hero headline is the LCP element — so gating it on JS
+   pushed LCP from 0.6s to 1.1s under Lighthouse's throttling. These keyframes
+   start at parse time instead, so the hero paints and animates on the
+   critical path rather than behind it. Content further down the page still
+   uses the observer: it has hydrated long before anyone scrolls to it. */
+.hero-in {
+  animation: hero-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+}
+
+.hero-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.hero-line > span {
+  display: block;
+  animation: hero-line 0.62s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+@keyframes hero-line {
+  from {
+    transform: translate3d(0, 110%, 0);
+  }
 }
 
 /* Links sitting inside running text carry an underline, not just a colour

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useCart } from "@/lib/cart";
+import { useHeaderScroll } from "@/lib/motion";
 
 const navLinks = [
   { href: "/shop", label: "Shop" },
@@ -15,9 +16,23 @@ export function Header() {
   const pathname = usePathname();
   const { count, ready } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { hidden, stuck } = useHeaderScroll();
+
+  // Never retract while the mobile menu is open — the bar would take the menu
+  // with it and leave the toggle unreachable.
+  const retracted = hidden && !menuOpen;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-bg/95 backdrop-blur-sm">
+    <header
+      data-hidden={retracted}
+      className={`sticky top-0 z-40 border-b transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
+        retracted ? "-translate-y-full" : "translate-y-0"
+      } ${
+        stuck || menuOpen
+          ? "border-line bg-bg/90 backdrop-blur-md"
+          : "border-transparent bg-transparent"
+      }`}
+    >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
