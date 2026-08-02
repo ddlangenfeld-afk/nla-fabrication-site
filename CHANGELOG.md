@@ -146,3 +146,11 @@ Two portability fixes were needed to make them run anywhere rather than just her
 Also worth recording: a Lighthouse run that reported all zeros turned out to be `CHROME_INTERSTITIAL_ERROR` because the server under test had died, not a site problem. Third time this session that a red result was the harness rather than the code — hence `scripts/README.md`, which documents each script's purpose and the `innerText`/`text-transform` trap that produced two earlier false failures.
 
 `BASE_URL` retargets any script at a deployment.
+
+## 2026-08-02 · 12:10 — Order confirmation given substance
+
+The confirmation page was a lone green panel floating in space — thin treatment for the highest-trust moment in the funnel, and the one place where unset expectations turn into support email.
+
+Added a **"What happens next"** sequence: confirmation email (now), part gets printed (3–5 business days), shipped with tracking (after printing). Numbered, because this genuinely is a sequence where each step waits on the one before — not decoration. The right-hand timing column reads as a spec-sheet table, consistent with the rest of the site.
+
+The second step does real work: "nothing is sitting on a shelf — every part is printed to order" explains a lead time that would otherwise look like slow fulfilment, and reframes it as the thing that makes the parts good.

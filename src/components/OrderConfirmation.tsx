@@ -40,3 +40,63 @@ export function OrderConfirmation() {
     </div>
   );
 }
+
+/*
+ * Numbered because this genuinely is a sequence — each step waits on the one
+ * before it. Setting the expectation here is what stops "where is my order"
+ * arriving on day two of a print queue.
+ */
+const steps = [
+  {
+    n: "01",
+    when: "Now",
+    title: "Confirmation email",
+    body: "Stripe sends a receipt to the address you checked out with. That address is also how an order gets looked up later.",
+  },
+  {
+    n: "02",
+    when: "3–5 business days",
+    title: "Your part gets printed",
+    body: "Nothing is sitting on a shelf — every part is printed to order, inspected, and test-fitted before it goes in a box.",
+  },
+  {
+    n: "03",
+    when: "After printing",
+    title: "Shipped with tracking",
+    body: "A tracking number follows by email as soon as the label is made.",
+  },
+];
+
+export function OrderNextSteps() {
+  return (
+    <section aria-labelledby="next-steps" className="mt-14">
+      <h2
+        id="next-steps"
+        className="font-mono text-2xs uppercase tracking-widest text-ink-muted"
+      >
+        What happens next
+      </h2>
+      <ol className="mt-6 border-t border-line">
+        {steps.map((step) => (
+          <li
+            key={step.n}
+            className="grid gap-x-6 gap-y-1 border-b border-line py-5 sm:grid-cols-[auto_1fr_auto] sm:items-baseline"
+          >
+            <span className="font-mono text-2xs text-accent">{step.n}</span>
+            <div>
+              <h3 className="font-display text-base font-semibold tracking-tight text-ink">
+                {step.title}
+              </h3>
+              <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-ink-secondary">
+                {step.body}
+              </p>
+            </div>
+            <span className="font-mono text-2xs uppercase tracking-wider text-ink-muted sm:text-right">
+              {step.when}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
