@@ -87,6 +87,8 @@ dimensions on a fitment-critical part is worse than publishing none.
 | `NEXT_PUBLIC_ETSY_URL` | Etsy storefront link | Etsy is not shown anywhere |
 | `NEXT_PUBLIC_EBAY_URL` | eBay storefront link | eBay is not shown anywhere |
 | `NEXT_PUBLIC_AMAZON_URL` | Amazon storefront link | Amazon is not shown anywhere |
+| `OPS_PASSWORD` | The `/ops` dashboard | **`/ops` returns 404.** Fails closed on purpose — see below |
+| `OPS_SAMPLE` | Set to `1` to fill `/ops` with synthetic orders | `/ops` reads real Stripe data |
 
 Use Stripe **test-mode** keys (`sk_test_…`) until the store is genuinely ready
 to take money.
@@ -108,6 +110,48 @@ NEXT_PUBLIC_EBAY_URL=https://www.ebay.com/str/your-store-name
 On Vercel these go in Project Settings → Environment Variables. They are
 `NEXT_PUBLIC_`, so they are inlined at build time: a redeploy is required
 after changing them.
+
+### The `/ops` dashboard
+
+`/ops` is the operations panel: the day's production queue batched by colour,
+every order with its date, cost and margin, and rolling revenue. It reads
+**straight from the Stripe API** — there is no orders database, because Stripe
+already is one and a second copy would only ever drift out of sync with it.
+The one thing Stripe cannot know is what a part costs to produce; that comes
+from `src/data/costs.json` and is joined by product slug.
+
+**It shows customer names, email addresses and shipping addresses.** Treat the
+password accordingly:
+
+```bash
+OPS_PASSWORD=<a long random string>
+```
+
+Log in with any username and that password. Two things worth knowing:
+
+- **With no `OPS_PASSWORD` set, `/ops` returns 404.** That is deliberate. The
+  realistic failure is not someone guessing the password, it is a deploy that
+  forgets to set one — and "no password configured, so let everyone in" would
+  publish every customer's address silently. It fails closed instead.
+- Use a **restricted** Stripe key. The dashboard only reads, so give it read
+  access to Checkout Sessions, Payment Intents and Charges and nothing else.
+  It never needs a key that can move money.
+
+Run `npm run qa:ops` to verify both behaviours; it spins up its own servers and
+checks the locked and unlocked configurations.
+
+Set `OPS_SAMPLE=1` to populate the dashboard with synthetic orders. Useful
+before the first real sale, when a working dashboard and a broken one both look
+like an empty page. It is opt-in, never a fallback for a missing Stripe key,
+and the page carries a loud banner while it is on.
+
+### Finishes
+
+Five standard PETG colours, defined in `src/lib/colors.ts`. The palette is
+short for a reason that is documented in that file: pigment barely changes the
+price of PETG, so the real constraint is how many spools you want to own and
+hold. Custom colours are handled as a quote with a minimum order rather than a
+checkout option — the terms live in the same file.
 
 ---
 

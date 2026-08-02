@@ -15,6 +15,7 @@ npm run qa:states    # axe against interactive states axe-at-rest misses
 npm run qa:keyboard  # skip link, tab order, focus rings, mobile menu
 npm run qa:flows     # form validation, cart, variants, keyless checkout
 npm run qa:motion    # scroll reveals, cursor spotlight, and the audio engine
+npm run qa:ops       # the /ops auth gate, in both configurations
 npm run qa:lighthouse
 npm run qa:shots     # full-page screenshots at 375/768/1440/1920/2560 -> ./.shots
 ```
@@ -63,3 +64,15 @@ and was half true — the home page animated and four other pages had no reveal
 components at all. Asserting per page that a below-the-fold element *starts*
 offset and *then* settles is what distinguishes "animating" from "already
 there," which is what was actually wrong.
+
+## `qa:ops`, and the test that matters most
+
+The `/ops` dashboard shows customer names, email addresses and shipping
+addresses. The failure this suite is really written for is not a guessed
+password — it is a deploy that forgets to set one. So the first assertion is
+that with `OPS_PASSWORD` unset the route returns **404**, not a page.
+
+It spawns its own servers, one per configuration, because that is the only
+honest way to test "what happens when the variable is missing". It also checks
+that a *prefix* of the real password is rejected, which is what catches a
+comparison that truncates or short-circuits.

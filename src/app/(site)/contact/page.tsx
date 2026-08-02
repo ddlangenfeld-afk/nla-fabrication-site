@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/ContactForm";
 import { Reveal } from "@/components/Reveal";
+import { COLORS, CUSTOM_COLOR } from "@/lib/colors";
 import { CONTACT_EMAIL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -29,7 +30,36 @@ const whatHelps: [string, string][] = [
   ],
 ];
 
-export default function ContactPage() {
+/*
+ * Reading searchParams makes this route dynamic rather than prerendered. That
+ * is the deliberate trade for the custom-finish deep link: doing the prefill
+ * client-side with useSearchParams would need a Suspense boundary, wouldn't
+ * work with JS disabled, and would flash an empty textarea before hydrating.
+ * A contact page is not a page whose static rendering is worth defending.
+ */
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ subject?: string }>;
+}) {
+  const { subject } = await searchParams;
+
+  // Never render arbitrary query text into the form. The subject is only used
+  // to look up one of our own product names; anything else is discarded.
+  const requested = typeof subject === "string" ? subject : "";
+  const isCustomFinish = requested.startsWith("Custom colour — ");
+  const partName = isCustomFinish
+    ? requested.slice("Custom colour — ".length).slice(0, 80)
+    : "";
+
+  const prefill = isCustomFinish
+    ? `Custom finish request\n\nPart: ${partName}\nColour wanted: \nQuantity: (minimum ${CUSTOM_COLOR.minimumUnits})\nChassis / year: \n`
+    : "";
+
+  return renderContact(prefill, isCustomFinish);
+}
+
+function renderContact(prefill: string, isCustomFinish: boolean) {
   return (
     <>
       {/* CSS-only entrance above the fold — the h1 is the LCP element here and
@@ -63,7 +93,21 @@ export default function ContactPage() {
 
       <section className="shell grid gap-12 py-14 sm:py-16 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
         <Reveal>
-          <ContactForm />
+          {isCustomFinish && (
+            <div className="mb-8 border border-accent/40 bg-accent/10 p-5">
+              <p className="font-display text-base font-semibold text-ink">
+                Custom finish enquiry
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-secondary">
+                Custom colours are quoted rather than listed. Minimum{" "}
+                {CUSTOM_COLOR.minimumUnits} units, ${CUSTOM_COLOR.setupFeeUsd} setup to
+                cover sourcing the material, {CUSTOM_COLOR.leadTimeWeeks} weeks lead time.
+                Below that threshold the {COLORS.length} standard finishes ship in 3–5
+                business days.
+              </p>
+            </div>
+          )}
+          <ContactForm prefillMessage={prefill} />
           <p className="mt-10 border-t border-line pt-6 text-sm text-ink-muted">
             Direct enquiries:{" "}
             <a href={`mailto:${CONTACT_EMAIL}`} className="link-inline">

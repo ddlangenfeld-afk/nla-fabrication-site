@@ -2,9 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import { Atmosphere } from "@/components/three/Atmosphere";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { SoundToggle } from "@/components/SoundToggle";
 import { MARKETPLACES, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -108,22 +105,16 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-accent focus:px-4 focus:py-2 focus:font-medium focus:text-accent-ink"
-        >
-          Skip to content
-        </a>
         <Atmosphere />
-        <Header />
-        {/* tabIndex={-1} lets the skip link actually move focus here. Without
-            it the hash changes but focus stays on <body>, so the next Tab
-            restarts at the top of the page and the skip link does nothing. */}
-        <main id="main" tabIndex={-1} className="flex-1 outline-none">
-          {children}
-        </main>
-        <Footer />
-        <SoundToggle />
+        {/*
+         * Header, footer, skip link and sound toggle live in the (site) route
+         * group, not here. /ops is an internal instrument panel: shop
+         * navigation, a marketing footer and an ambient-audio toggle floating
+         * over a margin table are noise at best and misleading at worst. Only
+         * things every document needs — fonts, the .js flag, the atmosphere
+         * layer, organisation metadata — belong at this level.
+         */}
+        {children}
       </body>
     </html>
   );

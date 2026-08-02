@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { DEFAULT_COLOR_ID, getColor, isValidColorId } from "@/lib/colors";
 import { getProduct } from "@/lib/products";
 import { SITE_URL } from "@/lib/site";
 
 type CheckoutItem = {
   slug?: unknown;
   variantId?: unknown;
+  colorId?: unknown;
   qty?: unknown;
 };
 
@@ -28,6 +30,12 @@ export async function POST(request: Request) {
   }
 
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+  /* A compact manifest of what was actually bought, stored on the session.
+     The ops dashboard reads this back to know which part and which colour to
+     print — Stripe's own line item is a display name, and parsing production
+     instructions out of a display string is how you end up printing the wrong
+     thing the first time someone renames a product. */
+  const manifest: string[] = [];
 
   for (const raw of rawItems) {
     const slug = typeof raw.slug === "string" ? raw.slug : null;
@@ -43,17 +51,32 @@ export async function POST(request: Request) {
     const variantId = typeof raw.variantId === "string" ? raw.variantId : undefined;
     const variantLabel = product.variants?.find((v) => v.id === variantId)?.label;
 
+    // Colour never affects price — same resin, different masterbatch — so it
+    // is validated against the palette and used for naming only. An unknown id
+    // falls back to the default rather than failing the checkout.
+    const colorId = isValidColorId(raw.colorId) ? raw.colorId : DEFAULT_COLOR_ID;
+    const color = getColor(colorId);
+
+    const nameParts = [product.name];
+    if (variantLabel) nameParts.push(variantLabel);
+    nameParts.push(color.name);
+
     lineItems.push({
       quantity: qty,
       price_data: {
         currency: "usd",
         unit_amount: product.priceCents,
         product_data: {
-          name: variantLabel ? `${product.name} — ${variantLabel}` : product.name,
+          name: nameParts.join(" — "),
           description: product.fitment,
+          // Survives onto the Stripe Product, so it is visible in Stripe's own
+          // dashboard as well as ours.
+          metadata: { slug, colorId, variantId: variantId ?? "" },
         },
       },
     });
+
+    manifest.push([slug, variantId ?? "-", colorId, qty].join(":"));
   }
 
   if (lineItems.length === 0) {
@@ -71,6 +94,11 @@ export async function POST(request: Request) {
       success_url: `${SITE_URL}/cart/success`,
       cancel_url: `${SITE_URL}/cart`,
       shipping_address_collection: { allowed_countries: ["US"] },
+      // Stripe caps a metadata value at 500 characters. A cart long enough to
+      // overflow that is far past anything this shop will see, but truncating
+      // silently would corrupt the production queue, so it is capped
+      // explicitly and the dashboard falls back to line items if it is absent.
+      metadata: { manifest: manifest.join(",").slice(0, 500) },
     });
 
     if (!session.url) {

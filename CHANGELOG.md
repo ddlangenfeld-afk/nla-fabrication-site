@@ -328,3 +328,61 @@ The byte count barely moved; the *parse and evaluate* cost was the real charge, 
 Visual output verified identical against a captured frame of the hero.
 
 **Final: home 95–97, every other page 100**, all four categories, LCP 0.6s, CLS 0. 18/18 axe scans, 7/7 interactive states, flows, keyboard, and 34/34 motion+audio checks including the new replay and direction assertions.
+
+## 2026-08-02 · 23:55 — Finishes, and an operations dashboard
+
+Two requests: sell the parts in colours without the colour range becoming a cost problem, and build somewhere to see what has been ordered, what it costs to make and what is actually left over.
+
+### The colour research, and why it changed the answer
+
+The brief was to find PETG colours that are cheap. Researching it properly says that is the wrong axis. Standard opaque PETG is one base resin with a different masterbatch, so black, white, grey, red, blue, orange and green all sell for the same price per kilo from the same brand. Picking "cheap colours" saves approximately nothing.
+
+What actually costs money, in order:
+
+1. **Inventory.** Every colour is a spool you have bought and are holding. Five colours is five spools of working capital on a shelf — and PETG is hygroscopic, so an opened spool degrades whether or not it gets printed. A slow-moving colour is a running loss, not just idle capital. **This is the constraint that sets the palette size**, and it is why the answer is five and not fifteen.
+2. **Changeover.** Switching colour means purging the hotend: wasted material plus machine time producing nothing. It is charged per *switch*, not per part.
+3. **Abrasive pigments.** The one place cost genuinely diverges. Metallic, sparkle, glow-in-the-dark and carbon-filled grades chew through a brass nozzle and need a hardened one. That is a real consumable cost and a real failure mode. None of them are in the palette.
+4. **UV behaviour.** These parts live under a windscreen. Dark colours hide the yellowing PETG shows with age and sun; white and natural show it plainly.
+
+Hence: **Matte Black, Graphite, Sand, Signal Red, Deep Blue.** All standard opaque, all the same price, biased dark. Two read as factory interior tones, three are deliberate accents. All five are priced identically because they cost the same to buy — charging more for red would be a markup with nothing behind it.
+
+Point 2 is also why the production queue on `/ops` groups by colour rather than by order. Six black parts then four red costs one changeover; alternating them costs nine.
+
+### Custom colours: yes, but as a quote
+
+Asked whether this is a logistics nightmare. Unbounded, yes — a checkout button for "any colour" commits us to buying a full spool for a single unit, and the customer pays for one part while 950g of a colour nobody else wants sits on the shelf. Bounded, no.
+
+So custom finishes are a **quote, never a checkout option**: minimum 4 units, $25 setup covering the spool commitment and the changeover, 2–3 weeks while the material is sourced. The product page states those terms next to the picker and deep-links to a contact form that arrives pre-filled with the part, so an enquiry comes in with the facts needed to quote it instead of "do you do other colours". Terms live in `lib/colors.ts` — they are a business decision, not a technical constraint, and should be changed without touching copy.
+
+Colour is now a third axis of line identity alongside part and side: a black bezel and a red bezel are two cart lines, not one line with quantity two. Carts saved before finishes existed migrate to black rather than being dropped.
+
+### `/ops`
+
+**Stripe is the database.** It already holds every fact the dashboard needs — what was bought, for how much, when, by whom, where it ships, the actual processing fee, whether it was refunded. A local orders table would have to be kept in sync with all of that through webhooks, and the first missed webhook is the moment the dashboard starts lying about money. Not worth taking on to save an API call.
+
+The one thing Stripe cannot know is production cost. That is `src/data/costs.json` — grams, print minutes, filament price, failure allowance, purge, machine time, labour, packaging, postage — joined to Stripe orders by product slug. Every number in it is an estimate, the page says so in as many words, and correcting them against a kitchen scale and a real filament invoice is the single highest-value thing to do with it.
+
+Three sections, in the order the questions get asked on a working day:
+
+- **Production queue** — unfulfilled paid orders, grouped by colour, largest batch first, with units, machine hours, and the changeover count and purge cost the ordering saves.
+- **Margin** — 7/30/all-time. Gross from Stripe, fees from Stripe's actual balance transaction where available rather than an estimate, then material, machine time and the per-order block, then net.
+- **Orders** — every order with date, customer, items with colour chips, shipping address, gross, fees, cost, net and status.
+
+Checkout now writes a `slug:variant:colour:qty` manifest onto the Stripe session. Parsing that is exact; parsing the human-readable line item name would break the first time a product is renamed.
+
+### The security decision
+
+The dashboard shows customer names, email addresses and shipping addresses. "It's behind an unguessable URL" is not a control.
+
+Basic auth in `middleware.ts`, constant-time comparison, `no-store`, `X-Robots-Tag: noindex`, sub-paths covered by the matcher. But the decision that matters is this: **with no `OPS_PASSWORD` configured the route returns 404, not an open page.** The realistic failure mode is not someone guessing a password, it is a deploy that forgets to set one — and "no password set, so let everyone in" publishes every customer's address to the open internet, silently. A 404 is loud in exactly the right way: the owner notices immediately and nobody else learns anything.
+
+`npm run qa:ops` spawns its own servers to test both configurations. 16 assertions, including that a *prefix* of the real password is rejected — which is what catches a comparison that truncates or short-circuits.
+
+### Two bugs found by building the dashboard and looking at it
+
+- **Refunds showed a profit.** A refunded order rendered a positive net. It is a loss: the revenue goes back, Stripe does not return the processing fee, and the part was already printed, packed and posted. Refunded orders now show net as the fee plus full production cost, negative, and no margin percentage — a percentage of returned revenue is meaningless.
+- **The dashboard wore shop chrome.** It inherited the site header, the marketing footer and the ambient-sound toggle, which floated over the margin table. Marketing pages moved into a `(site)` route group with that chrome; `/ops` sits outside it and renders bare. URLs are unchanged — a route group's folder name never appears in a path.
+
+Also fixed while in the product UI: the colour swatches had `hover-lift`, so a 24px chip translated and scaled as the pointer approached it. Fine on a nav link, wrong on a control you aim at precisely — a moving target. Hover is carried by colour and border now; nothing moves.
+
+**Final: home 95, every other page 100**, all four categories, LCP 0.6s, CLS 0. 18/18 axe scans with the new controls, 7/7 states, flows, keyboard, 34/34 motion+audio, 16/16 ops gate.

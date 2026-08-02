@@ -1,0 +1,56 @@
+{
+  "_README": [
+    "The cost model behind the /ops margin figures. Every number here is an",
+    "ESTIMATE and is meant to be corrected against reality — weigh a finished",
+    "part on a kitchen scale, read the real print time off the slicer, check the",
+    "actual invoice from your filament supplier. Until then the margins on /ops",
+    "are indicative, and the dashboard says so.",
+    "",
+    "Nothing in this file is customer-facing. It never ships to the browser.",
+    "Change a number, redeploy, and every figure on /ops updates."
+  ],
+
+  "materialCostPerKgUsd": 22.0,
+  "_materialCostNote": "Typical mid-market PETG at 1kg quantities. Colour does not meaningfully change this — same resin, different masterbatch. Buying 5kg+ of black is where the real saving is, not in which colours you pick.",
+
+  "failureAllowancePct": 8,
+  "_failureAllowanceNote": "Reprints, failed first layers, purge waste. Applied on top of part mass. 8% is conservative for a dialled-in printer and generous for a new material batch.",
+
+  "colorChangeoverGrams": 12,
+  "_changeoverNote": "Purged on each colour switch. Per SWITCH, not per part — which is exactly why the ops production queue groups by colour.",
+
+  "machineCostPerHourUsd": 0.18,
+  "_machineCostNote": "Electricity plus a depreciation allowance on the printer. Not labour.",
+
+  "labourRatePerHourUsd": 25.0,
+  "labourMinutesPerOrder": 8,
+  "_labourNote": "Hands-on time per ORDER, not per part: removing from the bed, deburring, bagging, labelling, dropping off. Print time is machine time and is counted separately, because you are not standing there watching it.",
+
+  "packagingCostUsd": 1.15,
+  "_packagingNote": "Box or padded mailer, poly bag, label, insert card.",
+
+  "shippingCostUsd": 4.75,
+  "_shippingNote": "Assumed cost TO US of a domestic small parcel. Stripe reports what the customer PAID for shipping; this is what it costs, and the difference is the shipping margin shown on /ops.",
+
+  "stripePercentFee": 2.9,
+  "stripeFixedFeeUsd": 0.3,
+  "_stripeNote": "US card rate. Stripe reports actual fees per charge via the balance transaction; this is the fallback used when that expansion is unavailable.",
+
+  "parts": {
+    "glove-box-latch-96-00-civic": {
+      "grams": 38,
+      "printMinutes": 105,
+      "_note": "Latch body plus handle. Estimate from the 148x62mm envelope at typical wall/infill for a load-bearing interior part."
+    },
+    "hvac-slider-knob-set-96-98-civic": {
+      "grams": 16,
+      "printMinutes": 55,
+      "_note": "Full knob set. Small parts, but the set prints as one plate so the time is dominated by travel and layer changes rather than volume."
+    },
+    "door-handle-bezel-96-00-civic": {
+      "grams": 45,
+      "printMinutes": 120,
+      "_note": "Large thin-wall part with a reinforced corner radius. Per side."
+    }
+  }
+}

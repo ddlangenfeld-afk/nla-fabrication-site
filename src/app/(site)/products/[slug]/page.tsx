@@ -5,6 +5,7 @@ import { AddToCart } from "@/components/AddToCart";
 import { ProductArt } from "@/components/ProductArt";
 import { ProductCard } from "@/components/ProductCard";
 import { Reveal } from "@/components/Reveal";
+import { COLORS } from "@/lib/colors";
 import { formatPrice, getAllProducts, getProduct, type Product } from "@/lib/products";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -98,7 +99,9 @@ export default async function ProductPage({
     ["Fitment", product.fitment],
     ["Chassis", product.chassis.join(" / ")],
     ["Material", product.material],
-    ...((product.color ? [["Finish", product.color]] : []) as [string, string][]),
+    // The static "Finish" field is replaced by the palette: the picker in the
+    // buy column is the live one, and this states the range on the spec sheet.
+    ["Finish", comingSoon ? (product.color ?? "TBC") : `${COLORS.length} standard`],
     ["Status", comingSoon ? "In engineering" : "In production — made to order"],
   ];
 

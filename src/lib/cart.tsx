@@ -1,11 +1,14 @@
 "use client";
 
 import { useMemo, useSyncExternalStore } from "react";
+import { DEFAULT_COLOR_ID, isValidColorId } from "@/lib/colors";
 import { getProduct } from "@/lib/products";
 
 export type CartItem = {
   slug: string;
   variantId?: string;
+  /** Always set on write; older saved carts are migrated on read. */
+  colorId: string;
   qty: number;
 };
 
@@ -32,8 +35,17 @@ let snapshot: Snapshot = SERVER_SNAPSHOT;
 let loaded = false;
 const listeners = new Set<() => void>();
 
-function sameLine(item: CartItem, slug: string, variantId?: string) {
-  return item.slug === slug && (item.variantId ?? null) === (variantId ?? null);
+/*
+ * Colour is a third axis alongside part and side, so it is part of the line
+ * identity: a black bezel and a red bezel are two lines, not one line with a
+ * quantity of two. Every mutation therefore has to key on all three.
+ */
+function sameLine(item: CartItem, slug: string, variantId?: string, colorId?: string) {
+  return (
+    item.slug === slug &&
+    (item.variantId ?? null) === (variantId ?? null) &&
+    item.colorId === (colorId ?? DEFAULT_COLOR_ID)
+  );
 }
 
 function parseCart(raw: string | null): CartItem[] {
@@ -41,17 +53,26 @@ function parseCart(raw: string | null): CartItem[] {
   try {
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
-      (i): i is CartItem =>
-        typeof i === "object" &&
-        i !== null &&
-        typeof (i as CartItem).slug === "string" &&
-        typeof (i as CartItem).qty === "number" &&
-        (i as CartItem).qty > 0 &&
-        // Drops lines for parts that were removed or moved to "coming soon"
-        // since the cart was saved.
-        getProduct((i as CartItem).slug)?.status === "available"
-    );
+    return parsed
+      .filter(
+        (i): i is CartItem =>
+          typeof i === "object" &&
+          i !== null &&
+          typeof (i as CartItem).slug === "string" &&
+          typeof (i as CartItem).qty === "number" &&
+          (i as CartItem).qty > 0 &&
+          // Drops lines for parts that were removed or moved to "coming soon"
+          // since the cart was saved.
+          getProduct((i as CartItem).slug)?.status === "available"
+      )
+      // Carts saved before colours existed have no colorId, and an unknown id
+      // could survive a palette change. Both resolve to the default rather
+      // than dropping the line — a cart that silently loses items is worse
+      // than one that quietly picks black.
+      .map((i) => ({
+        ...i,
+        colorId: isValidColorId(i.colorId) ? i.colorId : DEFAULT_COLOR_ID,
+      }));
   } catch {
     return [];
   }
@@ -117,28 +138,35 @@ function subscribe(listener: () => void) {
 }
 
 // Module-level and therefore referentially stable — safe as effect dependencies.
-export function addItem(slug: string, variantId?: string) {
+export function addItem(slug: string, variantId?: string, colorId: string = DEFAULT_COLOR_ID) {
   update((prev) => {
-    const existing = prev.find((i) => sameLine(i, slug, variantId));
+    const existing = prev.find((i) => sameLine(i, slug, variantId, colorId));
     if (existing) {
       return prev.map((i) =>
-        sameLine(i, slug, variantId) ? { ...i, qty: Math.min(i.qty + 1, MAX_QTY) } : i
+        sameLine(i, slug, variantId, colorId)
+          ? { ...i, qty: Math.min(i.qty + 1, MAX_QTY) }
+          : i
       );
     }
-    return [...prev, { slug, variantId, qty: 1 }];
+    return [...prev, { slug, variantId, colorId, qty: 1 }];
   });
 }
 
-export function removeItem(slug: string, variantId?: string) {
-  update((prev) => prev.filter((i) => !sameLine(i, slug, variantId)));
+export function removeItem(slug: string, variantId?: string, colorId?: string) {
+  update((prev) => prev.filter((i) => !sameLine(i, slug, variantId, colorId)));
 }
 
-export function setQty(slug: string, variantId: string | undefined, qty: number) {
+export function setQty(
+  slug: string,
+  variantId: string | undefined,
+  colorId: string | undefined,
+  qty: number
+) {
   update((prev) =>
     qty <= 0
-      ? prev.filter((i) => !sameLine(i, slug, variantId))
+      ? prev.filter((i) => !sameLine(i, slug, variantId, colorId))
       : prev.map((i) =>
-          sameLine(i, slug, variantId) ? { ...i, qty: Math.min(qty, MAX_QTY) } : i
+          sameLine(i, slug, variantId, colorId) ? { ...i, qty: Math.min(qty, MAX_QTY) } : i
         )
   );
 }

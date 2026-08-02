@@ -13,7 +13,8 @@
     "qa:flows": "node scripts/flows.mjs",
     "qa:lighthouse": "node scripts/lh.mjs",
     "qa:shots": "node scripts/shoot.mjs",
-    "qa:motion": "node scripts/motion-audio.mjs"
+    "qa:motion": "node scripts/motion-audio.mjs",
+    "qa:ops": "node scripts/ops-security.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "^9.7.0",

@@ -27,7 +27,7 @@ function validate(values: Values): Errors {
 
   const message = values.message.trim();
   if (!message) {
-    errors.message = "Tell us what you need — a part, a fitment question, an order.";
+    errors.message = "Tell us what you need — a fitment question, an order, or a part request.";
   } else if (message.length < MIN_MESSAGE) {
     errors.message = `A few more words would help — ${MIN_MESSAGE - message.length} more character${
       MIN_MESSAGE - message.length === 1 ? "" : "s"
@@ -37,9 +37,16 @@ function validate(values: Values): Errors {
   return errors;
 }
 
-export function ContactForm() {
+export function ContactForm({ prefillMessage = "" }: { prefillMessage?: string }) {
   const [status, setStatus] = useState<Status>("idle");
-  const [values, setValues] = useState<Values>({ name: "", email: "", message: "" });
+  const [values, setValues] = useState<Values>({
+    name: "",
+    email: "",
+    // Arrives already rendered in the server HTML rather than being written in
+    // after hydration, so a deep link works with JS off and there is no flash
+    // of an empty textarea.
+    message: prefillMessage,
+  });
   const [errors, setErrors] = useState<Errors>({});
   // A field only starts showing errors once it has been left or submitted —
   // flagging "invalid email" on the first keystroke is hostile.
@@ -108,7 +115,7 @@ export function ContactForm() {
       <div className="border border-success/40 bg-success/10 p-6" role="status">
         <p className="font-display text-lg font-semibold text-ink">Message sent.</p>
         <p className="mt-2 text-sm text-ink-secondary">
-          Thanks — this shop is one person, so expect a reply within a day or two.
+          Thanks. Expect a reply within one business day.
         </p>
       </div>
     );

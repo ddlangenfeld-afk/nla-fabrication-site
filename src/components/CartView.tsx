@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ProductArt } from "@/components/ProductArt";
 import { useCart } from "@/lib/cart";
+import { getColor } from "@/lib/colors";
 import { formatPrice, getProduct } from "@/lib/products";
 
 type CheckoutState = "idle" | "submitting" | "error" | "not-configured";
@@ -59,7 +60,7 @@ export function CartView() {
           Nothing in the cart yet.
         </p>
         <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-ink-secondary">
-          Three parts are available now, with more in fitment verification.
+          Three components are in production, each available in five finishes.
         </p>
         <Link
           href="/shop"
@@ -81,7 +82,10 @@ export function CartView() {
             const variantLabel = product.variants?.find(
               (v) => v.id === item.variantId
             )?.label;
-            const lineKey = `${item.slug}-${item.variantId ?? "base"}`;
+            const color = getColor(item.colorId);
+            // Colour is part of the line identity, so it has to be part of the
+            // key too — otherwise React reuses one row for two different lines.
+            const lineKey = `${item.slug}-${item.variantId ?? "base"}-${item.colorId}`;
 
             return (
               <li key={lineKey} className="flex gap-4 py-5 sm:gap-6">
@@ -109,11 +113,21 @@ export function CartView() {
                           {product.name}
                         </Link>
                       </h2>
-                      {variantLabel && (
-                        <p className="mt-1 font-mono text-2xs uppercase tracking-wider text-accent">
-                          {variantLabel}
-                        </p>
-                      )}
+                      <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                        {variantLabel && (
+                          <span className="font-mono text-2xs uppercase tracking-wider text-accent">
+                            {variantLabel}
+                          </span>
+                        )}
+                        <span className="flex items-center gap-1.5 font-mono text-2xs uppercase tracking-wider text-ink-secondary">
+                          <span
+                            aria-hidden="true"
+                            className="h-3 w-3 border"
+                            style={{ background: color.hex, borderColor: color.ring }}
+                          />
+                          {color.name}
+                        </span>
+                      </p>
                       <p className="mt-1 text-sm text-ink-secondary">{product.fitment}</p>
                     </div>
                     <p className="shrink-0 font-mono text-sm text-ink">
@@ -125,8 +139,8 @@ export function CartView() {
                     <div className="flex items-center border border-line">
                       <button
                         type="button"
-                        onClick={() => setQty(item.slug, item.variantId, item.qty - 1)}
-                        aria-label={`Decrease quantity of ${product.name}`}
+                        onClick={() => setQty(item.slug, item.variantId, item.colorId, item.qty - 1)}
+                        aria-label={`Decrease quantity of ${product.name}, ${color.name}`}
                         className="flex h-9 w-9 items-center justify-center text-ink-secondary transition-colors hover:bg-bg-raised hover:text-ink"
                       >
                         −
@@ -136,8 +150,8 @@ export function CartView() {
                       </span>
                       <button
                         type="button"
-                        onClick={() => setQty(item.slug, item.variantId, item.qty + 1)}
-                        aria-label={`Increase quantity of ${product.name}`}
+                        onClick={() => setQty(item.slug, item.variantId, item.colorId, item.qty + 1)}
+                        aria-label={`Increase quantity of ${product.name}, ${color.name}`}
                         className="flex h-9 w-9 items-center justify-center text-ink-secondary transition-colors hover:bg-bg-raised hover:text-ink"
                       >
                         +
@@ -145,10 +159,14 @@ export function CartView() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => removeItem(item.slug, item.variantId)}
+                      onClick={() => removeItem(item.slug, item.variantId, item.colorId)}
                       className="font-mono text-2xs uppercase tracking-wider text-ink-muted transition-colors hover:text-error"
                     >
                       Remove
+                      <span className="sr-only">
+                        {" "}
+                        {product.name}, {color.name}
+                      </span>
                     </button>
                   </div>
                 </div>
