@@ -97,8 +97,16 @@ def survival_rate():
 # cares   = of those, the share who ever fix it
 # price   = list price, USD
 # grams / minutes = from src/data/costs.json
+# supply = how much of the demand you can actually reach, given what else the
+#          buyer can get instead. THIS WAS MISSING FROM THE FIRST VERSION and
+#          it was the flaw that made the latch look like the best product in
+#          the catalogue. Modelling demand without modelling the competing
+#          supply flatters any part that is easy to buy elsewhere.
+#              1.0  = nothing else exists, you are the only source
+#              0.1  = genuine OEM in stock plus a cheap Prime aftermarket
 PARTS = {
     "HVAC knob set": dict(
+        kind="repair",
         # Weakest input in the model, and the evidence contradicts itself:
         #  + press-fit plastic on a 28-year-old dash; used singles sell at
         #    $12-15 with "only 2 left in stock", which does not happen for
@@ -106,17 +114,44 @@ PARTS = {
         #  - the authoritative common-failures writeup for this exact unit
         #    lists backlights first and the blower resistor second. Broken
         #    knobs are NOT listed as a top failure mode.
-        defect=(0.12, 0.25, 0.45),
+        need=(0.12, 0.25, 0.45),
         cares=(0.10, 0.22, 0.40),      # cosmetic — most owners live with it
+        # No new aftermarket found for the 96-98 SLIDER knob. Used singles
+        # only, thin stock. This is a genuine supply gap.
+        supply=(0.55, 0.75, 0.95),
         price=14.0, grams=16, minutes=55,
     ),
     "Glove box latch": dict(
+        kind="repair",
         # Documented recurring failure with a dedicated YouTube repair
-        # tutorial and multiple forum threads — materially stronger evidence
-        # than anything found for the knob.
-        defect=(0.25, 0.45, 0.65),
+        # tutorial and multiple forum threads.
+        need=(0.25, 0.45, 0.65),
         cares=(0.40, 0.62, 0.85),      # functional — the box will not stay shut
+        # ...but genuine Honda 77540-S04-003ZB/ZC are on Amazon TODAY, and
+        # HUYILUN sell a cross-platform aftermarket handle covering Civic,
+        # Element, CR-V, Odyssey and Accord. Five platforms of injection
+        # moulding volume. Demand you cannot capture is not demand.
+        supply=(0.04, 0.12, 0.28),
         price=22.0, grams=38, minutes=105,
+    ),
+    "Custom symbol set": dict(
+        kind="cosmetic",
+        # Not a repair. Re-cut symbols on the sliders and buttons — an X or a
+        # custom glyph where the factory light window is — so the backlit
+        # panel reads differently at night. Every surviving car is a
+        # candidate, not just broken ones, so `need` is mod propensity on the
+        # EK: a heavily-modified platform with an established interior
+        # aesthetics market.
+        need=(0.10, 0.19, 0.28),
+        # Of interior modders, the share who would want THIS specific mod.
+        cares=(0.20, 0.35, 0.50),
+        # Nothing like it exists for the EK. The constraint is awareness,
+        # not competition — which is what the capture range below encodes.
+        supply=(1.0, 1.0, 1.0),
+        # Comparables: EK gauge-face overlays ~$90; Illumaesthetic EK gauge
+        # faces $200-300. The platform's interior-aesthetics market clears at
+        # real money. This is a smaller, secondary mod, so priced well under.
+        price=29.0, grams=24, minutes=80,
     ),
 }
 
@@ -124,22 +159,29 @@ PARTS = {
 # ---------------------------------------------------------------------------
 # 4. THE FUNNEL — WHERE ALMOST ALL OF THE LOSS HAPPENS
 # ---------------------------------------------------------------------------
-def funnel(cares_range, intl=False):
+def funnel(cares_range, supply_range, kind, intl=False):
     cares = tri(*cares_range)
 
-    # Of those who will fix it, the share who become active buyers in any
-    # GIVEN YEAR rather than "someday". A backlog clearing over ~5-12 years.
-    annual = tri(1 / 12, 1 / 8, 1 / 5)
+    if kind == "repair":
+        # Share who become active buyers in any GIVEN YEAR rather than
+        # "someday" — a backlog clearing over ~5-12 years.
+        annual = tri(1 / 12, 1 / 8, 1 / 5)
+        # Of those, the share who find you at all. New store, no ranking.
+        reach = tri(0.002, 0.012, 0.05) if intl else tri(0.01, 0.05, 0.15)
+    else:
+        # Modding is continuous rather than a backlog being worked off, so a
+        # larger slice of the interested population is in-market each year.
+        annual = tri(1 / 5, 1 / 3, 1 / 2)
+        # For a product nobody else makes, "capture" is almost purely
+        # AWARENESS — if they want it and find it, there is no alternative to
+        # lose them to. That is why this is not discounted by supply below.
+        # It is also the hard part: nobody searches for a thing they do not
+        # know exists, so this is Instagram, forums and build threads, not
+        # SEO. International is less penalised than for repair — shipping a
+        # small light part is easy and mod communities are global.
+        reach = tri(0.006, 0.03, 0.10) if intl else tri(0.02, 0.07, 0.18)
 
-    # Of those active buyers, the share who find and choose YOU over a used
-    # OEM part, a junkyard pull, eBay, or a free STL they print themselves.
-    # A new store with no ranking, no reviews and no backlinks.
-    #
-    # International is worse: higher shipping, customs friction, a language
-    # barrier, and stronger local breaker networks in Europe and Japan.
-    capture = tri(0.002, 0.012, 0.05) if intl else tri(0.01, 0.05, 0.15)
-
-    return cares * annual * capture
+    return cares * annual * reach * tri(*supply_range)
 
 
 # ---------------------------------------------------------------------------
@@ -210,9 +252,9 @@ def main():
         broken, sales, profit = [], [], []
         fun_rec, def_rec = [], []
         for k in range(N):
-            d = tri(*p["defect"])
-            fu = funnel(p["cares"], intl=False)
-            fi = funnel(p["cares"], intl=True)
+            d = tri(*p["need"])
+            fu = funnel(p["cares"], p["supply"], p["kind"], intl=False)
+            fi = funnel(p["cares"], p["supply"], p["kind"], intl=True)
             bu, bi = alive_us[k] * d, alive_intl[k] * d
             n = bu * fu + bi * fi
             broken.append(bu + bi)
@@ -225,11 +267,11 @@ def main():
 
         unit_net = net_per_order(p["price"], p["grams"], p["minutes"])
         print("\n" + "=" * 76)
-        print(f"{pname.upper()}  —  ${p['price']:.0f}, net ${unit_net:.2f} per "
-              f"single-item order")
+        print(f"{pname.upper()}  [{p['kind']}]  —  ${p['price']:.0f}, net "
+              f"${unit_net:.2f} per single-item order")
         print("=" * 76)
         print(f"{'':34}{'P10':>11}{'P50':>11}{'P90':>11}")
-        band(broken, "cars with the fault")
+        band(broken, "candidate cars")
         band(sales, "UNITS SOLD / YEAR")
         band([s / 12 for s in sales], "units / month")
         band(profit, "NET PROFIT / YEAR", "USD")
@@ -242,24 +284,41 @@ def main():
         s = sorted(summary[pname]["sales"])[N // 2]
         pr = sorted(summary[pname]["profit"])[N // 2]
         print(f"  {pname:<20} {s:>6.0f} units/yr   ${pr:>8,.0f}/yr net")
-    ratio = (sorted(summary['Glove box latch']['profit'])[N // 2] /
-             max(sorted(summary['HVAC knob set']['profit'])[N // 2], 1e-9))
-    print(f"\n  The latch is {ratio:.1f}x the knob on net profit — driven by "
-          f"defect rate,\n  by owners actually caring about a functional "
-          f"failure, and by price.")
+    best = max(PARTS, key=lambda n: sorted(summary[n]["profit"])[N // 2])
+    print(f"\n  Best median net: {best}")
 
     # ---- sensitivity ------------------------------------------------------
     print("\n" + "=" * 76)
-    print("SENSITIVITY — what moves the answer (HVAC knob set)")
+    print("SENSITIVITY — what moves the answer (Custom symbol set)")
     print("=" * 76)
-    ks = summary["HVAC knob set"]
+    ks = summary["Custom symbol set"]
     for label, series in (("survival rate", surv),
                           ("defect rate", ks["defect"]),
                           ("funnel: cares x timing x capture", ks["fun"])):
         r = correlation(series, ks["sales"])
         print(f"  {label:<34} r={r:+.3f}  {'#' * int(abs(r) * 46)}")
-    print("\n  The funnel dominates. Fleet size and defect rate are facts you\n"
-          "  cannot change; the funnel is entirely marketing and channel.")
+    print("\n  The funnel dominates. Fleet size and failure/desire rate are facts\n"
+          "  you cannot change; the funnel is entirely marketing and channel.")
+
+    # ---- price ladder for the cosmetic product ------------------------------
+    print("\n" + "=" * 76)
+    print("PRICE LADDER — Custom symbol set")
+    print("=" * 76)
+    print("  Demand falls as price rises. Modelled with constant elasticity")
+    print("  e=1.2 around the $29 reference: a niche mod with NO substitute is")
+    print("  fairly inelastic, but it is discretionary, so not free to price.")
+    print(f"\n  {'price':>7} {'elast.':>8} {'units/yr':>10} {'net/unit':>10} "
+          f"{'NET/YEAR':>11}")
+    base_units = sorted(summary["Custom symbol set"]["sales"])[N // 2]
+    cp = PARTS["Custom symbol set"]
+    for price in (19, 24, 29, 35, 45, 59):
+        elasticity = (price / cp["price"]) ** -1.2
+        units = base_units * elasticity
+        per = net_per_order(price, cp["grams"], cp["minutes"])
+        print(f"  ${price:>6} {elasticity:>8.2f} {units:>10.0f} "
+              f"${per:>9.2f} ${units * per:>10,.0f}")
+    print("\n  For comparison: EK gauge-face overlays sell ~$90 and")
+    print("  Illumaesthetic's EK gauge faces are $200-300.")
 
     # ---- order bundling ---------------------------------------------------
     print("\n" + "=" * 76)

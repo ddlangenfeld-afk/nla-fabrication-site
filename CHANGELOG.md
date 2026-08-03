@@ -462,3 +462,25 @@ Founder asked how many 96-98 Civics still exist and what share plausibly need th
 **Sensitivity says the funnel dominates** (r=+0.666 against sales, versus +0.43 for survival and +0.43 for defect rate). Fleet size and failure rate are facts that cannot be changed. The funnel — being found, and being chosen over a junkyard pull — is entirely marketing and channel, and it is where effort returns the most.
 
 **Bundling is worth more than any of it.** Fixed cost per order is $9.23 in labour, packaging and postage. A knob alone nets $9.34; a knob and a latch in *one* order nets $29.49. The second item costs $1.22 to add and carries no new fixed cost, so it is nearly triple the profit for one more part in the box. The model's implication is that basket size, not per-part demand, is the lever — free shipping over a threshold, bundle pricing, and cross-sell on the product page.
+
+## 2026-08-03 · 06:20 — Supply factor added; cosmetic upgrade modelled
+
+Two changes, one of which corrects a real error in yesterday's model.
+
+**The model had no supply variable, and that flattered the glove box latch badly.** It modelled how many cars have the fault and how many owners act, but never asked what else the buyer could buy instead. Verification against Honda's own catalogue: **77540-S04-003ZA is not discontinued.** Genuine 77540-S04-003ZB/ZC are on Amazon, and HUYILUN sell a cross-platform aftermarket handle covering Civic 96-00, Element 03-07, CR-V 97-06, Odyssey 95-04 and Accord 94-97 — five platforms of injection-moulding volume. Adding a `supply` term collapsed the latch from **179 units/yr to 25**. Demand you cannot capture is not demand.
+
+**This also means the live product copy is false.** The latch page claims "confirmed discontinued by the manufacturer", "secondary-market units are scarce" and "the original component is out of production". None of that survives verification. Flagged for the founder; the fix is a positioning decision, not a wording one, so it is not being made unilaterally.
+
+**Cosmetic upgrade modelled as a third product.** Re-cut symbols on the sliders and buttons — an X or a custom glyph where the factory light window is — so the backlit panel reads differently at night. It inverts every constraint the repair parts run into:
+
+| | units/yr | net/yr |
+| --- | --- | --- |
+| HVAC knob set (repair) | 30 | $283 |
+| Glove box latch (repair) | 25 | $415 |
+| **Custom symbol set (cosmetic)** | **166** | **$3,923** |
+
+The reason is structural, not optimism. A repair part is gated on the fault existing (25-45% of cars) and on beating an existing supply channel. A cosmetic part is gated on neither: every surviving car is a candidate, and **nothing like it exists for the EK**, so nobody is competing for the sale. Modding is also continuous rather than a backlog being worked off, so more of the interested population is in-market in any year.
+
+Comparables support the price: EK gauge-face overlays sell ~$90, and Illumaesthetic's EK gauge faces are $200-300. The platform's interior-aesthetics market clears at real money.
+
+**The price ladder is nearly flat between $19 and $59** — modelled at constant elasticity e=1.2, net lands within 5% of $3,900 across that whole range, peaking around $29. That is what a product with no substitute looks like: pricing is not the lever. Volume comes from awareness, which is why the sensitivity table puts the funnel top again. This is a demand-*creation* product — nobody searches for a thing they don't know exists — so the channel is Instagram, forums and build threads, not SEO.
