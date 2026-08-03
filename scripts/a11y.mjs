@@ -16,6 +16,10 @@ const PAGES = [
   // knob-face glyphs) alongside the colour picker — worth its own line rather
   // than trusting the latch page to stand in for it.
   "/products/hvac-slider-knob-set-96-98-civic",
+  // The price ladder: a stacked radio group whose options carry their own
+  // price and a description, plus the filtered aperture glyph set. Different
+  // enough markup from the two-up handing choice to be scanned on its own.
+  "/products/hvac-symbol-set-96-98-civic",
   "/products/armrest-lid-latch-96-00-civic",
   "/about",
   "/contact",

@@ -13,6 +13,7 @@ const pages = process.argv[2]
       { name: "shop", path: "/shop" },
       { name: "product", path: "/products/glove-box-latch-96-00-civic" },
       { name: "product-hvac", path: "/products/hvac-slider-knob-set-96-98-civic" },
+      { name: "product-symbols", path: "/products/hvac-symbol-set-96-98-civic" },
       { name: "product-soon", path: "/products/armrest-lid-latch-96-00-civic" },
       { name: "about", path: "/about" },
       { name: "contact", path: "/contact" },

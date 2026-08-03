@@ -6,8 +6,15 @@ import { ProductArt } from "@/components/ProductArt";
 import { ProductCard } from "@/components/ProductCard";
 import { Reveal } from "@/components/Reveal";
 import { COLORS } from "@/lib/colors";
-import { FACE_DESIGNS } from "@/lib/faceDesigns";
-import { formatPrice, getAllProducts, getProduct, type Product } from "@/lib/products";
+import { designsFor } from "@/lib/faceDesigns";
+import {
+  formatPriceRange,
+  getAllProducts,
+  getProduct,
+  hasPriceLadder,
+  priceRangeCents,
+  type Product,
+} from "@/lib/products";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -24,7 +31,7 @@ export async function generateMetadata({
   if (!product) return { title: "Part not found" };
 
   const priceLabel =
-    product.priceCents != null ? ` — ${formatPrice(product.priceCents)}` : " — Coming soon";
+    product.priceCents != null ? ` — ${formatPriceRange(product)}` : " — Coming soon";
 
   return {
     title: `${product.name} — ${product.fitmentYears} Civic ${product.chassis.join("/")}`,
@@ -64,19 +71,38 @@ function productJsonLd(product: Product) {
     };
   }
 
-  base.offers = {
-    "@type": "Offer",
-    url: `${SITE_URL}/products/${product.slug}`,
-    priceCurrency: "USD",
-    price:
-      product.priceCents != null ? (product.priceCents / 100).toFixed(2) : undefined,
-    availability:
-      product.status === "available"
-        ? "https://schema.org/InStock"
-        : "https://schema.org/PreOrder",
-    itemCondition: "https://schema.org/NewCondition",
-    seller: { "@type": "Organization", name: SITE_NAME },
-  };
+  const availability =
+    product.status === "available"
+      ? "https://schema.org/InStock"
+      : "https://schema.org/PreOrder";
+  const range = priceRangeCents(product);
+
+  /* A product whose variants span $19-$59 has to be published as an
+     AggregateOffer. Emitting a single `price` for it would state one number as
+     THE price to every aggregator that reads this, which is the structured-data
+     equivalent of the scarcity copy — technically parseable, factually wrong. */
+  base.offers =
+    range && range[0] !== range[1]
+      ? {
+          "@type": "AggregateOffer",
+          url: `${SITE_URL}/products/${product.slug}`,
+          priceCurrency: "USD",
+          lowPrice: (range[0] / 100).toFixed(2),
+          highPrice: (range[1] / 100).toFixed(2),
+          offerCount: product.variants?.length ?? 1,
+          availability,
+          itemCondition: "https://schema.org/NewCondition",
+          seller: { "@type": "Organization", name: SITE_NAME },
+        }
+      : {
+          "@type": "Offer",
+          url: `${SITE_URL}/products/${product.slug}`,
+          priceCurrency: "USD",
+          price: range ? (range[0] / 100).toFixed(2) : undefined,
+          availability,
+          itemCondition: "https://schema.org/NewCondition",
+          seller: { "@type": "Organization", name: SITE_NAME },
+        };
 
   return base;
 }
@@ -107,7 +133,14 @@ export default async function ProductPage({
     // buy column is the live one, and this states the range on the spec sheet.
     ["Finish", comingSoon ? (product.color ?? "TBC") : `${COLORS.length} standard`],
     ...((product.hasFaceDesigns
-      ? [["Face design", `Classic + ${FACE_DESIGNS.length - 1} designs`]]
+      ? [
+          product.glyphSurface === "aperture"
+            ? // No "Classic +" here: the classic single line is not one of the
+              // options on an aperture product, so counting from it would
+              // advertise a choice this page does not offer.
+              ["Symbol", `${designsFor("aperture").length} designs`]
+            : ["Face design", `Classic + ${designsFor("knob").length - 1} designs`],
+        ]
       : []) as [string, string][]),
     ["Status", comingSoon ? "In engineering" : "In production — made to order"],
   ];
@@ -205,11 +238,14 @@ export default async function ProductPage({
             </div>
           ) : (
             <div className="mt-8">
+              {/* A ladder shows its range here and the exact figure on each
+                   tier button below, rather than duplicating a live price that
+                   would then need client state in a server component. */}
               <p className="font-display text-3xl font-semibold text-accent">
-                {formatPrice(product.priceCents!)}
+                {formatPriceRange(product)}
                 {product.hasVariants && (
                   <span className="ml-2 font-sans text-sm font-normal text-ink-muted">
-                    per side
+                    {hasPriceLadder(product) ? "by specification" : "per side"}
                   </span>
                 )}
               </p>

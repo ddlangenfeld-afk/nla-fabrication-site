@@ -580,3 +580,68 @@ are a free canvas, function glyphs (defrost, feet, face) get restyled but never
 re-meant. FMVSS 101 binds vehicle manufacturers rather than aftermarket makers,
 so this is judgment rather than compliance — but an unrecognisable defrost symbol
 is a return either way.
+
+## 2026-08-03 · The switch line ships — glyph library + price ladder
+
+Two things the strategy note called for, built.
+
+**Glyph library** (`src/lib/faceDesigns.ts`). Four designs became eight, with
+`cross` (the X the whole idea started from), `chevron`, `hex` and `crosshair`
+joining the originals. Each carries an `aperture` flag recording whether it
+survives being cut as a backlit light window rather than moulded onto a knob
+face — `classic` is a single stroke and `skull` has interior detail that turns
+to mush at 6mm, so both are knob-only. `designsFor(surface)` filters, it does
+not disable: a greyed-out option invites "how do I unlock that" for a choice
+that does not exist on that product.
+
+One pick drives every surface on a panel. A panel where the knobs and the
+buttons disagree looks like a repair rather than a decision, so mix-and-match
+was never offered.
+
+**Price ladder** (`ProductVariant.priceCents`). Variants previously shared one
+price, which was fine for LH/RH and useless for T1/T2/T3. Now optional per
+variant, so the switch line is ONE page at $19 / $34 / $59 rather than three
+near-identical pages competing for the same search result.
+
+`unitPriceCents()` is the single place allowed to decide what a line costs, and
+cart subtotal, cart line and Stripe `unit_amount` all route through it — a
+variant price cannot be honoured in one place and dropped in another.
+
+**Two decisions worth recording:**
+
+1. *Checkout rejects an unknown variant on a laddered product instead of
+   falling back.* Colour and glyph fall back to a default when the id is
+   unrecognised — getting black instead of red is a bad order, not a loss.
+   Price is different: a fallback there silently bills the base tier for
+   whatever the customer thought they were buying.
+2. *The buy column defaults to the middle rung, not the first.* On a handing
+   choice the first variant is neutral; on a ladder it is the cheapest, and
+   opening on the cheapest anchors every buyer at the bottom of a range the
+   model says they are largely insensitive to.
+
+**Also:**
+
+- Cost model is variant-aware — the tiers are genuinely 8g/30min, 24g/80min and
+  28g/90min plus a $3.50 LED set, and averaging them would flatter the cheap
+  tier and punish the expensive one. Added `bomCostUsd` for bought-in stock,
+  with no failure allowance applied (a spare LED is not a reprint).
+- Ops queue carries `variantId` so print-minute planning uses the right tier.
+- Laddered products publish `AggregateOffer` with lowPrice/highPrice. Emitting
+  a single `price` for a $19–$59 product states one number as THE price to
+  every aggregator — the structured-data version of the scarcity copy.
+- Footer shop list is derived from the catalog. The hardcoded three went stale
+  the moment a fourth product shipped.
+- New `qa:ladder` script. The other QA scripts check that pages render and pass
+  axe; this one checks that the number the customer picked is the number that
+  reaches the cart, because a variant-pricing bug is a money bug that looks
+  fine on screen.
+
+**Caught by measuring, not by looking:** the spec table read "Face design —
+Classic + 7 designs" on a product where classic is not offered. Two rounds of
+verification appeared to show the fix not landing; the cause was a stale
+`next start` process still bound to :3000 serving the previous build, not the
+code. Worth remembering that "I changed it and it did not change" is a claim
+about the server as often as about the source.
+
+Build clean, lint clean, Lighthouse 100/100/100/100 on all five audited pages,
+trademark sweep still zero.

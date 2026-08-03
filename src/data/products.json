@@ -78,6 +78,68 @@
       "hasFaceDesigns": true
     },
     {
+      "slug": "hvac-symbol-set-96-98-civic",
+      "name": "Backlit Symbol & Aperture Set",
+      "shortName": "Symbol Set",
+      "status": "available",
+      "priceCents": 3400,
+      "hasVariants": true,
+      "variants": [
+        {
+          "id": "apertures",
+          "label": "Aperture set",
+          "note": "The four backlit indicator windows only. The smallest change that reads at night.",
+          "priceCents": 1900
+        },
+        {
+          "id": "full",
+          "label": "Full face set",
+          "note": "Apertures, restyled function symbols and the slider knob faces — the whole panel as one designed object.",
+          "priceCents": 3400
+        },
+        {
+          "id": "kit",
+          "label": "Panel kit + LEDs",
+          "note": "The full set plus a matched LED bulb set, so the colour of the light is specified rather than left to a 28-year-old bulb.",
+          "priceCents": 5900
+        }
+      ],
+      "fitment": "Fits 1996–1998 Civic (EK/EJ chassis, manual slider climate control)",
+      "fitmentYears": "1996–1998",
+      "chassis": [
+        "EK",
+        "EJ"
+      ],
+      "oemRef": null,
+      "oemNote": "There is no original part to compare this to. The factory cut a plain square where the backlight comes through and moved on. This is not a reproduction of anything — it is the same panel with the light coming through a shape you chose.",
+      "material": "PETG",
+      "materialNote": "Wall thickness at each lit symbol is specified per colour, not per part. Pigment loading changes light transmission enormously — the same 0.5 mm section that glows cleanly in one colour is opaque in another — so each colour carries its own verified thickness.",
+      "color": "Matte black",
+      "description": [
+        "The square window on a climate control button is not a graphic. It is an aperture — a hole the backlight comes through. This set replaces those apertures, and the symbols around them, with shapes that were chosen rather than inherited.",
+        "Two surfaces are treated differently on purpose. The indicator windows carry no meaning — the label beside them does — so they are a free canvas. The function symbols themselves are restyled but never redrawn into something else: a defrost symbol you cannot recognise at night is a worse part than the cracked one it replaced.",
+        "Supplied as a coordinated set. One design choice drives every surface, because a panel where the knobs and the buttons disagree looks like a repair rather than a decision.",
+        "The 1999–2000 panel is a different design with rotary knobs and does not interchange. Check that your panel uses sliders before ordering."
+      ],
+      "features": [
+        "Backlit apertures cut to the chosen design, not the factory square",
+        "Function symbols restyled with the original silhouette kept legible",
+        "Press-fit and drop-in — same installation as the factory pieces",
+        "Wall thickness verified per colour for even light transmission"
+      ],
+      "installNote": "Buttons and knobs press off and on by hand. The LED set in the panel kit needs the cluster surround removed — approximately 30 minutes.",
+      "keywords": [
+        "EK Civic custom climate control symbols",
+        "96-98 Civic backlit HVAC buttons",
+        "Civic EK interior night lighting mod",
+        "EK climate panel custom glyphs"
+      ],
+      "art": "sliders",
+      "sortOrder": 3,
+      "hasFaceDesigns": true,
+      "glyphSurface": "aperture"
+    },
+    {
       "slug": "door-handle-bezel-96-00-civic",
       "name": "Interior Door Handle Bezel",
       "shortName": "Door Handle Bezel",
@@ -122,7 +184,7 @@
         "EK Civic door handle trim cracked"
       ],
       "art": "bezel",
-      "sortOrder": 3
+      "sortOrder": 4
     },
     {
       "slug": "armrest-lid-latch-96-00-civic",
@@ -152,7 +214,7 @@
         "96-00 Civic console lid latch"
       ],
       "art": "console",
-      "sortOrder": 4
+      "sortOrder": 5
     },
     {
       "slug": "hatch-pull-handle-96-00-civic",
@@ -180,7 +242,7 @@
         "96-00 Civic tailgate handle"
       ],
       "art": "handle",
-      "sortOrder": 5
+      "sortOrder": 6
     },
     {
       "slug": "door-panel-backing-bracket",
@@ -209,7 +271,7 @@
         "EK Civic door card repair bracket"
       ],
       "art": "bracket",
-      "sortOrder": 6
+      "sortOrder": 7
     },
     {
       "slug": "dash-cradle-modern-hardware",
@@ -238,7 +300,7 @@
         "Civic EK gauge dash mount"
       ],
       "art": "cradle",
-      "sortOrder": 7
+      "sortOrder": 8
     },
     {
       "slug": "underhood-guides-k-swap",
@@ -267,7 +329,7 @@
         "K series swap plastic guides"
       ],
       "art": "bracket",
-      "sortOrder": 8
+      "sortOrder": 9
     }
   ]
 }

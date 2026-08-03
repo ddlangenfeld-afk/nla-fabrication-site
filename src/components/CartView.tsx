@@ -7,7 +7,7 @@ import { useCart } from "@/lib/cart";
 import { getColor } from "@/lib/colors";
 import { DEFAULT_FACE_DESIGN_ID, getFaceDesign } from "@/lib/faceDesigns";
 import { KnobFaceIcon } from "@/components/KnobFaceIcon";
-import { formatPrice, getProduct } from "@/lib/products";
+import { formatPrice, getProduct, unitPriceCents } from "@/lib/products";
 
 type CheckoutState = "idle" | "submitting" | "error" | "not-configured";
 
@@ -80,7 +80,9 @@ export function CartView() {
         <ul className="divide-y divide-line border-y border-line">
           {items.map((item) => {
             const product = getProduct(item.slug);
-            if (!product || product.priceCents == null) return null;
+            if (!product) return null;
+            const unitCents = unitPriceCents(product, item.variantId);
+            if (unitCents == null) return null;
             const variantLabel = product.variants?.find(
               (v) => v.id === item.variantId
             )?.label;
@@ -153,7 +155,7 @@ export function CartView() {
                       <p className="mt-1 text-sm text-ink-secondary">{product.fitment}</p>
                     </div>
                     <p className="shrink-0 font-mono text-sm text-ink">
-                      {formatPrice(product.priceCents * item.qty)}
+                      {formatPrice(unitCents * item.qty)}
                     </p>
                   </div>
 

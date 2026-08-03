@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { DEFAULT_COLOR_ID, getColor, isValidColorId } from "@/lib/colors";
-import { DEFAULT_FACE_DESIGN_ID, getFaceDesign, isValidFaceDesignId } from "@/lib/faceDesigns";
-import { getProduct } from "@/lib/products";
+import { defaultDesignFor, getFaceDesign, isValidForSurface } from "@/lib/faceDesigns";
+import { getProduct, hasPriceLadder, unitPriceCents } from "@/lib/products";
 import { SITE_URL } from "@/lib/site";
 
 type CheckoutItem = {
@@ -51,7 +51,19 @@ export async function POST(request: Request) {
     if (!product || product.status !== "available" || product.priceCents == null) continue;
 
     const variantId = typeof raw.variantId === "string" ? raw.variantId : undefined;
-    const variantLabel = product.variants?.find((v) => v.id === variantId)?.label;
+    const variant = product.variants?.find((v) => v.id === variantId);
+    const variantLabel = variant?.label;
+
+    /* Price is the one attribute a client must never be able to influence by
+       sending something unexpected. Colour and glyph fall back to a default
+       when the id is unknown, because getting black instead of red is a bad
+       order, not a loss. A variant CAN carry its own price, so an unknown id
+       on a laddered product would silently bill the base tier for whatever
+       the customer thought they were buying. Reject the line instead. */
+    if (hasPriceLadder(product) && !variant) continue;
+
+    const unitAmount = unitPriceCents(product, variantId);
+    if (unitAmount == null) continue;
 
     // Colour never affects price — same resin, different masterbatch — so it
     // is validated against the palette and used for naming only. An unknown id
@@ -61,10 +73,13 @@ export async function POST(request: Request) {
 
     // Face design likewise never affects price — same print, different model
     // loaded first — and only matters for products that actually offer it.
+    // Validated against the SURFACE, not just the library: an aperture
+    // product accepting a knob-only design would book an order that cannot be
+    // produced. Falling back to that surface's default is the safe landing.
     const faceDesignId =
-      product.hasFaceDesigns && isValidFaceDesignId(raw.faceDesignId)
+      product.hasFaceDesigns && isValidForSurface(raw.faceDesignId, product.glyphSurface)
         ? raw.faceDesignId
-        : DEFAULT_FACE_DESIGN_ID;
+        : defaultDesignFor(product.glyphSurface);
     const faceDesign = getFaceDesign(faceDesignId);
 
     const nameParts = [product.name];
@@ -78,7 +93,7 @@ export async function POST(request: Request) {
       quantity: qty,
       price_data: {
         currency: "usd",
-        unit_amount: product.priceCents,
+        unit_amount: unitAmount,
         product_data: {
           name: nameParts.join(" — "),
           description: product.fitment,

@@ -11,6 +11,7 @@
     "qa:states": "node scripts/axe-states.mjs",
     "qa:keyboard": "node scripts/keyboard.mjs",
     "qa:flows": "node scripts/flows.mjs",
+    "qa:ladder": "node scripts/ladder.mjs",
     "qa:lighthouse": "node scripts/lh.mjs",
     "qa:shots": "node scripts/shoot.mjs",
     "qa:motion": "node scripts/motion-audio.mjs",

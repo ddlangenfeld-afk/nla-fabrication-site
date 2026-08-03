@@ -2,8 +2,8 @@
 
 import { useMemo, useSyncExternalStore } from "react";
 import { DEFAULT_COLOR_ID, isValidColorId } from "@/lib/colors";
-import { DEFAULT_FACE_DESIGN_ID, isValidFaceDesignId } from "@/lib/faceDesigns";
-import { getProduct } from "@/lib/products";
+import { DEFAULT_FACE_DESIGN_ID, defaultDesignFor, isValidForSurface } from "@/lib/faceDesigns";
+import { getProduct, unitPriceCents } from "@/lib/products";
 
 export type CartItem = {
   slug: string;
@@ -87,13 +87,16 @@ function parseCart(raw: string | null): CartItem[] {
       // fields, and an unknown id could survive a palette change. Both
       // resolve to the default rather than dropping the line — a cart that
       // silently loses items is worse than one that quietly picks black.
-      .map((i) => ({
-        ...i,
-        colorId: isValidColorId(i.colorId) ? i.colorId : DEFAULT_COLOR_ID,
-        faceDesignId: isValidFaceDesignId(i.faceDesignId)
-          ? i.faceDesignId
-          : DEFAULT_FACE_DESIGN_ID,
-      }));
+      .map((i) => {
+        const surface = getProduct(i.slug)?.glyphSurface;
+        return {
+          ...i,
+          colorId: isValidColorId(i.colorId) ? i.colorId : DEFAULT_COLOR_ID,
+          faceDesignId: isValidForSurface(i.faceDesignId, surface)
+            ? i.faceDesignId
+            : defaultDesignFor(surface),
+        };
+      });
   } catch {
     return [];
   }
@@ -208,9 +211,11 @@ export function useCart() {
     let subtotalCents = 0;
     for (const item of items) {
       const product = getProduct(item.slug);
-      if (!product || product.priceCents == null) continue;
+      if (!product) continue;
+      const unit = unitPriceCents(product, item.variantId);
+      if (unit == null) continue;
       count += item.qty;
-      subtotalCents += product.priceCents * item.qty;
+      subtotalCents += unit * item.qty;
     }
     return { count, subtotalCents };
   }, [items]);

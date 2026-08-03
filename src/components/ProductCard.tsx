@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatPrice, type Product } from "@/lib/products";
+import { formatPriceRange, hasPriceLadder, type Product } from "@/lib/products";
 import { ProductArt } from "@/components/ProductArt";
 
 export function ProductCard({ product, index }: { product: Product; index: number }) {
@@ -7,7 +7,13 @@ export function ProductCard({ product, index }: { product: Product; index: numbe
   const refLine = [
     `NLA-${String(index).padStart(3, "0")}`,
     product.oemRef ? `REF ${product.oemRef}` : null,
-    product.hasVariants ? "LH / RH" : null,
+    // "LH / RH" only describes a handing choice. A price ladder gets its
+    // count instead, because "LH / RH" on a 3-tier product is just wrong.
+    product.hasVariants
+      ? hasPriceLadder(product)
+        ? `${product.variants?.length ?? 0} TIERS`
+        : "LH / RH"
+      : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -46,8 +52,8 @@ export function ProductCard({ product, index }: { product: Product; index: numbe
             <p className="font-mono text-sm text-ink-muted">In engineering</p>
           ) : (
             <p className="font-mono text-base text-accent">
-              {formatPrice(product.priceCents!)}
-              {product.hasVariants && (
+              {formatPriceRange(product)}
+              {product.hasVariants && !hasPriceLadder(product) && (
                 <span className="text-2xs text-ink-muted"> / side</span>
               )}
             </p>

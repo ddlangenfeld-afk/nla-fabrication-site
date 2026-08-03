@@ -1,6 +1,11 @@
 "use client";
 
-import { FACE_DESIGNS, getFaceDesign, type FaceDesign } from "@/lib/faceDesigns";
+import {
+  designsFor,
+  getFaceDesign,
+  type FaceDesign,
+  type GlyphSurface,
+} from "@/lib/faceDesigns";
 import { KnobFaceIcon } from "@/components/KnobFaceIcon";
 
 /*
@@ -17,21 +22,27 @@ export function FaceDesignPicker({
   value,
   onChange,
   name = "face-design",
+  surface = "knob",
 }: {
   value: string;
   onChange: (id: string) => void;
   name?: string;
+  surface?: GlyphSurface;
 }) {
   const selected = getFaceDesign(value);
+  // Filtered, not disabled. A design that cannot be cut as a light window is
+  // not a locked upsell — it simply is not an option on this product, and
+  // showing it greyed out would invite the question "how do I unlock that".
+  const designs = designsFor(surface);
 
   return (
     <fieldset>
       <legend className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
-        Knob face
+        {surface === "aperture" ? "Symbol" : "Knob face"}
       </legend>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        {FACE_DESIGNS.map((design) => (
+        {designs.map((design) => (
           <Chip
             key={design.id}
             design={design}

@@ -194,6 +194,7 @@ export async function getOrders(limit = 100): Promise<OpsData> {
       const economicsLines: OrderLine[] = lines.map((l) => ({
         slug: l.slug,
         colorId: l.colorId,
+        variantId: l.variantId,
         name: l.name,
         qty: l.qty,
         grossCents: l.grossCents,
@@ -255,6 +256,9 @@ export type QueueGroup = {
     /** For the face icon next to the item — a colour switch groups items,
      *  a face switch is free and just needs to be visibly distinct here. */
     faceDesignId: string | null;
+    /** Needed for print minutes: the switch line's tiers are 30, 80 and 90
+     *  minutes, so a queue that ignored the tier would plan the wrong day. */
+    variantId: string | null;
     qty: number;
     orderIds: string[];
   }[];
@@ -293,6 +297,7 @@ export function buildQueue(orders: OpsOrder[]): QueueGroup[] {
           name: line.name,
           slug: line.slug,
           faceDesignId: line.faceDesignId,
+          variantId: line.variantId,
           qty: line.qty,
           orderIds: [order.id],
         });
@@ -305,7 +310,8 @@ export function buildQueue(orders: OpsOrder[]): QueueGroup[] {
   for (const group of byColor.values()) {
     for (const item of group.items) {
       if (!item.slug) continue;
-      group.printMinutes += (getPartCost(item.slug)?.printMinutes ?? 0) * item.qty;
+      group.printMinutes +=
+        (getPartCost(item.slug, item.variantId)?.printMinutes ?? 0) * item.qty;
     }
   }
 

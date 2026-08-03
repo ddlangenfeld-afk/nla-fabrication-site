@@ -6,18 +6,27 @@ import { ColorPicker } from "@/components/ColorPicker";
 import { FaceDesignPicker } from "@/components/FaceDesignPicker";
 import { useCart } from "@/lib/cart";
 import { CUSTOM_COLOR, DEFAULT_COLOR_ID, getColor } from "@/lib/colors";
-import { DEFAULT_FACE_DESIGN_ID, getFaceDesign } from "@/lib/faceDesigns";
-import type { Product } from "@/lib/products";
+import { defaultDesignFor, getFaceDesign } from "@/lib/faceDesigns";
+import { formatPrice, hasPriceLadder, unitPriceCents, type Product } from "@/lib/products";
 
 export function AddToCart({ product }: { product: Product }) {
   const { addItem } = useCart();
-  const [variantId, setVariantId] = useState(product.variants?.[0]?.id);
+  const ladder = hasPriceLadder(product);
+  /* Default to the middle rung, not the first. On a handing choice the first
+     variant is a neutral default; on a ladder it is the cheapest, and
+     defaulting to the cheapest anchors every buyer at the bottom of a range
+     the model says they are largely insensitive to. */
+  const defaultVariant = ladder
+    ? product.variants?.[Math.floor((product.variants.length - 1) / 2)]?.id
+    : product.variants?.[0]?.id;
+  const [variantId, setVariantId] = useState(defaultVariant);
   const [colorId, setColorId] = useState(DEFAULT_COLOR_ID);
-  const [faceDesignId, setFaceDesignId] = useState(DEFAULT_FACE_DESIGN_ID);
+  const [faceDesignId, setFaceDesignId] = useState(defaultDesignFor(product.glyphSurface));
   const [added, setAdded] = useState(false);
 
   const color = getColor(colorId);
   const faceDesign = getFaceDesign(faceDesignId);
+  const unitCents = unitPriceCents(product, variantId);
 
   function handleAdd() {
     addItem({
@@ -40,44 +49,83 @@ export function AddToCart({ product }: { product: Product }) {
     `Custom colour — ${product.name}`
   )}`;
 
+  // The price goes in the button only on a ladder, where the header shows a
+  // range and this is the first place the actual figure appears.
+  const priceSuffix = ladder && unitCents != null ? ` — ${formatPrice(unitCents)}` : "";
   const label = product.hasFaceDesigns
-    ? `Add to cart — ${faceDesign.name} · ${color.name}`
-    : `Add to cart — ${color.name}`;
+    ? `Add to cart${priceSuffix} — ${faceDesign.name} · ${color.name}`
+    : `Add to cart${priceSuffix} — ${color.name}`;
 
   return (
     <div className="space-y-6">
       {product.hasVariants && product.variants && (
         <fieldset>
           <legend className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
-            Side
+            {ladder ? "Specification" : "Side"}
           </legend>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {product.variants.map((variant) => (
-              <label
-                key={variant.id}
-                className={`flex cursor-pointer items-center justify-center border px-4 py-3 text-sm transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${
-                  variantId === variant.id
-                    ? "border-accent bg-accent/10 text-ink"
-                    : "border-line text-ink-secondary hover:border-line-strong hover:text-ink"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="variant"
-                  value={variant.id}
-                  checked={variantId === variant.id}
-                  onChange={() => setVariantId(variant.id)}
-                  className="sr-only"
-                />
-                {variant.label}
-              </label>
-            ))}
+          {/* A handing choice is two equivalent options and belongs side by
+              side. A ladder is a vertical decision with different content and
+              different money at each step, so it stacks and each row states
+              both. Forcing the ladder into the two-up grid was the version
+              that made $19 and $59 look like the same kind of choice. */}
+          <div className={`mt-3 gap-2 ${ladder ? "flex flex-col" : "grid grid-cols-2"}`}>
+            {product.variants.map((variant) => {
+              const selected = variantId === variant.id;
+              return (
+                <label
+                  key={variant.id}
+                  className={`cursor-pointer border transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${
+                    ladder
+                      ? "px-4 py-3.5"
+                      : "flex items-center justify-center px-4 py-3 text-sm"
+                  } ${
+                    selected
+                      ? "border-accent bg-accent/10 text-ink"
+                      : "border-line text-ink-secondary hover:border-line-strong hover:text-ink"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="variant"
+                    value={variant.id}
+                    checked={selected}
+                    onChange={() => setVariantId(variant.id)}
+                    className="sr-only"
+                  />
+                  {ladder ? (
+                    <>
+                      <span className="flex items-baseline justify-between gap-3">
+                        <span className="text-sm font-medium">{variant.label}</span>
+                        <span
+                          className={`shrink-0 font-mono text-sm ${
+                            selected ? "text-accent" : "text-ink-muted"
+                          }`}
+                        >
+                          {formatPrice(variant.priceCents ?? product.priceCents ?? 0)}
+                        </span>
+                      </span>
+                      {variant.note && (
+                        <span className="mt-1.5 block text-xs leading-relaxed text-ink-muted">
+                          {variant.note}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    variant.label
+                  )}
+                </label>
+              );
+            })}
           </div>
         </fieldset>
       )}
 
       {product.hasFaceDesigns && (
-        <FaceDesignPicker value={faceDesignId} onChange={setFaceDesignId} />
+        <FaceDesignPicker
+          value={faceDesignId}
+          onChange={setFaceDesignId}
+          surface={product.glyphSurface}
+        />
       )}
 
       <ColorPicker value={colorId} onChange={setColorId} />
@@ -94,7 +142,11 @@ export function AddToCart({ product }: { product: Product }) {
       <p aria-live="polite" className="sr-only">
         {added
           ? `${product.name}${
-              product.hasFaceDesigns ? `, ${faceDesign.name} face` : ""
+              product.hasFaceDesigns
+                ? `, ${faceDesign.name} ${
+                    product.glyphSurface === "aperture" ? "symbol" : "face"
+                  }`
+                : ""
             } in ${color.name} added to cart`
           : ""}
       </p>

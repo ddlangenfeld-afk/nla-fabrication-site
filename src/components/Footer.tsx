@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getAvailableProducts } from "@/lib/products";
 import { CONTACT_EMAIL, MARKETPLACES, SITE_NAME } from "@/lib/site";
 
 type FooterLink = { href: string; label: string; external?: boolean };
@@ -9,9 +10,13 @@ const footerColumns: FooterColumn[] = [
     heading: "Shop",
     links: [
       { href: "/shop", label: "All parts" },
-      { href: "/products/glove-box-latch-96-00-civic", label: "Glove box latch" },
-      { href: "/products/hvac-slider-knob-set-96-98-civic", label: "HVAC knob set" },
-      { href: "/products/door-handle-bezel-96-00-civic", label: "Door handle bezel" },
+      /* Derived, not hand-listed. The previous hardcoded three went stale the
+         moment a fourth product shipped, and a footer that silently omits a
+         product is a footer nobody notices is wrong. */
+      ...getAvailableProducts().map((p) => ({
+        href: `/products/${p.slug}`,
+        label: p.shortName,
+      })),
     ],
   },
   {

@@ -12,12 +12,30 @@ import costs from "@/data/costs.json";
  * error the moment you sum a column, and this file exists to be summed.
  */
 
-export type PartCost = { grams: number; printMinutes: number };
+export type PartCost = {
+  grams: number;
+  printMinutes: number;
+  /** Bought-in parts at cost — LED bulbs and the like. Absent for anything
+   *  that is purely printed, which is most of the catalog. */
+  bomCostUsd?: number;
+};
 
-const PARTS = costs.parts as Record<string, PartCost | undefined>;
+/* Variants of the same part can cost materially different amounts to make.
+   The switch line's three tiers are 8g/30min, 24g/80min and 28g/90min plus an
+   LED bulb set — treating them as one 24g part would understate the top tier
+   and overstate the bottom one, and /ops exists precisely to not do that. */
+type PartCostEntry = PartCost & { variants?: Record<string, PartCost | undefined> };
 
-export function getPartCost(slug: string): PartCost | null {
-  return PARTS[slug] ?? null;
+const PARTS = costs.parts as Record<string, PartCostEntry | undefined>;
+
+export function getPartCost(slug: string, variantId?: string | null): PartCost | null {
+  const entry = PARTS[slug];
+  if (!entry) return null;
+  const variant = variantId ? entry.variants?.[variantId] : undefined;
+  // Falls back to the part-level figures rather than returning null: an
+  // unrecognised variant should give an approximate margin, not blank out the
+  // whole order's economics.
+  return variant ?? entry;
 }
 
 /** True when every part in an order has a cost entry, so margins are real. */
@@ -28,16 +46,18 @@ export function hasCostModel(slug: string): boolean {
 const cents = (usd: number) => Math.round(usd * 100);
 
 /** Material cost for one unit of a part, including the reprint allowance. */
-export function materialCostCents(slug: string): number {
-  const part = PARTS[slug];
+export function materialCostCents(slug: string, variantId?: string | null): number {
+  const part = getPartCost(slug, variantId);
   if (!part) return 0;
   const grams = part.grams * (1 + costs.failureAllowancePct / 100);
-  return Math.round((grams / 1000) * cents(costs.materialCostPerKgUsd));
+  const material = (grams / 1000) * cents(costs.materialCostPerKgUsd);
+  // Bought-in parts carry no failure allowance — a spare LED is not a reprint.
+  return Math.round(material + cents(part.bomCostUsd ?? 0));
 }
 
 /** Machine time for one unit — electricity and depreciation, not labour. */
-export function machineCostCents(slug: string): number {
-  const part = PARTS[slug];
+export function machineCostCents(slug: string, variantId?: string | null): number {
+  const part = getPartCost(slug, variantId);
   if (!part) return 0;
   return Math.round((part.printMinutes / 60) * cents(costs.machineCostPerHourUsd));
 }
@@ -64,6 +84,8 @@ export function estimatedStripeFeeCents(grossCents: number): number {
 export type OrderLine = {
   slug: string | null;
   colorId: string | null;
+  /** Needed for cost, not just for display — tiers differ in mass and BOM. */
+  variantId?: string | null;
   name: string;
   qty: number;
   grossCents: number;
@@ -107,9 +129,9 @@ export function orderEconomics(
       complete = false;
       continue;
     }
-    materialCents += materialCostCents(line.slug) * line.qty;
-    machineCents += machineCostCents(line.slug) * line.qty;
-    printMinutes += (PARTS[line.slug]?.printMinutes ?? 0) * line.qty;
+    materialCents += materialCostCents(line.slug, line.variantId) * line.qty;
+    machineCents += machineCostCents(line.slug, line.variantId) * line.qty;
+    printMinutes += (getPartCost(line.slug, line.variantId)?.printMinutes ?? 0) * line.qty;
   }
 
   const stripeFeeCents = actualStripeFeeCents ?? estimatedStripeFeeCents(grossCents);

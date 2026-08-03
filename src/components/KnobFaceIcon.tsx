@@ -51,6 +51,30 @@ function Glyph({ id }: { id: string }) {
       );
     case "diamond":
       return <path d="M16 7L25 16L16 25L7 16Z" />;
+    case "cross":
+      return (
+        <>
+          <path d="M10 10L22 22" />
+          <path d="M22 10L10 22" />
+        </>
+      );
+    case "chevron":
+      // Two stacked, not one: a single chevron at 24px reads as a stray tick.
+      return (
+        <>
+          <path d="M9 18L16 11L23 18" />
+          <path d="M9 24L16 17L23 24" />
+        </>
+      );
+    case "hex":
+      return <path d="M16 6L24.7 11V21L16 26L7.3 21V11Z" />;
+    case "crosshair":
+      return (
+        <>
+          <circle cx="16" cy="16" r="6.5" />
+          <path d="M16 5.5V9M16 23V26.5M5.5 16H9M23 16H26.5" />
+        </>
+      );
     case "spade":
       return (
         <>
