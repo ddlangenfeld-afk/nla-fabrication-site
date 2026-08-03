@@ -540,3 +540,43 @@ Build passes, lint clean, trademark sweep still returns zero across `src/` and
 The parts with no substitute — custom symbol sets, dash cradles — are the only
 ones where `supply = 1.0` in `analysis/fleet_model.py`, and that factor dominates
 addressable volume.
+
+## 2026-08-03 · The switch line — modelled as a ladder, not a SKU
+
+`analysis/glyph_line.py` + `research/switch-line-strategy.md`.
+
+**Model bug caught mid-write.** The first run of `glyph_line.py` reported 480
+orders/yr against `fleet_model.py`'s 166 for the same product. Cause: the fleet
+model gates the cosmetic product twice — `need` (0.19, mods the interior at all)
+× `cares` (0.35, wants this specific mod) — and `glyph_line.py` applied only the
+first. The docstring claimed the two files "cannot drift apart" while the file
+silently reported ~3× the volume. Fixed; they now reconcile at 165 vs 166. Part
+masses aligned to the same 24 g / 80 min the fleet model prices.
+
+**Findings:**
+
+- Ladder (T1 $19 apertures / T2 $34 full face / T3 $59 panel kit + LEDs) blends
+  to $30.85 net per order against $27.9 for a flat $29 SKU — **+29% per order**
+  on identical volume and identical awareness. The gain is mix, not price.
+- Median EK-only: **165 orders/yr, $5,084 net** (P10 $2,609, P90 $9,371).
+- Commissions at $85 net $65.52 — 2.1× a blended order for 30 min of extra CAD.
+  One a week nearly doubles the EK-only business.
+- A new glyph costs ~45 min of CAD and is free past ~20 units. Variety is the
+  moat, not any single design.
+- **Awareness is the only lever that matters.** T3 attach ±15pp moves net ±10%;
+  awareness ×2 moves it +100%. Recommendation in the doc is to stop optimising
+  price entirely.
+
+**The engineering call in the doc:** the backlit square is an *aperture*, not a
+graphic, so the product is the shape of the light. Four manufacturing routes
+compared; the recommendation is thin-wall glow (0.4–0.8 mm instead of a through
+cut) — single material, single colour, no pause step, and it yields the hook
+"looks stock until the lights come on." Blocking experiment is a step-wedge
+light-transmission test across thickness × colour × bulb, which no amount of
+modelling can substitute for.
+
+Also split the panel into two surfaces with different rules: indicator apertures
+are a free canvas, function glyphs (defrost, feet, face) get restyled but never
+re-meant. FMVSS 101 binds vehicle manufacturers rather than aftermarket makers,
+so this is judgment rather than compliance — but an unrecognisable defrost symbol
+is a return either way.
