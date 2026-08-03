@@ -441,3 +441,24 @@ Envelope verified on every build: X 16.500, Y 20.320, Z 16.494 against targets 1
 The socket is a rectangular block with a T-shaped through-slot, tiled as six convex boxes rather than cut with a boolean, so each piece stays trivially watertight and their union is the socket.
 
 `design/.gitignore` keeps the STLs out of the repo — 1.2 MB of binary that regenerates in under a second from the committed script. The OBJ is committed because it is text and imports straight into Blender.
+
+## 2026-08-03 · 05:10 — Fleet survival and addressable market model
+
+Founder asked how many 96-98 Civics still exist and what share plausibly need this part. Built `analysis/fleet_model.py`, a 200k-trial Monte Carlo. Monte Carlo rather than a spreadsheet because several inputs span an order of magnitude, and multiplying six mid-point guesses together produces a confident-looking number that is almost certainly wrong.
+
+**Sourced inputs.** Global 6th-gen production >3.5M (Sep 1995 – Aug 2000). NHTSA DOT HS 809 952: 7.9% of passenger cars survive 20 years. iSeeCars 2025: the Civic reaches 250k miles at 4.2× the segment average — applied at a discounted 2.0–3.6× because that is a mileage statistic, not a survival statistic.
+
+**Result: ~122,000 cars still on the road worldwide** (P10 86k, P90 167k), implying a 5.3% survival rate at 28-30 years. **51,000 US, 71,000 international** — the international fleet is the larger half, which validates the instinct to sell abroad even though capture there is modelled far worse.
+
+**The finding that matters is the part comparison.** Modelling every part with one demand curve would have been the biggest available error. A glove box that will not stay shut is a functional failure the owner meets on every drive; a missing slider knob is cosmetic and the HVAC still works. Modelled separately:
+
+| | units/yr | net/yr |
+| --- | --- | --- |
+| HVAC knob set | 40 | $378 |
+| Glove box latch | 179 | $2,943 |
+
+**The latch is 7.8× the knob**, on defect rate, on owners actually acting, and on price. That matches the earlier research finding — the latch has a dedicated repair tutorial and multiple forum threads; the knob has neither, and the authoritative common-failures writeup for that HVAC unit lists backlights and the blower resistor ahead of it.
+
+**Sensitivity says the funnel dominates** (r=+0.666 against sales, versus +0.43 for survival and +0.43 for defect rate). Fleet size and failure rate are facts that cannot be changed. The funnel — being found, and being chosen over a junkyard pull — is entirely marketing and channel, and it is where effort returns the most.
+
+**Bundling is worth more than any of it.** Fixed cost per order is $9.23 in labour, packaging and postage. A knob alone nets $9.34; a knob and a latch in *one* order nets $29.49. The second item costs $1.22 to add and carries no new fixed cost, so it is nearly triple the profit for one more part in the box. The model's implication is that basket size, not per-part demand, is the lever — free shipping over a threshold, bundle pricing, and cross-sell on the product page.
