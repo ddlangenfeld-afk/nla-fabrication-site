@@ -404,3 +404,21 @@ Grounded in an actual teardown: a spare 96–97 climate control unit was pulled 
 **Ops queue groups by colour only, and now demonstrates why in one screenshot.** The sample data has Skull and Ace of Spades both in the Matte Black group — merged for the changeover count — while Diamond sits in a genuinely separate Graphite group. That's the whole point made visible: two design switches cost nothing, one colour switch costs a purge, and the queue's grouping already reflected that correctly the moment `line.name` started carrying the design label — no changes needed to the changeover math itself.
 
 Verified: two different designs of the same part, same colour, land as two distinct cart lines (not one line, quantity two); the product spec sheet states the design count; the ledger and queue both show the correct face icon per line; axe clean on the HVAC page specifically (now a permanent line in `qa:a11y` rather than trusting the latch page to stand in for every product); ops gate still 16/16 after `orders.ts` changed.
+
+## 2026-08-03 · 02:15 — Dimensioned drawing for the HVAC slider knob
+
+Founder measured a spare 96–97 climate control unit and supplied a five-view hand sketch with calliper dimensions. Turned into a proper third-angle orthographic drawing (`design/hvac-slider-knob-orthographic.svg`), and the site's schematic for that product replaced with the same geometry.
+
+**The dimensions did not agree with each other, so the reconciliation is documented on the sheet rather than hidden.** Three findings:
+
+- **Depth had three independent readings** — 16.46 (bottom view), 16.12 (top view), and 16.81 (implied by closing the side profile through the 16.85 top edge, 8.40 rear face and 11.48 diagonal). Their mean is 16.46 exactly. Adopted **16.50**, which squares the base footprint with the 16.50 width and sits 0.04 off the bottom-view reading.
+- **Top face width had two readings**, 8.87 (front) and 9.11 (back), 0.24 apart. Averaged to **9.00**.
+- **The 11.48 side diagonal is longer than the straight line it spans.** Within the adopted envelope that chord is 9.25. A measured value exceeding its own chord is what happens when a rule follows a curved surface instead of a calliper spanning it, so 11.48 is recorded as a contour length and flagged VERIFY rather than being used to stretch the envelope.
+
+Width (16.50) and height (20.32) needed no reconciliation — both agreed exactly across two views each, which is why they anchor everything else.
+
+The sheet carries all five views, hidden-line detail for the internal shell and lever socket, a third-angle projection symbol, a title block marked REV A / SKETCH-DERIVED / NOT FOR PRODUCTION, and the reconciliation notes. Geometry is drawn 1 SVG unit = 1 mm and split into `geometry` and `annotations` groups so the annotations can be deleted after import, leaving clean profile curves.
+
+**It lives in `design/`, not `public/`.** A fully dimensioned drawing of a part whose whole business case is that nobody else reproduces it does not belong on a public URL — that is a competitor's CAD starting point served for free. The website gets front and side elevations with three headline dimensions, matching the density of the other product schematics.
+
+The site art and the drawing share one envelope; a comment in `ProductArt.tsx` points at the sheet so the two stay in step.

@@ -131,25 +131,66 @@ function Drawing({ art }: { art: string }) {
           <DimLine x1={324} y1={90} x2={324} y2={200} label="62 mm" labelX={348} labelY={148} />
         </>
       );
+    /*
+     * Front and right-side elevation of a single slider knob, drawn from the
+     * measured part rather than as a schematic of the panel it sits in. The
+     * geometry here is the same reconciled envelope as the full orthographic
+     * sheet in design/hvac-slider-knob-orthographic.svg — 16.50 W x 20.32 H
+     * x 16.50 D, tapering to a 9.00 top face — scaled 7:1 into this viewBox.
+     * Keep the two in step if either changes.
+     */
     case "sliders":
       return (
         <>
           <Frame />
           <g className="text-ink-secondary" stroke="currentColor" strokeWidth="1.25">
-            {/* slider tracks */}
-            <line x1="90" y1="100" x2="310" y2="100" strokeWidth="0.75" strokeDasharray="4 4" />
-            <line x1="90" y1="150" x2="310" y2="150" strokeWidth="0.75" strokeDasharray="4 4" />
-            <line x1="90" y1="200" x2="310" y2="200" strokeWidth="0.75" strokeDasharray="4 4" />
-            {/* knobs on tracks */}
-            <rect x="120" y="88" width="34" height="24" rx="5" />
-            <line x1="137" y1="94" x2="137" y2="106" />
-            <rect x="230" y="138" width="34" height="24" rx="5" />
-            <line x1="247" y1="144" x2="247" y2="156" />
-            <rect x="176" y="188" width="34" height="24" rx="5" />
-            <line x1="193" y1="194" x2="193" y2="206" />
+            {/* front elevation */}
+            <path
+              d="M62.25 222 L62.25 131
+                 C62.25 105.8 71.7 87.6 88.5 85.15
+                 C101.8 83.05 110.9 79.76 120 79.76
+                 C129.1 79.76 138.2 83.05 151.5 85.15
+                 C168.3 87.6 177.75 105.8 177.75 131
+                 L177.75 222 Z"
+            />
+            {/* recessed front panel */}
+            <path
+              d="M85 213.6 C85 155.5 96.2 111.4 120 100.2
+                 C143.8 111.4 155 155.5 155 213.6 Z"
+              strokeWidth="0.9"
+            />
+            {/* indicator line slot — the factory single-line face */}
+            <rect x="116.5" y="113.5" width="7" height="91" strokeWidth="0.9" />
+
+            {/* right-side elevation */}
+            <path
+              d="M215 222 L215 91.8
+                 C215 83.4 223.4 79.76 236 79.76
+                 C265.4 79.76 300.4 91.1 330.5 103.7
+                 L330.5 162.5
+                 C329.8 190.5 321.4 213.6 305.02 222 Z"
+            />
+            {/* lever socket, hidden */}
+            <path
+              d="M232.5 222 L232.5 114 C232.5 107 240.2 104.2 252.8 104.2
+                 C275.2 104.2 294.8 112.6 313 121.4 L313 160.4
+                 C312.3 182.8 306 200.3 294.8 207.3 L294.8 222"
+              strokeWidth="0.75"
+              strokeDasharray="5 3"
+            />
           </g>
-          <DimLine x1={120} y1={68} x2={154} y2={68} label="24 mm" labelX={137} labelY={58} />
-          <DimLine x1={332} y1={100} x2={332} y2={200} label="PITCH 50" labelX={352} labelY={153} />
+          {/* centrelines */}
+          <g
+            className="text-line-strong"
+            stroke="currentColor"
+            strokeWidth="0.75"
+            strokeDasharray="10 4 2 4"
+          >
+            <line x1="120" y1="66" x2="120" y2="236" />
+          </g>
+          <DimLine x1={62.25} y1={240} x2={177.75} y2={240} label="16.5 mm" labelX={120} labelY={256} />
+          <DimLine x1={48} y1={79.76} x2={48} y2={222} label="20.32" labelX={30} labelY={154} />
+          <DimLine x1={215} y1={240} x2={330.5} y2={240} label="16.5 mm" labelX={272} labelY={256} />
         </>
       );
     case "bezel":

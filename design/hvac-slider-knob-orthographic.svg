@@ -1,0 +1,275 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 170" width="1840" height="1360">
+  <!--
+    NLA FABRICATION | HVAC SLIDER KNOB | 96-98 CIVIC EK/EJ
+    Third angle orthographic projection. All dimensions in millimetres.
+
+    GEOMETRY IS DRAWN 1 SVG USER UNIT = 1 MM.
+    Blender: File > Import > Scalable Vector Graphics. The importer applies
+    its own scale, so after import measure one known edge (the 16.50 base
+    width is easiest) and scale uniformly to match. Delete the "annotations"
+    group to leave clean profile curves for tracing.
+
+    Reconciled from hand measurement. See NOTES block.
+  -->
+
+  <defs>
+    <marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="2.2" markerHeight="2.2"
+            refX="2.2" refY="1.1" orient="auto">
+      <path d="M0,0 L2.2,1.1 L0,2.2 Z" fill="#c1121f"/>
+    </marker>
+    <marker id="arrowStart" markerUnits="userSpaceOnUse" markerWidth="2.2" markerHeight="2.2"
+            refX="0" refY="1.1" orient="auto">
+      <path d="M2.2,0 L0,1.1 L2.2,2.2 Z" fill="#c1121f"/>
+    </marker>
+    <style>
+      .obj   { fill:none; stroke:#141414; stroke-width:0.38; stroke-linejoin:round; }
+      .feat  { fill:none; stroke:#141414; stroke-width:0.26; stroke-linejoin:round; }
+      .hid   { fill:none; stroke:#9a9a9a; stroke-width:0.20; stroke-dasharray:1.2 0.8; }
+      .ctr   { fill:none; stroke:#6f8fb0; stroke-width:0.15; stroke-dasharray:3 0.8 0.6 0.8; }
+      .dim   { fill:none; stroke:#c1121f; stroke-width:0.16; }
+      .ext   { fill:none; stroke:#c1121f; stroke-width:0.12; }
+      .t     { font-family:"IBM Plex Mono", ui-monospace, "DejaVu Sans Mono", monospace;
+               font-size:2.5px; fill:#c1121f; }
+      .tc    { text-anchor:middle; }
+      .te    { text-anchor:end; }
+      .lbl   { font-family:"IBM Plex Mono", ui-monospace, "DejaVu Sans Mono", monospace;
+               font-size:3px; fill:#141414; letter-spacing:0.4px; text-anchor:middle; }
+      .note  { font-family:"IBM Plex Mono", ui-monospace, "DejaVu Sans Mono", monospace;
+               font-size:2px; fill:#3a3a3a; }
+      .tb    { font-family:"IBM Plex Mono", ui-monospace, "DejaVu Sans Mono", monospace;
+               font-size:2.4px; fill:#141414; }
+      .tbs   { font-family:"IBM Plex Mono", ui-monospace, "DejaVu Sans Mono", monospace;
+               font-size:2px; fill:#6a6a6a; }
+      .frame { fill:none; stroke:#141414; stroke-width:0.3; }
+    </style>
+  </defs>
+
+  <rect width="230" height="170" fill="#ffffff"/>
+  <rect x="4" y="4" width="222" height="162" class="frame"/>
+
+  <!-- ============================ GEOMETRY ============================ -->
+  <g id="geometry">
+
+    <!-- ========== TOP VIEW  (cx 50, front edge y=48.5) ========== -->
+    <g id="view-top">
+      <rect x="41.75" y="32" width="16.5" height="16.5" rx="2.2" class="obj"/>
+      <rect x="45.5" y="34" width="9" height="13" rx="1.6" class="feat"/>
+      <rect x="49.5" y="46.5" width="1" height="2" class="feat"/>
+      <line x1="50" y1="29.5" x2="50" y2="51" class="ctr"/>
+    </g>
+
+    <!-- ========== FRONT VIEW  (cx 50, baseline y=95) ========== -->
+    <g id="view-front">
+      <path class="obj" d="M41.75,95 L41.75,82
+        C41.75,78.4 43.1,75.8 45.5,75.45
+        C47.4,75.15 48.7,74.68 50,74.68
+        C51.3,74.68 52.6,75.15 54.5,75.45
+        C56.9,75.8 58.25,78.4 58.25,82
+        L58.25,95 Z"/>
+      <path class="feat" d="M45,93.8
+        C45,85.5 46.6,79.2 50,77.6
+        C53.4,79.2 55,85.5 55,93.8 Z"/>
+      <rect x="49.5" y="79.5" width="1" height="13" class="feat"/>
+      <line x1="50" y1="71.5" x2="50" y2="98" class="ctr"/>
+    </g>
+
+    <!-- ========== BOTTOM VIEW  (cx 50, front edge y=118) ========== -->
+    <g id="view-bottom">
+      <rect x="41.75" y="118" width="16.5" height="16.46" rx="2.2" class="obj"/>
+      <line x1="41.75" y1="130.86" x2="58.25" y2="130.86" class="hid"/>
+      <rect x="44.25" y="120" width="11.5" height="10.5" rx="1.6" class="feat"/>
+      <line x1="44.25" y1="125" x2="55.75" y2="125" class="feat"/>
+      <rect x="45" y="125.5" width="10" height="3" rx="0.5" class="feat"/>
+      <rect x="45.5" y="129" width="9" height="1" rx="0.4" class="feat"/>
+      <line x1="50" y1="115.5" x2="50" y2="137" class="ctr"/>
+    </g>
+
+    <!-- ========== RIGHT SIDE VIEW  (front at x=95, baseline y=95) ========== -->
+    <g id="view-side">
+      <path class="obj" d="M95,95 L95,76.4
+        C95,75.2 96.2,74.68 98,74.68
+        C102.2,74.68 107.2,76.3 111.5,78.1
+        L111.5,86.5
+        C111.4,90.5 110.2,93.8 107.86,95 Z"/>
+      <path class="hid" d="M97.5,95 L97.5,79.6
+        C97.5,78.6 98.6,78.2 100.4,78.2
+        C103.6,78.2 106.4,79.4 109,80.6
+        L109,86.2
+        C108.9,89.4 108,91.9 106.4,92.9 L106.4,95"/>
+      <line x1="97.5" y1="88.5" x2="109" y2="88.5" class="hid"/>
+      <line x1="97.5" y1="91.5" x2="109" y2="91.5" class="hid"/>
+    </g>
+
+    <!-- ========== BACK VIEW  (cx 165, baseline y=95) ========== -->
+    <g id="view-back">
+      <path class="obj" d="M156.75,95 L156.75,82
+        C156.75,78.4 158.1,75.8 160.5,75.45
+        C162.4,75.15 163.7,74.68 165,74.68
+        C166.3,74.68 167.6,75.15 169.5,75.45
+        C171.9,75.8 173.25,78.4 173.25,82
+        L173.25,95 Z"/>
+      <path class="feat" d="M159.25,95 L159.25,82.5
+        C159.25,79.7 160.3,78 162.4,77.7
+        C163.6,77.5 164.3,77.2 165,77.2
+        C165.7,77.2 166.4,77.5 167.6,77.7
+        C169.7,78 170.75,79.7 170.75,82.5
+        L170.75,95 Z"/>
+      <rect x="159.25" y="89.56" width="2.65" height="5.44" class="feat"/>
+      <rect x="168.1" y="89.56" width="2.65" height="5.44" class="feat"/>
+      <line x1="165" y1="71.5" x2="165" y2="98" class="ctr"/>
+    </g>
+  </g>
+
+  <!-- ============================ ANNOTATIONS ============================ -->
+  <g id="annotations">
+
+    <text x="50"  y="27"    class="lbl">TOP</text>
+    <text x="50"  y="64.5"  class="lbl">FRONT</text>
+    <text x="50"  y="114"   class="lbl">BOTTOM</text>
+    <text x="103" y="64.5"  class="lbl">RIGHT SIDE</text>
+    <text x="165" y="64.5"  class="lbl">BACK</text>
+
+    <!-- ==== FRONT: overall width 16.50 ==== -->
+    <line x1="41.75" y1="95" x2="41.75" y2="101.5" class="ext"/>
+    <line x1="58.25" y1="95" x2="58.25" y2="101.5" class="ext"/>
+    <line x1="41.75" y1="100.5" x2="58.25" y2="100.5" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="50" y="104" class="t tc">16.50</text>
+
+    <!-- ==== FRONT: overall height 20.32 ==== -->
+    <line x1="41.75" y1="74.68" x2="35.5" y2="74.68" class="ext"/>
+    <line x1="41.75" y1="95"    x2="35.5" y2="95"    class="ext"/>
+    <line x1="36.5" y1="74.68" x2="36.5" y2="95" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="34.8" y="84.85" class="t tc" transform="rotate(-90 34.8 84.85)">20.32</text>
+
+    <!-- ==== FRONT: top face width 9.00 ==== -->
+    <line x1="45.5" y1="75.45" x2="45.5" y2="69.5" class="ext"/>
+    <line x1="54.5" y1="75.45" x2="54.5" y2="69.5" class="ext"/>
+    <line x1="45.5" y1="70.5" x2="54.5" y2="70.5" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="50" y="68.9" class="t tc">9.00</text>
+
+    <!-- ==== TOP: depth 16.50 ==== -->
+    <line x1="58.25" y1="32"   x2="64.5" y2="32"   class="ext"/>
+    <line x1="58.25" y1="48.5" x2="64.5" y2="48.5" class="ext"/>
+    <line x1="63.5" y1="32" x2="63.5" y2="48.5" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="65.8" y="40.25" class="t tc" transform="rotate(-90 65.8 40.25)">16.50</text>
+
+    <!-- ==== BOTTOM: depth 16.46 ==== -->
+    <line x1="58.25" y1="118"    x2="64.5" y2="118"    class="ext"/>
+    <line x1="58.25" y1="134.46" x2="64.5" y2="134.46" class="ext"/>
+    <line x1="63.5" y1="118" x2="63.5" y2="134.46" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="65.8" y="126.2" class="t tc" transform="rotate(-90 65.8 126.2)">16.46</text>
+
+    <!-- ==== BOTTOM: pocket 5.00 / blade slot 3.00 / groove 1.00 ==== -->
+    <line x1="44.25" y1="120" x2="40" y2="120" class="ext"/>
+    <line x1="44.25" y1="125" x2="40" y2="125" class="ext"/>
+    <line x1="41" y1="120" x2="41" y2="125" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="39.5" y="123.3" class="t te">5.00</text>
+
+    <line x1="45" y1="125.5" x2="33" y2="125.5" class="ext"/>
+    <line x1="45" y1="128.5" x2="33" y2="128.5" class="ext"/>
+    <line x1="34" y1="125.5" x2="34" y2="128.5" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="32.5" y="127.7" class="t te">3.00</text>
+
+    <line x1="45.5" y1="129" x2="26" y2="129" class="ext"/>
+    <line x1="45.5" y1="130" x2="26" y2="130" class="ext"/>
+    <line x1="27" y1="129" x2="27" y2="130" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="25.5" y="130.3" class="t te">1.00</text>
+
+    <!-- ==== SIDE: overall depth 16.50 ==== -->
+    <line x1="95"    y1="95"   x2="95"    y2="101.5" class="ext"/>
+    <line x1="111.5" y1="78.1" x2="111.5" y2="101.5" class="ext"/>
+    <line x1="95" y1="100.5" x2="111.5" y2="100.5" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="103.25" y="104" class="t tc">16.50</text>
+
+    <!-- ==== SIDE: base contact 12.86 ==== -->
+    <line x1="95"     y1="95" x2="95"     y2="108" class="ext"/>
+    <line x1="107.86" y1="95" x2="107.86" y2="108" class="ext"/>
+    <line x1="95" y1="107" x2="107.86" y2="107" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="101.4" y="110.5" class="t tc">12.86 BASE</text>
+
+    <!-- ==== SIDE: overall height 20.32 ==== -->
+    <line x1="95" y1="74.68" x2="88.5" y2="74.68" class="ext"/>
+    <line x1="95" y1="95"    x2="88.5" y2="95"    class="ext"/>
+    <line x1="89.5" y1="74.68" x2="89.5" y2="95" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="87.8" y="84.85" class="t tc" transform="rotate(-90 87.8 84.85)">20.32</text>
+
+    <!-- ==== SIDE: rear face 8.40 ==== -->
+    <line x1="111.5" y1="78.1" x2="118.5" y2="78.1" class="ext"/>
+    <line x1="111.5" y1="86.5" x2="118.5" y2="86.5" class="ext"/>
+    <line x1="117.5" y1="78.1" x2="117.5" y2="86.5" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="121" y="82.3" class="t tc" transform="rotate(-90 121 82.3)">8.40</text>
+
+    <!-- ==== BACK: overall width 16.50 ==== -->
+    <line x1="156.75" y1="95" x2="156.75" y2="105.5" class="ext"/>
+    <line x1="173.25" y1="95" x2="173.25" y2="105.5" class="ext"/>
+    <line x1="156.75" y1="104.5" x2="173.25" y2="104.5" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="165" y="108" class="t tc">16.50</text>
+
+    <!-- ==== BACK: pad width 2.65 ==== -->
+    <line x1="168.1"  y1="95" x2="168.1"  y2="100" class="ext"/>
+    <line x1="170.75" y1="95" x2="170.75" y2="100" class="ext"/>
+    <line x1="168.1" y1="99" x2="170.75" y2="99" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="175" y="99.8" class="t">2.65 PAD</text>
+
+    <!-- ==== BACK: pad height 5.44 ==== -->
+    <line x1="170.75" y1="89.56" x2="181.5" y2="89.56" class="ext"/>
+    <line x1="173.25" y1="95"    x2="181.5" y2="95"    class="ext"/>
+    <line x1="180.5" y1="89.56" x2="180.5" y2="95" class="dim"
+          marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
+    <text x="183" y="92.3" class="t tc" transform="rotate(-90 183 92.3)">5.44</text>
+
+    <!-- ==== BACK: wall 2.50, leader ==== -->
+    <path class="dim" d="M171.9,80.5 L179,76.5 L185,76.5" marker-start="url(#arrowStart)"/>
+    <text x="185.8" y="75.8" class="t">2.50 WALL</text>
+
+    <!-- projection symbol -->
+    <g transform="translate(193,118)">
+      <text x="12" y="-2.5" class="tbs" style="text-anchor:middle">THIRD ANGLE</text>
+      <circle cx="6" cy="5" r="4.2" class="obj"/>
+      <ellipse cx="18" cy="5" rx="1.8" ry="4.2" class="obj"/>
+      <line x1="6" y1="0.2" x2="6" y2="9.8" class="ctr"/>
+      <line x1="18" y1="0.2" x2="18" y2="9.8" class="ctr"/>
+      <line x1="1.2" y1="5" x2="22.8" y2="5" class="ctr"/>
+    </g>
+  </g>
+
+  <!-- ============================ NOTES ============================ -->
+  <g id="notes">
+    <line x1="8" y1="140" x2="140" y2="140" class="frame"/>
+    <text x="8" y="144.5" class="tb">RECONCILIATION NOTES</text>
+    <text x="8" y="148.6" class="note">1. ENVELOPE 16.50 W x 20.32 H x 16.50 D. Width and height agreed exactly across two views each.</text>
+    <text x="8" y="152.2" class="note">2. DEPTH read 16.46 bottom / 16.12 top / 16.81 side-closure. Mean 16.46; adopted 16.50 to square</text>
+    <text x="8" y="155.4" class="note">   with the width. Bottom view keeps its as-measured 16.46.</text>
+    <text x="8" y="159" class="note">3. TOP FACE 8.87 front and 9.11 back, averaged to 9.00.</text>
+    <text x="8" y="162.6" class="note">4. SIDE 11.48 exceeds its own chord 9.25 - taken as a CONTOUR length over the curved rear. VERIFY.</text>
+  </g>
+
+  <!-- ============================ TITLE BLOCK ============================ -->
+  <g id="title-block">
+    <rect x="146" y="140" width="80" height="25" class="frame"/>
+    <line x1="146" y1="149" x2="226" y2="149" class="frame"/>
+    <line x1="146" y1="156.5" x2="226" y2="156.5" class="frame"/>
+    <line x1="188" y1="156.5" x2="188" y2="165" class="frame"/>
+    <text x="148" y="145" class="tb">HVAC SLIDER KNOB</text>
+    <text x="148" y="148" class="tbs">96-98 CIVIC EK/EJ MANUAL CLIMATE | NLA-002</text>
+    <text x="148" y="154" class="tb">NLA FABRICATION</text>
+    <text x="148" y="161" class="tbs">UNITS mm</text>
+    <text x="148" y="163.8" class="tbs">1 SVG UNIT = 1 mm</text>
+    <text x="190" y="161" class="tbs">REV A SKETCH-DERIVED</text>
+    <text x="190" y="163.8" class="tbs">NOT FOR PRODUCTION</text>
+  </g>
+</svg>
