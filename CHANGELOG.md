@@ -422,3 +422,22 @@ The sheet carries all five views, hidden-line detail for the internal shell and 
 **It lives in `design/`, not `public/`.** A fully dimensioned drawing of a part whose whole business case is that nobody else reproduces it does not belong on a public URL — that is a competitor's CAD starting point served for free. The website gets front and side elevations with three headline dimensions, matching the density of the other product schematics.
 
 The site art and the drawing share one envelope; a comment in `ProductArt.tsx` points at the sheet so the two stay in step.
+
+## 2026-08-03 · 03:30 — 3D model generated from the reconciled envelope
+
+Founder supplied two photographs of the real knob and asked for the model itself. Built `design/knob_model.py` — a parametric, dependency-free generator that emits OBJ and STL from the same reconciled envelope as the orthographic sheet.
+
+**The photographs corrected two things the sketch had implied.**
+
+- **The indicator line is a contrasting cream stripe moulded across the top face, not an open groove.** That is a second material, not geometry. Modelled as a shallow channel so it can be printed and filled, or used as the layer marker for a filament change. `--no-line` emits the blank body for the skull / diamond / spade faces, which is the variant the face-design product feature actually needs.
+- **The socket is a keyed T-slot in a separate cream insert (marked "15"), not the two parallel slots the bottom-view sketch implied.** The 3.00 blade thickness from the sketch survives as the crossbar thickness; the rest of the T is read off the photograph and is flagged in the file as the least trustworthy dimension in it.
+
+**A geometric constraint caught a real bug on the first pass.** At y=0 the part is only 12.86 deep, so the cavity at the base is 12.86 − 2×2.50 = 7.86 mm front-to-back. The first socket was 11.2 mm deep and pushed straight out through the rear wall — visible immediately in the verification render as boxes floating outside the shell. The socket is now derived from the cavity at the base rather than positioned by hand, and raises `SystemExit` if the T will not fit. Re-checked by walking every vertex against the profile envelope: one vertex outside, the crown apex, 0.28 mm proud, which is the rounded tip.
+
+**Verified by rendering, not by inspection.** The generated OBJ is loaded into three.js headless (the project already ships three) and rendered from four angles with a wireframe overlay. That is what caught the escaped socket, and a shading seam across the flank where the cross-section spacing stepped from 1.2 mm to 0.4 mm — the levels are now a single graded curve, and the seam is gone.
+
+Envelope verified on every build: X 16.500, Y 20.320, Z 16.494 against targets 16.50 / 20.32 / 16.50.
+
+The socket is a rectangular block with a T-shaped through-slot, tiled as six convex boxes rather than cut with a boolean, so each piece stays trivially watertight and their union is the socket.
+
+`design/.gitignore` keeps the STLs out of the repo — 1.2 MB of binary that regenerates in under a second from the committed script. The OBJ is committed because it is text and imports straight into Blender.
