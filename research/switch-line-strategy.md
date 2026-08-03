@@ -140,7 +140,11 @@ At the modelled mix (20 / 55 / 25) the blended order is **$37.25 list, $30.85
 net**. Against a single flat $29 SKU at the same volume, the ladder is worth
 **+29% per order** — about **$1,100/yr** at median volume.
 
-Median volume, EK only: **165 orders/yr, $5,084 net.** P10 $2,609, P90 $9,371.
+Median volume, EK only: **165 orders/yr, $5,084 net — PER YEAR.** P10 $2,609,
+P90 $9,371. At the median that is **~$424 a month**, on ~14 orders a month.
+
+Stated that plainly because every figure in this document is annual, and an
+annual figure misread as monthly is a 12× planning error.
 
 Note this is *not* the $14,900 an earlier draft of the model produced. That
 version had dropped one of the two demand gates and reported roughly 3× the
@@ -251,9 +255,36 @@ on Etsy**, which is direct proof of the product form in an adjacent market. The
 design language and the photography style port completely; only the body geometry
 changes, and body geometry is the part already proven in `design/knob_model.py`.
 
-Full stack — ladder + a commission a week + four more chassis + 3× awareness —
-lands around **$56,700/yr**. Every multiplier in that chain is a decision, not a
-bet on how many latches broke this year.
+### Do not chain these
+
+Ladder + a commission a week + four more chassis + 3× awareness multiplies out
+to **$56,738/yr**. That number is arithmetic, not a projection, and it should
+not be planned against. It stacks four separate optimistic assumptions:
+
+| Step | Status |
+|---|---|
+| Base $5,084 | **Modelled** — 200k trials, though already a 3.6× P10–P90 spread |
+| + 52 commissions/yr | **Assumed** — that is 1 bespoke order in every 4. No evidence. |
+| × 3.05 chassis | **Assumed** — fleet sizes above were never researched |
+| × 3 awareness | **Assumed** — and applied *after* the chassis step, so it silently assumes 3× awareness in four separate car communities at once, built by one person |
+
+Read the multipliers **one at a time** as scenarios. Multiplying four optimistic
+assumptions compounds the optimism and produces a figure that looks earned and
+is not.
+
+### And the hours the model never charges
+
+The cost model charges 8 minutes of packing per order at $25/hr, plus
+commission CAD. It charges **nothing** for marketing, photography, CAD for new
+chassis, customer service, returns or admin.
+
+At the median that is roughly 200 unpaid hours a year for $5,084 — about
+**$25/hr**. Which is the honest read on the base case: not yet a business, a
+hobby that pays for itself and its own tooling. The reason to build it is the
+ceiling and the optionality, not year one's number.
+
+**Plan against $2,600–$9,400 for year one.** That is the only range with a
+simulation behind it.
 
 ---
 

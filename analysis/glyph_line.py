@@ -242,13 +242,37 @@ def main():
     print("  needs only a new body — which is the part you have already proven")
     print("  you can do (design/knob_model.py).")
 
-    rule("BOTTOM LINE")
-    print(f"  Ladder, EK only, median:        ${base:>9,.0f}/yr")
-    print(f"  + 1 commission/week:            ${base + c * 52:>9,.0f}/yr")
-    print(f"  + 4 more chassis:               ${base * 3.05 + c * 52:>9,.0f}/yr")
-    print(f"  + awareness x3 on all of it:    ${(base * 3.05 + c * 52) * 3:>9,.0f}/yr")
-    print("\n  Every one of those multipliers is a decision you control. None of")
-    print("  them is a bet on how many glove box latches broke this year.")
+    rule("PLAN AGAINST THIS")
+    print(f"  MODELLED — the only figures with a simulation behind them:")
+    print(f"    Ladder, EK only, P10 / median / P90:")
+    print(f"      ${nlo:>9,.0f}  ${nmid:>9,.0f}  ${nhi:>9,.0f}   per YEAR")
+    print(f"      (${nmid/12:>9,.0f} per month at the median)")
+    print()
+    print(f"  SPECULATIVE — each is a scenario, NOT a forecast. Read them one at")
+    print(f"  a time. They are deliberately not chained into a single total,")
+    print(f"  because multiplying four optimistic assumptions compounds the")
+    print(f"  optimism and produces a number that looks earned and is not.")
+    print(f"    if commissions land at 1/week:      +${c * 52:>8,.0f}/yr")
+    print(f"    if 4 more chassis perform like EK:  +${base * 2.05:>8,.0f}/yr  (fleet sizes NOT researched)")
+    print(f"    if awareness reaches 3x:            x3        (nothing supports this)")
+    print()
+    print(f"  All four together would be ${(base * 3.05 + c * 52) * 3:,.0f}/yr. That is arithmetic, not a")
+    print(f"  projection: it assumes a 1-in-4 commission attach rate, four")
+    print(f"  unresearched fleets, and 3x awareness in four separate car")
+    print(f"  communities at once, built by one person.")
+
+    # The model charges 8 min/order of packing labour and nothing else. Every
+    # other hour this business needs is invisible to it, which is why a "net
+    # profit" line flatters the outcome. State the rate, not just the total.
+    rule("WHAT THE MODEL DOES NOT CHARGE YOU FOR")
+    unpaid_base = 200
+    print(f"  Charged:     8 min/order packing @ ${LABOUR_PER_HR:.0f}/hr, and commission CAD.")
+    print(f"  NOT charged: marketing, photography, chassis CAD, customer")
+    print(f"               service, admin, returns.")
+    print(f"\n  At the median, ~{unpaid_base} unpaid hours/yr for ${base:,.0f} is "
+          f"${base/unpaid_base:,.0f}/hr.")
+    print(f"  That is the honest read on the base case: not yet a business,")
+    print(f"  a hobby that pays for itself and its own tooling.")
 
 
 if __name__ == "__main__":

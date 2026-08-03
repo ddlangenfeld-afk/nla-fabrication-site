@@ -645,3 +645,35 @@ about the server as often as about the source.
 
 Build clean, lint clean, Lighthouse 100/100/100/100 on all five audited pages,
 trademark sweep still zero.
+
+## 2026-08-03 · Correction — the model was presenting scenarios as a forecast
+
+Raised by a direct question: two figures in the same conversation, $5,084 and
+$56,738, with no obvious relationship between them.
+
+**They differ by an 11.2× multiplier chain, and only the first link is modelled.**
+$5,084 is a Monte Carlo median. The rest is: + 52 commissions/yr (assumed — that
+is one bespoke order in every four, with no evidence for the attach rate),
+× 3.05 for four more chassis (assumed — the doc itself says those fleet sizes
+were never researched), × 3 awareness (assumed, and applied *after* the chassis
+step, so it quietly assumes 3× awareness in four separate car communities at
+once, built by one person).
+
+Each line was captioned honestly. Chaining them under a heading reading
+"BOTTOM LINE" was not — it made four stacked guesses look like a projection.
+`analysis/glyph_line.py` now prints the modelled P10/median/P90 under "PLAN
+AGAINST THIS", lists the speculative multipliers separately and explicitly
+un-chained, and states the combined figure only as arithmetic with its
+assumptions named.
+
+**Also added, because it was missing entirely:** the model charges 8 min/order
+of packing labour and commission CAD, and charges *nothing* for marketing,
+photography, chassis CAD, customer service, returns or admin. At the median
+that is ~200 unpaid hours for $5,084 — about **$25/hr**. The base case is not
+yet a business; it is a hobby that pays for itself and its own tooling. Both
+the script and `research/switch-line-strategy.md` now say so.
+
+Every figure in these documents is **annual**. The strategy note now states the
+monthly equivalent at the median (~$424/mo) next to the annual one, because an
+annual figure misread as monthly is a 12× planning error and nothing else in
+the model matters if that happens.
