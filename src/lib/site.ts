@@ -9,7 +9,7 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://nla-fabrica
 export const CONTACT_EMAIL = process.env.CONTACT_EMAIL ?? "hello@nla-fabrication.example.com";
 
 export const SITE_DESCRIPTION =
-  "3D-printed reproduction interior parts for the 1996–2000 Civic (EK/EJ). Discontinued glove box latches, HVAC knobs, and trim — modeled from original geometry, validated on the chassis, and produced to order.";
+  "3D-printed reproduction interior parts for the 1996–2000 Civic (EK/EJ). Glove box latches, HVAC knob sets, and interior trim — modeled from original geometry, validated on the chassis, and produced to order.";
 
 /*
  * Marketplace storefronts.

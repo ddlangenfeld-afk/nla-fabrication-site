@@ -6,7 +6,7 @@ import { Reveal } from "@/components/Reveal";
 import { getAllProducts, getAvailableProducts, getComingSoonProducts } from "@/lib/products";
 
 export const metadata: Metadata = {
-  title: "Shop — Discontinued 96–00 Civic EK/EJ Parts",
+  title: "Shop — 96–00 Civic EK/EJ Interior Parts",
   description:
     "The full NLA Fabrication catalog for the 1996–2000 Civic (EK/EJ): glove box latch, HVAC slider knobs and interior door handle bezel, plus components currently in engineering.",
   alternates: { canonical: "/shop" },

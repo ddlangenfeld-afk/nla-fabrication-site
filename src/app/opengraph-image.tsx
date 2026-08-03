@@ -60,7 +60,7 @@ export default function OpenGraphImage() {
               maxWidth: 820,
             }}
           >
-            Reverse-engineered replacements for discontinued interior components.
+            Reverse-engineered interior components for the 96–00 Civic.
             Validated on the chassis. Produced to order.
           </div>
         </div>

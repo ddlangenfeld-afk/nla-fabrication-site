@@ -55,8 +55,8 @@ export function Footer() {
               NLA<span className="text-accent">·</span>FABRICATION
             </p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink-muted">
-              Reverse-engineered replacements for discontinued interior components on the
-              1996–2000 Civic (EK/EJ). Validated on the chassis. Produced to order.
+              Reverse-engineered interior components for the 1996–2000 Civic (EK/EJ).
+              Validated on the chassis. Produced to order.
             </p>
             <p className="mt-4 font-mono text-2xs uppercase tracking-widest text-ink-muted">
               Independent manufacturer — not affiliated with any vehicle manufacturer

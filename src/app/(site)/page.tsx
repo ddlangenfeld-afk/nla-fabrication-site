@@ -8,7 +8,7 @@ import { getAllProducts, getAvailableProducts, getComingSoonProducts } from "@/l
 import { SITE_DESCRIPTION } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "NLA Fabrication — Discontinued 96–00 Civic (EK/EJ) Parts, Reproduced",
+  title: "NLA Fabrication — 96–00 Civic (EK/EJ) Interior Parts, Reproduced",
   description: SITE_DESCRIPTION,
   alternates: { canonical: "/" },
 };
@@ -54,7 +54,7 @@ export default function HomePage() {
               className="hero-in mt-6 max-w-xl text-base leading-relaxed text-ink-secondary sm:text-lg"
               style={{ "--hero-delay": "280ms" } as React.CSSProperties}
             >
-              Precision-manufactured replacements for discontinued interior components
+              Precision-manufactured replacements for hard-to-source interior components
               on the 96–00 Civic. Every part is modeled from original geometry, produced
               in engineering-grade PETG, and validated on the chassis before it is
               released for sale.
@@ -93,7 +93,7 @@ export default function HomePage() {
             <dl>
               {[
                 ["Part no.", "77540-S04-003ZA"],
-                ["Status", "Discontinued → Reproduced"],
+                ["Status", "Reproduced — made to order"],
                 ["Material", "PETG"],
                 ["Fitment", "96–00 Civic EK/EJ"],
               ].map(([term, detail]) => (
@@ -184,32 +184,39 @@ export default function HomePage() {
               className="mt-3 font-display text-2xl font-semibold leading-snug tracking-tight text-ink sm:text-3xl"
               id="story-heading"
               lines={[
-                <>Discontinued does not</>,
-                <>have to mean unavailable.</>,
+                <>Out of production is</>,
+                <>only half the problem.</>,
               ]}
             />
           </div>
           <Reveal delay={140} className="space-y-5 text-base leading-relaxed text-ink-secondary">
             <p>
               The interior components on this chassis were built to a 1990s cost target and
-              have now aged past it. Serviceable assemblies fail at predictable points, and
-              the factory has marked the replacements{" "}
+              have now aged past it. Serviceable assemblies fail at predictable points. Some
+              of those replacements are genuinely{" "}
               <strong className="font-medium text-ink">NLA — No Longer Available</strong>.
-              The remaining supply is salvage: the same 25-year-old plastic, at the same
-              point in its service life as the part it is replacing.
+              Others are still catalogued, and for those the honest answer is to buy the
+              original — so we publish the OEM part number on the product page and say so
+              outright.
             </p>
             <p>
-              We manufacture the replacements instead. Each component is reverse-engineered
-              from original geometry, re-specified in a material chosen for the cabin
-              environment, and reinforced where the original section was the limiting
-              factor. Print orientation is set so that loads run along the strongest axis
-              rather than across layer boundaries.
+              What is left over is the gap we actually work in. A latch sold only in factory
+              grey, fitted to an interior that is no longer grey. A single knob listed by
+              four vendors at four prices when the panel needs a matched set. A door card
+              whose only factory answer to a torn clip mount is a whole new door card. And
+              parts that were never made at all.
             </p>
             <p>
-              Selection is driven by failure data, not by what is easy to produce. A part
-              enters the catalog only when the failure is documented and recurring, the
-              discontinuation is confirmed against the manufacturer&rsquo;s own parts
-              catalog, and no new replacement exists from any source.
+              Each component is reverse-engineered from original geometry, re-specified in a
+              material chosen for the cabin environment, and reinforced where the original
+              section was the limiting factor. Print orientation is set so that loads run
+              along the strongest axis rather than across layer boundaries.
+            </p>
+            <p>
+              Selection is driven by failure data and by what an owner can actually buy
+              today — dealer catalog, aftermarket and salvage are all checked before
+              anything is tooled. Where the original is still available and costs less than
+              ours, the product page tells you that.
             </p>
           </Reveal>
         </div>
@@ -246,13 +253,14 @@ export default function HomePage() {
             className="mx-auto max-w-2xl font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
             id="cta-heading"
             lines={[
-              <>Sourcing a discontinued</>,
-              <>component we don&rsquo;t list yet?</>,
+              <>Sourcing a component</>,
+              <>we don&rsquo;t list yet?</>,
             ]}
           />
           <p className="mx-auto mt-4 max-w-xl text-ink-secondary">
-            Our development queue is prioritised by documented failure rates and confirmed
-            supply gaps. Submit a part and we will assess it against both.
+            Our development queue is prioritised by documented failure rates and by what is
+            genuinely hard to buy. Submit a part and we will assess it against both — and
+            tell you if you are better off buying the original.
           </p>
           <Link
             href="/contact"

@@ -12,27 +12,28 @@
         "EK",
         "EJ"
       ],
-      "oemRef": "77540-S04-003ZA",
-      "oemNote": "Replaces OEM part 77540-S04-003ZA, confirmed discontinued by the manufacturer. Secondary-market units are scarce and carry the same age-related embrittlement as the component being replaced.",
+      "oemRef": "77540-S04-003ZA / -003ZB / -003ZC",
+      "oemNote": "The original part is still produced and is inexpensive — OEM 77540-S04-003ZA, with the ZB and ZC suffixes covering the other factory interior shades. We are not going to tell you otherwise. Ours exists for the interiors that are no longer factory grey.",
       "material": "PETG",
       "materialNote": "Produced in engineering-grade PETG for impact resistance and cabin thermal tolerance. Build orientation is specified so the latch spring tab loads along the strongest axis rather than across a layer boundary.",
       "color": "Matte black",
       "description": [
-        "The glove box latch is the highest-frequency interior failure on this generation. The spring tab fatigues and the handle section fractures, leaving the assembly unable to latch or unable to release. The original component is out of production; this is a direct-fit replacement engineered from the original geometry.",
+        "The glove box latch is among the highest-frequency interior failures on this chassis. The spring tab fatigues and the handle section fractures, leaving the assembly unable to latch or unable to release.",
+        "If you want a stock-appearance repair, buy the original — OEM 77540-S04-003ZA is still in production and costs less than this does. Ours is for the cars where that no longer makes sense: interiors being rebuilt in a colour, where a grey latch is the one piece that does not match, and where the replacement should not embrittle the way the first one did.",
         "Installs with the original hardware. No trimming, no adapters, no modification to the lid."
       ],
       "features": [
-        "Direct replacement for discontinued OEM part 77540-S04-003ZA",
-        "Drop-in fitment — retains original hardware",
-        "PETG construction, specified above the original ABS in the failure zone",
-        "Matte black finish specified to the factory dash appearance"
+        "Produced in five colours — the original is supplied in factory greys only",
+        "Drop-in fitment — retains original hardware and mounting points",
+        "PETG rather than the original ABS in the section that fails",
+        "Build orientation specified so the spring tab loads along the strongest axis"
       ],
       "installNote": "Two fasteners from the glove box lid interior. Approximately 5–10 minutes with a Phillips driver.",
       "keywords": [
         "96-00 Civic glove box latch replacement",
-        "EK Civic glovebox handle discontinued",
-        "77540-S04-003ZA replacement",
-        "Civic EK NLA parts"
+        "EK Civic glovebox handle colour match",
+        "Civic EK interior colour matched latch",
+        "77540-S04-003ZA alternative"
       ],
       "art": "latch",
       "sortOrder": 1
@@ -43,32 +44,34 @@
       "shortName": "HVAC Knob Set",
       "status": "available",
       "priceCents": 1400,
-      "fitment": "Fits 1996–1998 Civic (EK/EJ chassis, manual climate control)",
+      "fitment": "Fits 1996–1998 Civic (EK/EJ chassis, manual slider climate control)",
       "fitmentYears": "1996–1998",
       "chassis": [
         "EK",
         "EJ"
       ],
       "oemRef": null,
-      "oemNote": "Individual knobs were never released as a service part. The only new option from the manufacturer is a complete climate control assembly, at a cost that is not proportionate to the failed component. Secondary-market supply is salvage-dependent.",
+      "oemNote": "Individual knobs were catalogued as service parts — OEM 79601-S04-003 is one of them — but never as a matched set. Building a full panel from OEM channels means single-knob orders across several vendors, and twenty-eight years of separate sun exposure means the shades will not agree when they arrive. This is supplied as one set, in one colour, in one order.",
       "material": "PETG",
       "materialNote": "PETG is specified for sustained dash-top solar exposure, which exceeds the service range of PLA. Slider dimensions are held to the original track with a controlled friction fit.",
       "color": "Matte black",
       "description": [
-        "Complete set of slider levers and knobs for the 96–98 manual climate control panel. These components crack and detach with age, and the manufacturer never offered them as a serviceable part.",
-        "Supplied as a full set for the manual HVAC panel. Press-fits onto the original lever arms. The factory face is a single flat line — this reproduction opens that face up as a design choice, at no cost difference, because it is the same print either way."
+        "Complete set of slider levers and knobs for the 96–98 manual climate control panel. These crack and detach with age, and the pieces that survive have faded at different rates depending on how the car spent its life.",
+        "Supplied as a matched set. Press-fits onto the original lever arms. The factory face is a single flat line — this reproduction opens that face up as a design choice, at no cost difference, because it is the same print either way.",
+        "The 1999–2000 panel is a different design with rotary knobs and its own part numbers. It does not interchange. Check that your panel uses sliders before ordering."
       ],
       "features": [
-        "Complete knob set for the 96–98 manual climate control panel",
+        "Complete matched set — not single knobs sourced from separate vendors",
         "Press-fit installation — no tools, no adhesive",
         "PETG construction specified for dash-top solar exposure",
         "Choice of knob face: classic line, or a designed face at the same price"
       ],
       "installNote": "Press onto the original lever arms by hand. Under a minute per knob, no tools required.",
       "keywords": [
-        "EK Civic HVAC slider knob replacement",
-        "96-98 Civic climate control knob",
-        "Civic EK heater slider lever"
+        "EK Civic HVAC slider knob set",
+        "96-98 Civic climate control knob replacement",
+        "Civic EK heater slider lever set",
+        "EK climate control knobs colour"
       ],
       "art": "sliders",
       "sortOrder": 2,
@@ -98,19 +101,19 @@
         "EJ"
       ],
       "oemRef": null,
-      "oemNote": "The original bezel is a documented weak point: the thin section around the handle cup cracks with age and repeated door closure. New replacements are out of production, and secondary-market units carry the same age-related embrittlement.",
+      "oemNote": "We have not been able to confirm a current OEM part number for the bezel on its own for this chassis, so we make no claim about whether one is available — if you can source one, that is a legitimate option. Complete interior handle assemblies are sold aftermarket at low cost, though those replace the handle as well as the surround.",
       "material": "PETG",
       "materialNote": "PETG with increased wall thickness at the crack-initiation radius — the single location where the original section was the limiting factor.",
       "color": "Matte black",
       "description": [
-        "The surround that frames the interior door release handle. On this generation the original component embrittles and initiates cracks at the corner radius — a failure mode documented consistently across the chassis.",
+        "The surround that frames the interior door release handle. On this chassis the original component embrittles and initiates cracks at the corner radius — a failure mode reported consistently across the platform.",
         "This reproduction retains the original mounting and visual profile while increasing section thickness at the failure point. Sold per side."
       ],
       "features": [
-        "Direct-fit reproduction of the discontinued interior handle bezel",
         "Reinforced corner radius at the documented crack-initiation point",
         "Available in left-hand and right-hand versions",
-        "Retains factory clip mounting"
+        "Retains factory clip mounting",
+        "Produced in the same five colours as the rest of the interior range"
       ],
       "installNote": "Unclips from the door card around the release handle. A trim removal tool is recommended.",
       "keywords": [
@@ -127,19 +130,20 @@
       "shortName": "Armrest Latch",
       "status": "coming-soon",
       "priceCents": null,
-      "fitment": "1996–2000 Civic (EK/EJ chassis) — fitment verification in progress",
+      "fitment": "1996–2000 Civic (EK/EJ chassis) with factory centre console armrest — fitment verification in progress",
       "fitmentYears": "1996–2000",
       "chassis": [
         "EK",
         "EJ"
       ],
       "oemRef": null,
-      "oemNote": "In engineering. Verifying that the EK console uses a discrete, serviceable latch before committing to tooling.",
+      "oemNote": "In engineering. Two things are being confirmed before tooling: whether this console uses a discrete, serviceable latch rather than being replaced as a complete assembly, and which trims left the factory with the centre armrest at all.",
       "material": "PETG",
       "materialNote": null,
       "color": null,
       "description": [
-        "Replacement latch mechanism for the centre console armrest lid. Currently in fitment validation — the console assembly is being disassembled to confirm the interface before the component is modelled."
+        "Replacement latch mechanism for the centre console armrest lid. Currently in fitment validation — the console assembly is being disassembled to confirm the interface before the component is modelled.",
+        "Note that the centre armrest was not fitted across the whole range. Confirm your car has one before ordering when this becomes available."
       ],
       "features": [],
       "installNote": null,
@@ -162,12 +166,12 @@
         "EK"
       ],
       "oemRef": null,
-      "oemNote": "In engineering. Confirming the exact OEM part number and discontinuation status before modelling.",
+      "oemNote": "In engineering. Confirming the exact OEM part number and its current availability before committing to modelling.",
       "material": "PETG",
       "materialNote": null,
       "color": null,
       "description": [
-        "Interior pull handle for closing the rear hatch. In assessment — OEM part number and discontinued status are being confirmed against the manufacturer's parts catalog."
+        "Interior pull handle for closing the rear hatch. In assessment — the OEM part number and its current supply status are being confirmed against the manufacturer's parts catalog before any work starts."
       ],
       "features": [],
       "installNote": null,
@@ -191,12 +195,12 @@
         "EJ"
       ],
       "oemRef": null,
-      "oemNote": "A repair component, not an OEM reproduction — backing bracket for door cards with failed clip mounts.",
+      "oemNote": "A repair component of our own design, not an OEM reproduction — a backing bracket for door cards whose clip mounts have torn through.",
       "material": "PETG",
       "materialNote": null,
       "color": null,
       "description": [
-        "A backing bracket for door cards whose clip mounting points have torn through the fibreboard substrate. This is a repair component of our own design rather than a reproduction of an OEM part."
+        "A backing bracket for door cards whose clip mounting points have torn through the fibreboard substrate. There is no OEM equivalent: the factory answer to a torn mount is a new door card. This is our own design."
       ],
       "features": [],
       "installNote": null,
@@ -206,64 +210,6 @@
       ],
       "art": "bracket",
       "sortOrder": 6
-    },
-    {
-      "slug": "weatherstrip-retainers-clips",
-      "name": "Weatherstrip End Retainers & Clips",
-      "shortName": "Weatherstrip Clips",
-      "status": "coming-soon",
-      "priceCents": null,
-      "fitment": "1996–2000 Civic (EK/EJ chassis)",
-      "fitmentYears": "1996–2000",
-      "chassis": [
-        "EK",
-        "EJ"
-      ],
-      "oemRef": null,
-      "oemNote": "In engineering. The retention hardware that is consistently destroyed whenever a door seal is removed.",
-      "material": "PETG",
-      "materialNote": null,
-      "color": null,
-      "description": [
-        "The retainers and clips that anchor weatherstrip ends. These fracture on removal and were never supplied in serviceable quantities."
-      ],
-      "features": [],
-      "installNote": null,
-      "keywords": [
-        "EK Civic weatherstrip clips",
-        "96-00 Civic door seal retainer"
-      ],
-      "art": "clips",
-      "sortOrder": 7
-    },
-    {
-      "slug": "cowl-hood-clip-assortment",
-      "name": "Cowl, Wiper & Hood-Prop Clip Assortment",
-      "shortName": "Clip Assortment",
-      "status": "coming-soon",
-      "priceCents": null,
-      "fitment": "1996–2000 Civic (EK/EJ chassis)",
-      "fitmentYears": "1996–2000",
-      "chassis": [
-        "EK",
-        "EJ"
-      ],
-      "oemRef": null,
-      "oemNote": "In engineering. A consolidated assortment of the engine-bay plastic retention hardware that has reached end of service life.",
-      "material": "PETG",
-      "materialNote": null,
-      "color": null,
-      "description": [
-        "An assortment of engine-bay fasteners — cowl clips, wiper trim retainers and the hood-prop retainer — that have embrittled to the point of failing on removal at this vehicle age."
-      ],
-      "features": [],
-      "installNote": null,
-      "keywords": [
-        "EK Civic cowl clips",
-        "Civic hood prop clip"
-      ],
-      "art": "clips",
-      "sortOrder": 8
     },
     {
       "slug": "dash-cradle-modern-hardware",
@@ -278,7 +224,7 @@
         "EJ"
       ],
       "oemRef": null,
-      "oemNote": "In engineering. Dash-integrated cradles for lap timers, data displays and wideband gauges.",
+      "oemNote": "In engineering. Dash-integrated cradles for lap timers, data displays and wideband gauges. No OEM equivalent exists — this category of hardware did not exist when the car was built.",
       "material": "PETG",
       "materialNote": null,
       "color": null,
@@ -292,7 +238,7 @@
         "Civic EK gauge dash mount"
       ],
       "art": "cradle",
-      "sortOrder": 9
+      "sortOrder": 7
     },
     {
       "slug": "underhood-guides-k-swap",
@@ -321,7 +267,7 @@
         "K series swap plastic guides"
       ],
       "art": "bracket",
-      "sortOrder": 10
+      "sortOrder": 8
     }
   ]
 }

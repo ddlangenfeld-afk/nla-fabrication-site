@@ -3,9 +3,9 @@ import Link from "next/link";
 import { Reveal, RevealLines } from "@/components/Reveal";
 
 export const metadata: Metadata = {
-  title: "About — Engineering discontinued EK/EJ Civic components",
+  title: "About — Engineering interior components for the EK/EJ Civic",
   description:
-    "NLA Fabrication reverse-engineers discontinued interior components for the 1996–2000 Civic. Every part is selected from documented failure data, validated on the chassis, and produced to order in engineering-grade PETG.",
+    "NLA Fabrication reverse-engineers interior components for the 1996–2000 Civic. Every part is selected from documented failure data, validated on the chassis, and produced to order in engineering-grade PETG.",
   alternates: { canonical: "/about" },
 };
 
@@ -18,7 +18,7 @@ const process = [
   {
     step: "02",
     title: "Supply verification",
-    body: "Discontinuation is confirmed against the manufacturer's own parts catalog, and secondary-market pricing is reviewed as a demand signal. If a new replacement is available from any source, we do not tool the part.",
+    body: "Before anything is tooled we establish what an owner can actually buy today: dealer catalog, aftermarket, and salvage, at what price. Some of these parts are genuinely out of production. Some are still sold, and the product page says so and gives you the part number — because the reason to buy ours is then colour, set completeness or material, never scarcity. We do not assert that a part is unavailable without checking.",
   },
   {
     step: "03",
@@ -108,11 +108,12 @@ export default function AboutPage() {
             className="measure space-y-6 text-base leading-relaxed text-ink-secondary sm:text-lg"
           >
             <p>
-              NLA Fabrication reverse-engineers and produces discontinued interior
-              components for the 1996–2000 Civic. We operate in a narrow segment on
-              purpose: a short catalog of parts with confirmed supply gaps, each one
-              engineered against a specific documented failure rather than adapted from a
-              generic pattern.
+              NLA Fabrication reverse-engineers and produces interior components for the
+              1996–2000 Civic: parts that are out of production, parts still sold only in a
+              form that no longer suits the car, and parts the factory never made. We
+              operate in a narrow segment on purpose — a short catalog, each item engineered
+              against a specific documented failure rather than adapted from a generic
+              pattern.
             </p>
             <p>
               The work is hard-surface CAD, materials specification and production
@@ -122,15 +123,19 @@ export default function AboutPage() {
               validated fitment out.
             </p>
             <p>
-              We compete on precision and availability, not on breadth. A catalog of three
+              We compete on precision and fit, not on breadth. A catalog of three
               components that install correctly is worth more to an owner mid-repair than a
               catalog of three hundred that require trimming, shimming or a second order.
             </p>
             <p className="border-l-2 border-accent pl-6 text-ink">
-              The name states the premise. &ldquo;NLA&rdquo; is the designation a parts
-              catalog applies when a component is out of production permanently:{" "}
-              <em>No Longer Available</em>. Everything we list carried that designation
-              before we brought it back.
+              The name states the standard, not a claim about every line in the catalog.
+              &ldquo;NLA&rdquo; is the designation a parts catalog applies when a component
+              is out of production permanently: <em>No Longer Available</em>. Closing that
+              gap is the reason this exists — but it is not the only gap. Some parts are
+              still sold and only in the wrong colour. Some are sold only as a complete
+              assembly costing many times the piece that actually broke. Some were never
+              made at all. Every product page states which of those applies to that part,
+              including when the original is still available and cheaper than ours.
             </p>
           </Reveal>
         </div>

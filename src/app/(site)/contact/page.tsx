@@ -7,7 +7,7 @@ import { CONTACT_EMAIL } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Contact NLA Fabrication for fitment verification, order support, or to submit a discontinued component for engineering assessment.",
+    "Contact NLA Fabrication for fitment verification, order support, or to submit a hard-to-source component for engineering assessment.",
   alternates: { canonical: "/contact" },
 };
 

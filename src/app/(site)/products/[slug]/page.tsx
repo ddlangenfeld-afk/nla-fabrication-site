@@ -53,8 +53,11 @@ function productJsonLd(product: Product) {
     isRelatedTo: `${product.fitment}`,
   };
 
+  // Deliberately NOT `mpn`. The OEM reference is the part this replaces, not
+  // the manufacturer part number of the thing being sold — publishing it as
+  // `mpn` under our own `brand` asserts that this IS the OEM part. It is not.
+  // `isSimilarTo` is the correct relationship for "replaces / interchanges with".
   if (product.oemRef) {
-    base.mpn = product.oemRef;
     base.isSimilarTo = {
       "@type": "Product",
       name: `OEM part ${product.oemRef}`,

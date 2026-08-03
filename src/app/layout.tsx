@@ -28,7 +28,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} — Discontinued 96–00 Civic (EK/EJ) Parts, Reproduced`,
+    default: `${SITE_NAME} — 96–00 Civic (EK/EJ) Interior Parts, Reproduced`,
     template: `%s — ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,

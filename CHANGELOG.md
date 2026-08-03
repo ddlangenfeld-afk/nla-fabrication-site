@@ -484,3 +484,59 @@ The reason is structural, not optimism. A repair part is gated on the fault exis
 Comparables support the price: EK gauge-face overlays sell ~$90, and Illumaesthetic's EK gauge faces are $200-300. The platform's interior-aesthetics market clears at real money.
 
 **The price ladder is nearly flat between $19 and $59** — modelled at constant elasticity e=1.2, net lands within 5% of $3,900 across that whole range, peaking around $29. That is what a product with no substitute looks like: pricing is not the lever. Volume comes from awareness, which is why the sensitivity table puts the funnel top again. This is a demand-*creation* product — nobody searches for a thing they don't know exists — so the channel is Instagram, forums and build threads, not SEO.
+
+## 2026-08-03 · Parts availability audit — three catalog claims were false
+
+Ran the availability audit across all 10 catalog entries before writing any more
+copy. Findings in `research/parts-availability-audit.md`. The short version: the
+site's central premise did not survive contact with a parts catalog.
+
+**What was false:**
+
+- **Glove box latch** — page claimed "confirmed discontinued", "scarce", "out of
+  production". The genuine part (OEM 77540-S04-003ZA / ZB / ZC) is still produced
+  and sells for roughly $16.50–$20, i.e. **less than our $22**. Aftermarket covers
+  five chassis. Every yard has one.
+- **HVAC knob set** — page claimed individual knobs "were never released as a
+  service part". OEM 79601-S04-003 is catalogued for 1996–1998 and listed by at
+  least six resellers at $8–14.
+- **Weatherstrip clips / cowl clips** — page claimed they "were never supplied in
+  serviceable quantities". They are sold in 20-, 40- and 72-piece assortment kits
+  for exactly this chassis. We cannot compete with an injection-moulded fastener
+  sold 72 to a box.
+
+**Changes:**
+
+- Rewrote `oemNote`, `description`, `features` and `keywords` on the three
+  available products. The latch page now names the OEM part number and states
+  plainly that the original is cheaper — the reason to buy ours is colour match,
+  material and reinforcement, and if none of those apply we say to buy the
+  original. Scarcity is no longer a selling argument anywhere in the catalog.
+- Removed the two clip products from the roadmap. They were built on the false
+  premise and there is no version of that page that is both honest and worth
+  publishing. Renumbered `sortOrder` (8 entries now).
+- Rewrote the site-wide thesis. `about` step 02 previously promised "If a new
+  replacement is available from any source, we do not tool the part" — a policy
+  the catalog itself violated. It now describes the check we actually run. The
+  "NLA" paragraph now scopes the name as the standard rather than a per-SKU claim,
+  and enumerates the other three gaps we work in (wrong colour, sold only as a
+  full assembly, never made at all).
+- Home "supply problem" section rewritten along the same lines; headline is now
+  "Out of production is only half the problem."
+- Added fitment warning to the armrest latch: the centre console armrest was not
+  fitted to every trim, and shipping without that warning would have earned
+  returns.
+
+**Structured-data bug found while in there:** `productJsonLd` was publishing the
+OEM part number as our Product's `mpn` under our own `brand`. That asserts our
+part *is* the OEM part. Removed; `isSimilarTo` already carried the correct
+"replaces / interchanges with" relationship. This was a worse problem than the
+copy — it was a machine-readable misrepresentation.
+
+Build passes, lint clean, trademark sweep still returns zero across `src/` and
+`public/`.
+
+**Strategic consequence:** the repair catalog is a credential, not the business.
+The parts with no substitute — custom symbol sets, dash cradles — are the only
+ones where `supply = 1.0` in `analysis/fleet_model.py`, and that factor dominates
+addressable volume.
