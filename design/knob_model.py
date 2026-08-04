@@ -46,11 +46,30 @@ H           = 20.32   # overall height                       [both views agreed]
 D_BASE      = 12.86   # depth of the flat base contact patch
 D_MAX       = 16.50   # deepest point of the rear overhang   [reconciled]
 Z_CROWN     =  3.00   # where the crown sits, measured back from the front face
-Y_REAR_TOP  = 16.90   # height of the rear top edge  [H minus the 8.40 rear face]
-Y_REAR_FULL =  8.50   # height at which the rear reaches its full depth
 
 WALL        =  2.50   # shell wall thickness                 [back view]
-Y_CEILING   = 15.00   # inside height of the cavity roof
+
+# --------------------------------------------------------------------------
+# PROFILE BREAKPOINTS  (fractions of H, never absolute heights)
+#
+# These used to be absolute millimetre heights, which quietly made the model
+# non-parametric in its own height: a taper hardcoded to run from y=12.0 to
+# y=19.0 does nothing whatever on a 12 mm part, so correcting H on its own
+# would have produced a straight-sided slug rather than a shorter knob — a
+# second wrong shape that looked like a fix. Held as fractions, the silhouette
+# survives a corrected envelope. At H = 20.32 they reproduce the previous
+# geometry exactly, vertex for vertex.
+# --------------------------------------------------------------------------
+F_TAPER_LO  = 12.00 / 20.32   # width holds full up to here
+F_TAPER_HI  = 19.00 / 20.32   # ...and has reached W_TOP by here
+F_CROWN     = 17.20 / 20.32   # front face begins rolling into the crown
+F_REAR_FULL =  8.50 / 20.32   # rear has reached its full overhang
+F_REAR_TOP  = 16.90 / 20.32   # rear top edge; above this the top face slopes
+F_CEILING   = 15.00 / 20.32   # cavity roof
+
+Y_REAR_TOP  = F_REAR_TOP  * H   # height of the rear top edge
+Y_REAR_FULL = F_REAR_FULL * H   # height at which the rear reaches full depth
+Y_CEILING   = F_CEILING   * H   # inside height of the cavity roof
 
 # Socket. Note the constraint that caught a bug on the first pass: at y=0 the
 # part is only D_BASE deep, so the cavity there is (D_BASE - 2*WALL) = 7.86 mm
@@ -84,12 +103,12 @@ def smoothstep(edge0: float, edge1: float, x: float) -> float:
 
 def width_at(y: float) -> float:
     """Front-view silhouette: near-vertical flanks, then a taper to the top face."""
-    return W_BASE + (W_TOP - W_BASE) * smoothstep(12.0, 19.0, y)
+    return W_BASE + (W_TOP - W_BASE) * smoothstep(F_TAPER_LO * H, F_TAPER_HI * H, y)
 
 
 def z_front(y: float) -> float:
     """The front face is flat and vertical until it rolls over into the crown."""
-    return Z_CROWN * smoothstep(17.2, H, y)
+    return Z_CROWN * smoothstep(F_CROWN * H, H, y)
 
 
 def z_back(y: float) -> float:
@@ -549,8 +568,93 @@ def emit(glyph: str, out: str, res: int, stl: bool) -> None:
         raise SystemExit(f"{glyph} changed the part envelope — it would not fit")
 
 
+# --------------------------------------------------------------------------
+# MEASURED DIMENSIONS FROM THE COMMAND LINE
+#
+# Every number in the PARAMETERS block came off a hand sketch whose views did
+# not reconcile, and the result is a near-cube for what should be a flat cap.
+# Correcting that needs calipers on the real part, not a better guess — so the
+# job of this section is to make the correction cost one command instead of a
+# source edit, and to fail loudly on a combination that cannot be produced.
+#
+#   python3 design/knob_model.py --width 14.2 --height 12.0 --depth 9.4 --all
+#
+# Flag -> constant. Only things you can physically put a caliper across are
+# here; the profile breakpoints are fractions of H and follow it on their own.
+# --------------------------------------------------------------------------
+DIMS: dict[str, tuple[str, str]] = {
+    "width":      ("W_BASE",     "overall width across the base"),
+    "height":     ("H",          "overall height, base to crown"),
+    "depth":      ("D_MAX",      "deepest point front-to-back"),
+    "top-width":  ("W_TOP",      "width across the flat top face"),
+    "base-depth": ("D_BASE",     "front-to-back at the base contact patch"),
+    "crown":      ("Z_CROWN",    "crown setback from the front face"),
+    "wall":       ("WALL",       "shell wall thickness"),
+    "blade":      ("BLADE_T",    "lever blade thickness — drives socket fit"),
+    "crossbar":   ("CROSSBAR_W", "socket crossbar width"),
+    "stem-width": ("STEM_W",     "socket stem width"),
+    "stem-len":   ("STEM_L",     "socket stem length"),
+}
+
+
+def apply_dimensions(args: argparse.Namespace) -> list[str]:
+    """Rebind measured constants, recompute what derives from them, and reject
+    combinations that cannot be built. Returns a log of what changed.
+
+    The checks matter more than the overrides. A wrong dimension that still
+    produces a watertight mesh is exactly the failure that put a cube on the
+    render list in the first place — every guard here turns one of those into
+    a build that stops."""
+    g = globals()
+    changed: list[str] = []
+
+    for flag, (const, _) in DIMS.items():
+        value = getattr(args, flag.replace("-", "_"))
+        if value is None:
+            continue
+        if value <= 0:
+            raise SystemExit(f"--{flag} must be positive, got {value}")
+        g[const] = float(value)
+        changed.append(f"{const} {value:.2f}")
+
+    # Heights expressed as fractions of H have to follow it.
+    g["Y_REAR_TOP"] = F_REAR_TOP * H
+    g["Y_REAR_FULL"] = F_REAR_FULL * H
+    g["Y_CEILING"] = F_CEILING * H
+
+    if W_TOP > W_BASE:
+        raise SystemExit(
+            f"--top-width {W_TOP:.2f} is wider than --width {W_BASE:.2f}; the "
+            f"taper would flare outward"
+        )
+    if D_BASE > D_MAX:
+        raise SystemExit(
+            f"--base-depth {D_BASE:.2f} exceeds --depth {D_MAX:.2f}; the base "
+            f"would overhang the rear"
+        )
+    if 2.0 * WALL >= D_BASE:
+        raise SystemExit(
+            f"{WALL:.2f} mm walls leave no cavity in a {D_BASE:.2f} mm base — "
+            f"the lever has nowhere to go"
+        )
+    if 2.0 * WALL >= W_BASE:
+        raise SystemExit(f"{WALL:.2f} mm walls leave no cavity in a {W_BASE:.2f} mm width")
+    if Y_CEILING <= SOCKET_H:
+        raise SystemExit(
+            f"cavity roof sits at {Y_CEILING:.2f} mm, at or below the "
+            f"{SOCKET_H:.2f} mm socket — the part is too short to engage the lever"
+        )
+    return changed
+
+
 def main() -> None:
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(
+        description="Parametric HVAC slider knob. Pass measured dimensions to "
+                    "correct the envelope; see --help for the caliper list.",
+    )
+    for flag, (const, help_text) in DIMS.items():
+        ap.add_argument(f"--{flag}", type=float, default=None,
+                        metavar="MM", help=f"{help_text} (default {globals()[const]:.2f})")
     ap.add_argument("--no-line", action="store_true",
                     help="omit the indicator channel (blank face for custom designs)")
     ap.add_argument("--glyph", default=None,
@@ -562,7 +666,17 @@ def main() -> None:
     ap.add_argument("--out", default="design/hvac-slider-knob")
     args = ap.parse_args()
 
+    changed = apply_dimensions(args)
+
     print(f"targets     W {W_BASE:.2f}  H {H:.2f}  D {D_MAX:.2f} mm   res={args.res}")
+    if changed:
+        print(f"overridden  {', '.join(changed)}")
+    else:
+        # Said every run, because the sketch-derived envelope is the open
+        # defect on this part and a silent default is how it got shipped into
+        # a render set in the first place.
+        print("            SKETCH-DERIVED, UNVERIFIED — measure the real part "
+              "and pass --width/--height/--depth")
     if args.all:
         for g in ALL_GLYPHS:
             emit(g, f"{args.out}-{g}", args.res, stl=False)
