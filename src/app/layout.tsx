@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
+import { SiteAnalytics } from "@/components/SiteAnalytics";
 import { Atmosphere } from "@/components/three/Atmosphere";
 import { MARKETPLACES, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -112,9 +113,15 @@ export default function RootLayout({
          * navigation, a marketing footer and an ambient-audio toggle floating
          * over a margin table are noise at best and misleading at worst. Only
          * things every document needs — fonts, the .js flag, the atmosphere
-         * layer, organisation metadata — belong at this level.
+         * layer, organisation metadata, analytics — belong at this level.
+         *
+         * Analytics is the one of those that deliberately covers /ops too:
+         * mounting it here rather than in (site) means a route added outside
+         * the group is measured by default instead of silently untracked. It
+         * filters /ops itself — see SiteAnalytics.
          */}
         {children}
+        <SiteAnalytics />
       </body>
     </html>
   );

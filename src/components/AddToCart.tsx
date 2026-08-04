@@ -6,7 +6,8 @@ import { ColorPicker } from "@/components/ColorPicker";
 import { FaceDesignPicker } from "@/components/FaceDesignPicker";
 import { useCart } from "@/lib/cart";
 import { CUSTOM_COLOR, DEFAULT_COLOR_ID, getColor } from "@/lib/colors";
-import { defaultDesignFor, getFaceDesign } from "@/lib/faceDesigns";
+import { getFaceDesign } from "@/lib/faceDesigns";
+import { useGlyphSelection } from "@/lib/glyphSelection";
 import { formatPrice, hasPriceLadder, unitPriceCents, type Product } from "@/lib/products";
 
 export function AddToCart({ product }: { product: Product }) {
@@ -21,7 +22,11 @@ export function AddToCart({ product }: { product: Product }) {
     : product.variants?.[0]?.id;
   const [variantId, setVariantId] = useState(defaultVariant);
   const [colorId, setColorId] = useState(DEFAULT_COLOR_ID);
-  const [faceDesignId, setFaceDesignId] = useState(defaultDesignFor(product.glyphSurface));
+  /* Colour is local, the glyph is not: the glyph also drives the drawing in
+     the opposite column, so it lives in a context both can read. Colour has
+     no equivalent — the drawing is a line drawing and has no fill to change —
+     so lifting it too would be state shared with nobody. */
+  const { glyphId: faceDesignId, setGlyphId: setFaceDesignId } = useGlyphSelection();
   const [added, setAdded] = useState(false);
 
   const color = getColor(colorId);

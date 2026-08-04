@@ -110,9 +110,13 @@ export function CartView() {
                   tabIndex={-1}
                   aria-hidden="true"
                 >
+                  {/* Carries the ordered face, so the thumbnail and the design
+                      chip beside it cannot show two different things. */}
                   <ProductArt
                     art={product.art}
                     title={product.name}
+                    glyphId={item.faceDesignId}
+                    glyphSurface={product.glyphSurface}
                     className="h-auto w-full"
                   />
                 </Link>

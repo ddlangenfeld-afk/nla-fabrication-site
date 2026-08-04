@@ -677,3 +677,68 @@ Every figure in these documents is **annual**. The strategy note now states the
 monthly equivalent at the median (~$424/mo) next to the annual one, because an
 annual figure misread as monthly is a 12× planning error and nothing else in
 the model matters if that happens.
+
+## 2026-08-04 · Glyph viewer, aperture drawing, and the first analytics
+
+Picked the render work back up. Three things shipped; one deliberately did not.
+
+**The picker now changes what you are looking at.** It previously changed the
+button label and nothing else — you could select Skull and sit there staring at
+a drawing of the factory single line. The selection lived in `AddToCart`, in the
+buy column, and the artwork is a sibling in the sticky column opposite, so there
+was no prop path between them. Lifted it into `lib/glyphSelection.tsx` and put
+both columns inside the provider. `ProductViewer` now owns the whole left column
+and answers one question: what are we allowed to show for this part right now.
+
+Two details worth keeping. The context **validates on read** rather than trusting
+its own state: the knob set and the aperture set mount the provider at the same
+position in the tree, so a client navigation between them can reconcile instead
+of remounting and carry `skull` onto a page that cannot cut a skull as a light
+window. And `GlyphMarks` is now exported from `KnobFaceIcon` and reused by the
+drawing, so the chip and the part beside it cannot show different shapes — two
+hand-drawn copies of eight glyphs is two sets that drift, silently.
+
+**The aperture product stopped borrowing the knob's drawing.** It was selling a
+cut, backlit window using a picture of a solid cap. It now has its own art: an
+elevation with the symbol lit, and a section showing it as an opening with a lamp
+behind it, drawn to one scale across both views. Only **6.00 mm** is dimensioned,
+because it is the only figure actually sourced — it is the window size the glyph
+library already reasons about and the reason `classic` and `skull` are not offered
+on that surface at all. A first pass had a "34.0 mm" button width in it, which was
+invented to make the drawing look finished. On a page people order parts from,
+a plausible number is worse than no number.
+
+**Analytics exist.** `@vercel/analytics` in the root layout. `/ops` is filtered in
+`beforeSend`: it is the internal margin dashboard, its visitors are us, and on a
+site with near-zero real traffic those sessions would be most of the graph rather
+than noise in it. This measures forward only — there is no historical data and
+nothing to recover.
+
+**The renders still are not published, and that is the finding.** The harness runs
+clean — 32 PNGs, all eight glyphs, hero plus true orthographic. So the set was
+regenerated and actually looked at, which had not happened before: the carving,
+the three-point rig and the framing are all correct, and the object underneath is
+a rounded lump nearer a jerry can than a knob. 16.50 × 20.32 × 16.50 mm is a cube
+that is taller than it is wide, for a flat cap. The pipeline is fine; the mesh is
+wrong, and it needs calipers, not another render.
+
+So publishing now takes two independent locks — un-ignoring `public/renders/` and
+adding the slug to `PUBLISHED_RENDER_SETS` in `lib/renders.ts`. Either alone does
+nothing, so a stray `git add -f` cannot put unverified product imagery on a live
+storefront, and the manifest can never point at an image that was not deployed
+with it. The render branch of the viewer is written and unreachable on purpose:
+switching on is meant to be a data change, not a build.
+
+**Not done, on purpose:** generating a "reference image" of the real Honda part.
+A reference is a thing you measure against, and an image model returns a
+confident, plausible, wrong part whose entire failure mode is looking exactly
+like the thing it is not. Feeding that into `knob_model.py` would launder a guess
+into a dimension — which is precisely where the current bad envelope came from.
+
+Build clean, lint clean, `qa:flows`, `qa:a11y` and `qa:keyboard` all pass.
+
+**Hit the stale-`next start` trap documented two entries above, again.** A flow
+test failed against a server still bound to :3000 from an earlier build, and the
+first instinct was to go read the diff. Killing by port rather than by name is
+the fix — `pkill -f "next start"` matches the agent's own command line here and
+kills the wrong process.

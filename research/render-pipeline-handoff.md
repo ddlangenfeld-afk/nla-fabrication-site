@@ -1,14 +1,12 @@
 # Handoff — product renders for the glyph line
 
-Written because the Higgsfield connector dropped out mid-session and could not be
-re-attached to a running session. Everything below is already committed. Pick up
-from here in a fresh session with Higgsfield enabled.
+Live state of the render work. Everything below is committed.
 
 ---
 
 ## The blocker that is NOT about tooling
 
-**The knob geometry is wrong and must be fixed before any render is worth making.**
+**The knob geometry is wrong and must be fixed before any render is published.**
 
 `design/knob_model.py` currently builds the part at:
 
@@ -23,6 +21,13 @@ should be a flat cap pressed onto a slider lever. The numbers came from averagin
 a hand sketch whose views did not reconcile — the model is watertight, holds its
 envelope, and is the wrong shape. Every automated check passes on it, which is
 why this went unnoticed until a render was looked at.
+
+**This has now been confirmed by looking, not inferred.** The full set was
+regenerated and inspected: the carving, the lighting rig and the framing are all
+doing their job — the glyph reads cleanly, the three-point rig separates a
+near-black part from a transparent background — and the object underneath is a
+rounded rectangular lump closer to a jerry can than to a knob. Nothing about the
+pipeline needs changing. The mesh does.
 
 **Required input:** caliper measurements off the real knob (one was pulled from a
 spare 96–97 climate unit). Width, height, depth. Then update the constants at the
@@ -46,6 +51,8 @@ python3 design/knob_model.py --glyph cross --res 96
 node scripts/render-knobs.mjs
 ```
 
+Last run: 32 renders, all eight glyphs, clean. ~3.6 g of PETG per part.
+
 - `_glyph_sd()` in `knob_model.py` holds the SDF for each design. Ids match
   `src/lib/faceDesigns.ts` exactly — keep them in sync or picker and render drift.
 - The renders are **gitignored on purpose**. `public/` is served at a live URL and
@@ -65,23 +72,56 @@ node scripts/render-knobs.mjs
 
 ---
 
-## What was asked for, still outstanding
+## Publishing a render set (the two-lock design)
 
-1. Reference image of the real 96–98 Civic HVAC slider knob
-2. Studio product render (three-point lighting)
-3. Orthographic views / alternate angles
-4. Per-glyph variants of all of the above
-5. A viewer on the product page where picking a glyph swaps the render set
-6. The same treatment for the aperture (Backlit Symbol & Aperture Set) listing
+Renders reaching the site requires two independent, deliberate steps. Either one
+alone does nothing:
 
-Items 1–4 need either Higgsfield or corrected geometry. **Items 5 and 6 are pure
-front-end and are not blocked** — the picker, the glyph library, the surface
-filtering and the price ladder all already exist. The viewer can be built against
-placeholder art and have real renders dropped in later.
+1. drop the `public/renders/` line from `.gitignore` and commit the PNGs
+2. add the product slug to `PUBLISHED_RENDER_SETS` in `src/lib/renders.ts`
+
+So a stray `git add -f` cannot put unverified product photography on a live
+storefront, and `renders.ts` can never point at an image that was not deployed
+alongside it. The viewer already handles both branches — switching on is a data
+change, not a build.
+
+Order of operations once calipers exist: correct `knob_model.py` → re-run the
+harness → **look at the output** → then the two steps above.
+
+---
+
+## What was asked for, and where each item stands
+
+1. ~~Reference image of the real 96–98 Civic HVAC slider knob~~ — **see below**
+2. Studio product render (three-point lighting) — **built, not published**
+3. Orthographic views / alternate angles — **built, not published**
+4. Per-glyph variants of all of the above — **built, not published**
+5. Viewer on the product page where picking a glyph swaps the art — **done**
+6. Same treatment for the aperture listing — **done**
+
+### On item 1
+
+This one should not be generated, and it is the only item where that matters.
+A reference image is a thing you measure against. An image model asked for "a
+96–98 Civic HVAC slider knob" returns a confident, plausible, wrong part — and
+its whole failure mode is looking exactly like the thing it is not. Feeding that
+back into `knob_model.py` would launder a guess into a dimension, which is the
+same failure the current envelope already came from (averaging a sketch whose
+views did not reconcile).
+
+What actually closes item 1, in order of preference: **calipers on the spare
+unit** (which also closes the real blocker), a real photograph of the part on a
+scale reference, or an OEM listing photo used strictly as an internal shape
+reference and never as site imagery.
 
 ## Site analytics
 
-There are none. No Vercel Analytics, no GA, no Plausible — nothing is recording
-visits, so "does the site have traffic yet" currently has no answer. Wiring up
-`@vercel/analytics` is a two-line change and should happen before any marketing
-push, or the launch produces no data.
+Wired. `@vercel/analytics` mounts in the root layout via
+`src/components/SiteAnalytics.tsx`; pageviews and referrers start recording on
+the next deploy. `/ops` is filtered out in `beforeSend` — it is the internal
+margin dashboard, its visitors are us, and on a site whose real traffic is
+currently near zero a handful of admin sessions would be most of the graph
+rather than noise in it.
+
+Note there is still **no historical data**: this answers "does the site have
+traffic" from the next deploy forward, not retroactively.

@@ -32,12 +32,22 @@ export function KnobFaceIcon({
       aria-hidden="true"
     >
       <circle cx="16" cy="16" r="13" />
-      <Glyph id={id} />
+      <GlyphMarks id={id} />
     </svg>
   );
 }
 
-function Glyph({ id }: { id: string }) {
+/**
+ * Just the face marks, in a 32x32 box centred on (16, 16), with no outline
+ * around them and no stroke settings of their own — both are inherited, so a
+ * caller can place these at any size and weight.
+ *
+ * Exported so the product drawing carves the same shapes the picker shows.
+ * Two hand-drawn copies of eight glyphs is two sets that drift: the chip would
+ * promise one thing and the drawing beside it would show another, and nothing
+ * would fail to catch it.
+ */
+export function GlyphMarks({ id }: { id: string }) {
   switch (id) {
     case "skull":
       return (
