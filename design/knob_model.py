@@ -120,7 +120,7 @@ def levels(count: int = 80) -> list[float]:
     return [H * (1.0 - (1.0 - i / count) ** 1.7) for i in range(count + 1)]
 
 
-def ring(y: float, inset: float = 0.0) -> list[tuple[float, float, float]] | None:
+def ring(y: float, inset: float = 0.0, pts_n: int | None = None) -> list[tuple[float, float, float]] | None:
     """
     One horizontal cross-section as a superellipse. `inset` shrinks it for the
     inner wall of the shell. Returns None once the section has closed up.
@@ -134,9 +134,10 @@ def ring(y: float, inset: float = 0.0) -> list[tuple[float, float, float]] | Non
     n = squareness(y)
     e = 2.0 / n
 
+    n_pts = pts_n or RING_PTS
     pts = []
-    for i in range(RING_PTS):
-        t = 2.0 * math.pi * i / RING_PTS
+    for i in range(n_pts):
+        t = 2.0 * math.pi * i / n_pts
         ct, st = math.cos(t), math.sin(t)
         x = a * math.copysign(abs(ct) ** e, ct)
         z = zc + b * math.copysign(abs(st) ** e, st)
@@ -162,6 +163,153 @@ def carve_line(pts: list[tuple[float, float, float]]) -> list[tuple[float, float
     return out
 
 
+
+# --------------------------------------------------------------------------
+# GLYPH LIBRARY — the front face as a carveable canvas
+# --------------------------------------------------------------------------
+# The factory knob has a single moulded line on its face. That face is the only
+# free surface on the part: the knob still has to press-fit the same lever and
+# clear the same bezel opening, so a different face is a different top surface
+# on identical base geometry.
+#
+# Each glyph is a 2D signed-distance function in a normalised frame where the
+# glyph occupies roughly [-1, 1] in u (across the width) and v (up the face).
+# Negative is inside. `carve_glyph` samples it per ring point and pushes the
+# surface back, so the glyph is pressed into the existing loft rather than
+# booleaned onto it — which keeps every section watertight for free.
+#
+# These mirror src/lib/faceDesigns.ts. Add one here and one there, and keep the
+# ids identical or the renders will not match what the picker offers.
+
+GLYPH_CY = 11.40     # centre height of the glyph on the front face, mm
+GLYPH_R = 4.30       # half-size of the glyph box, mm (8.6mm across a 16.3mm face)
+GLYPH_DEPTH = 0.72   # carve depth, mm — deeper than the classic channel,
+                     # because a glyph has to read across a curved face where
+                     # a straight line only has to read along one
+GLYPH_EDGE = 0.16    # SDF units over which the carve fades in, for soft walls
+
+
+def _sd_segment(px, py, ax, ay, bx, by):
+    """Distance from a point to a line segment. The workhorse for stroke glyphs."""
+    pax, pay = px - ax, py - ay
+    bax, bay = bx - ax, by - ay
+    denom = bax * bax + bay * bay
+    h = 0.0 if denom == 0 else max(0.0, min(1.0, (pax * bax + pay * bay) / denom))
+    return math.hypot(pax - bax * h, pay - bay * h)
+
+
+def _sd_polyline(u, v, pts, w):
+    return min(_sd_segment(u, v, *pts[i], *pts[i + 1]) for i in range(len(pts) - 1)) - w
+
+
+def _sd_circle(u, v, cx, cy, r):
+    return math.hypot(u - cx, v - cy) - r
+
+
+def _sd_ngon(u, v, n, r):
+    """Regular n-gon centred on the origin, flat-top orientation."""
+    ang = math.atan2(v, u)
+    seg = 2.0 * math.pi / n
+    a = ang - seg * round(ang / seg)
+    return math.cos(a) * math.hypot(u, v) - r * math.cos(seg / 2.0)
+
+
+def _glyph_sd(name: str, u: float, v: float) -> float:
+    """Signed distance to the glyph. Negative inside the carved region."""
+    if name == "cross":
+        return min(
+            _sd_segment(u, v, -0.72, -0.72, 0.72, 0.72),
+            _sd_segment(u, v, -0.72, 0.72, 0.72, -0.72),
+        ) - 0.17
+
+    if name == "chevron":
+        # Two stacked, not one. A single chevron at this size reads as a tick.
+        up = _sd_polyline(u, v, [(-0.72, 0.06), (0.0, 0.66), (0.72, 0.06)], 0.15)
+        lo = _sd_polyline(u, v, [(-0.72, -0.62), (0.0, -0.02), (0.72, -0.62)], 0.15)
+        return min(up, lo)
+
+    if name == "hex":
+        outer = _sd_ngon(u, v, 6, 0.86)
+        return max(outer, -(_sd_ngon(u, v, 6, 0.86) + 0.30))   # ring, not a plate
+
+    if name == "crosshair":
+        ring_ = abs(_sd_circle(u, v, 0.0, 0.0, 0.52)) - 0.13
+        ticks = min(
+            _sd_segment(u, v, 0.0, 0.74, 0.0, 0.98),
+            _sd_segment(u, v, 0.0, -0.74, 0.0, -0.98),
+            _sd_segment(u, v, 0.74, 0.0, 0.98, 0.0),
+            _sd_segment(u, v, -0.74, 0.0, -0.98, 0.0),
+        ) - 0.12
+        return min(ring_, ticks)
+
+    if name == "diamond":
+        d = (abs(u) + abs(v) - 0.90) * 0.7071
+        return abs(d) - 0.14                                    # outline
+
+    if name == "spade":
+        # Filled silhouette: two shoulders, a point, and a stem.
+        body = min(
+            _sd_circle(u, v, -0.34, -0.10, 0.40),
+            _sd_circle(u, v, 0.34, -0.10, 0.40),
+        )
+        point = _sd_polyline(u, v, [(0.0, 0.86), (-0.72, -0.10), (0.72, -0.10)], 0.0)
+        # crude fill of the triangle: inside when below both upper edges
+        tri = max(
+            (v - 0.86) * 0.0 + (_sd_segment(u, v, 0.0, 0.86, -0.72, -0.10) if u < 0
+                                else _sd_segment(u, v, 0.0, 0.86, 0.72, -0.10)) - 0.02,
+            -(v + 0.10),
+        )
+        stem = _sd_polyline(u, v, [(0.0, -0.20), (0.0, -0.80)], 0.13)
+        flare = _sd_polyline(u, v, [(-0.30, -0.86), (0.30, -0.86)], 0.10)
+        del point
+        return min(body, tri, stem, flare)
+
+    if name == "skull":
+        # Cranium plus jaw, with the eyes and nose left UNCARVED so they stand
+        # proud inside the recess. That is what makes a skull read at 6mm —
+        # a flat silhouette at this size is a blob.
+        cranium = _sd_circle(u, v, 0.0, 0.22, 0.72)
+        jaw = max(max(abs(u) - 0.44, abs(v + 0.62) - 0.30), 0.0) - 0.06
+        jaw = max(abs(u) - 0.44, abs(v + 0.62) - 0.28)
+        solid = min(cranium, jaw)
+        eyes = min(
+            _sd_circle(u, v, -0.30, 0.28, 0.21),
+            _sd_circle(u, v, 0.30, 0.28, 0.21),
+        )
+        nose = _sd_polyline(u, v, [(0.0, -0.06), (-0.13, -0.28), (0.13, -0.28), (0.0, -0.06)], 0.0)
+        nose = _sd_circle(u, v, 0.0, -0.18, 0.13)
+        return max(solid, -min(eyes, nose))
+
+    # "classic" and anything unknown fall back to the factory line, which is
+    # handled by carve_line rather than here.
+    return 1.0
+
+
+def carve_glyph(pts, name: str):
+    """
+    Press a glyph into the front-facing half of a section.
+
+    Applied to every section in turn, the glyph emerges across the stack of
+    rings. Points behind the mid-line are untouched, so the back of the knob is
+    unaffected regardless of which design is selected.
+    """
+    out = []
+    for (x, y, z) in pts:
+        zf, zb = z_front(y), z_back(y)
+        zc = (zf + zb) / 2.0
+        if z < zc:
+            u = x / GLYPH_R
+            v = (y - GLYPH_CY) / GLYPH_R
+            if abs(u) <= 1.35 and abs(v) <= 1.35:
+                d = _glyph_sd(name, u, v)
+                # smoothstep from the edge inwards gives soft channel walls,
+                # the same treatment the classic line gets from its cosine.
+                k = 1.0 - smoothstep(-GLYPH_EDGE, GLYPH_EDGE, d)
+                z += GLYPH_DEPTH * k
+        out.append((x, y, z))
+    return out
+
+
 # --------------------------------------------------------------------------
 # MESH
 # --------------------------------------------------------------------------
@@ -175,7 +323,15 @@ class Mesh:
         return len(self.v) - 1
 
     def tri(self, a: int, b: int, c: int) -> None:
-        self.f.append((a, b, c))
+        # Reversed on the way in. Every ring, cap and box in this file was
+        # authored with a consistent winding that happens to point INWARD —
+        # verified by signed volume, which came out at -2,873 mm^3 for the
+        # whole part. Flipping once here fixes the loft, the cavity and the
+        # socket boxes together and keeps them consistent with each other,
+        # which is why this is a single reversal rather than eight edits to
+        # the callers. Matters beyond rendering: an STL with inverted normals
+        # is a slicer's problem to guess at, and guessing is not a spec.
+        self.f.append((a, c, b))
 
     def quad(self, a: int, b: int, c: int, d: int) -> None:
         self.tri(a, b, c)
@@ -233,18 +389,32 @@ class Mesh:
         return (min(xs), max(xs)), (min(ys), max(ys)), (min(zs), max(zs))
 
 
-def build(with_line: bool) -> Mesh:
+def build(glyph: str = "classic", res: int = 80) -> Mesh:
+    """`glyph` is an id from the library above, "classic" for the factory line,
+    or "blank" for an uncarved face. `res` raises the section count for render
+    meshes — the default is enough to print, not enough to photograph.
+
+    Ring density is DERIVED from res rather than left at the module constant.
+    Raising only the vertical count is what made the first render pass produce
+    horizontal banding instead of glyphs: at res=260 the sections were 0.09mm
+    apart vertically while the ring points were 0.81mm apart horizontally, a
+    9x mismatch, so every glyph resolved along one axis and aliased along the
+    other. The two have to move together."""
     m = Mesh()
-    ys = levels()
+    ys = levels(res)
+    # ~0.8mm at the default, scaling down as res climbs.
+    pts_n = max(RING_PTS, int(res * 3.6))
 
     # ---- outer skin -------------------------------------------------------
     outer: list[list[int]] = []
     for y in ys:
-        pts = ring(y)
+        pts = ring(y, pts_n=pts_n)
         if pts is None:
             break
-        if with_line:
+        if glyph == "classic":
             pts = carve_line(pts)
+        elif glyph != "blank":
+            pts = carve_glyph(pts, glyph)
         outer.append(m.add_ring(pts))
     for lo, up in zip(outer, outer[1:]):
         m.bridge(lo, up)
@@ -255,7 +425,7 @@ def build(with_line: bool) -> Mesh:
     for y in ys:
         if y > Y_CEILING:
             break
-        pts = ring(y, inset=WALL)
+        pts = ring(y, inset=WALL, pts_n=pts_n)
         if pts is None:
             break
         inner.append(m.add_ring(pts))
@@ -332,27 +502,74 @@ def write_stl(m: Mesh, path: str) -> None:
             fh.write(struct.pack("<H", 0))
 
 
+ALL_GLYPHS = ["classic", "cross", "chevron", "hex", "crosshair",
+              "diamond", "spade", "skull", "blank"]
+
+
+def signed_volume(m: Mesh) -> float:
+    """Divergence-theorem volume. Positive means the surface faces outward.
+
+    This is the cheapest possible check that the mesh is not inside-out, and
+    it is here because the model WAS inside-out for its whole life until a
+    render made it visible. A wrong sign is invisible in any viewer that
+    renders double-sided, and it is a slicer's problem to guess at afterwards.
+    """
+    t = 0.0
+    for (a, b, c) in m.f:
+        p, q, r = m.v[a], m.v[b], m.v[c]
+        t += (p[0] * (q[1] * r[2] - q[2] * r[1])
+              - p[1] * (q[0] * r[2] - q[2] * r[0])
+              + p[2] * (q[0] * r[1] - q[1] * r[0])) / 6.0
+    return t
+
+
+PETG_DENSITY = 1.27   # g/cm^3
+
+
+def emit(glyph: str, out: str, res: int, stl: bool) -> None:
+    m = build(glyph, res)
+    vol = signed_volume(m)
+    if vol <= 0:
+        raise SystemExit(
+            f"{glyph}: signed volume {vol:.1f} mm^3 — the mesh is inside-out"
+        )
+    write_obj(m, out + ".obj", f"knob_{glyph}")
+    if stl:
+        write_stl(m, out + ".stl")
+
+    (x0, x1), (y0, y1), (z0, z1) = m.bounds()
+    # Every variant must stay dimensionally identical outside the carve — a
+    # glyph that changed the envelope would no longer fit the bezel opening.
+    ok = (abs((x1 - x0) - W_BASE) < 0.05 and abs((y1 - y0) - H) < 0.05)
+    grams = vol / 1000.0 * PETG_DENSITY
+    print(f"  {glyph:<10} {len(m.v):>7,}v {len(m.f):>7,}f   "
+          f"X {x1-x0:6.3f}  Y {y1-y0:6.3f}  Z {z1-z0:6.3f}   "
+          f"{grams:5.2f} g   {'ok' if ok else 'ENVELOPE DRIFT'}")
+    if not ok:
+        raise SystemExit(f"{glyph} changed the part envelope — it would not fit")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-line", action="store_true",
                     help="omit the indicator channel (blank face for custom designs)")
+    ap.add_argument("--glyph", default=None,
+                    help=f"one of: {', '.join(ALL_GLYPHS)}")
+    ap.add_argument("--all", action="store_true",
+                    help="emit every glyph in the library")
+    ap.add_argument("--res", type=int, default=80,
+                    help="cross-sections; raise for render meshes")
     ap.add_argument("--out", default="design/hvac-slider-knob")
     args = ap.parse_args()
 
-    with_line = not args.no_line
-    m = build(with_line)
-    name = "knob_classic_line" if with_line else "knob_blank"
+    print(f"targets     W {W_BASE:.2f}  H {H:.2f}  D {D_MAX:.2f} mm   res={args.res}")
+    if args.all:
+        for g in ALL_GLYPHS:
+            emit(g, f"{args.out}-{g}", args.res, stl=False)
+        return
 
-    write_obj(m, args.out + ".obj", name)
-    write_stl(m, args.out + ".stl")
-
-    (x0, x1), (y0, y1), (z0, z1) = m.bounds()
-    print(f"variant     {name}")
-    print(f"vertices    {len(m.v)}")
-    print(f"triangles   {len(m.f)}")
-    print(f"X  {x0:7.3f} .. {x1:7.3f}   ({x1 - x0:6.3f} mm)   target {W_BASE:.2f}")
-    print(f"Y  {y0:7.3f} .. {y1:7.3f}   ({y1 - y0:6.3f} mm)   target {H:.2f}")
-    print(f"Z  {z0:7.3f} .. {z1:7.3f}   ({z1 - z0:6.3f} mm)   target {D_MAX:.2f}")
+    glyph = args.glyph or ("blank" if args.no_line else "classic")
+    emit(glyph, args.out, args.res, stl=True)
     print(f"wrote       {args.out}.obj / .stl")
 
 

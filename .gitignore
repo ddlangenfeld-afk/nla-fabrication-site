@@ -41,3 +41,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .shots/
+
+# Generated product renders. NOT committed on purpose: anything under public/
+# is served at a real URL, and these are renders of geometry whose proportions
+# are disputed — 16.5 x 20.3 x 16.5mm is near enough a cube for a part that
+# should be a flat slider cap. Publishing them would put inaccurate product
+# imagery on the site. Regenerate in one command once the dimensions are
+# corrected against calipers:  node scripts/render-knobs.mjs
+public/renders/
