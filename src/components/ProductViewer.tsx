@@ -15,6 +15,17 @@ type GalleryImage = { key: string; label: string; src: string; alt: string };
 /** How long an image stays up before the carousel advances itself. */
 const AUTOPLAY_MS = 8000;
 
+/** Must match the slide animations in globals.css. */
+const SLIDE_MS = 420;
+
+/*
+ * Which frame is showing, which one is on its way out, and which way the pair
+ * is travelling. `dir: 0` means "arrive without animating" — the first paint,
+ * and every reset onto a different glyph, where a slide would imply a step
+ * the visitor never took.
+ */
+type Nav = { index: number; exiting: number | null; dir: 0 | 1 | -1 };
+
 /*
  * The product image, whatever that currently is.
  *
@@ -40,7 +51,7 @@ export function ProductViewer({
   dimmed?: boolean;
 }) {
   const { glyphId } = useGlyphSelection();
-  const [index, setIndex] = useState(0);
+  const [nav, setNav] = useState<Nav>({ index: 0, exiting: null, dir: 0 });
   const [paused, setPaused] = useState(false);
   const [holding, setHolding] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
@@ -71,11 +82,18 @@ export function ProductViewer({
   const [prevSetKey, setPrevSetKey] = useState(setKey);
   if (setKey !== prevSetKey) {
     setPrevSetKey(setKey);
-    setIndex(0);
+    setNav({ index: 0, exiting: null, dir: 0 });
   }
 
-  const current = images?.[Math.min(index, count - 1)];
-  const goTo = (next: number) => setIndex(((next % count) + count) % count);
+  const index = count ? Math.min(nav.index, count - 1) : 0;
+  const current = images?.[index];
+
+  const step = (delta: 1 | -1) =>
+    setNav((n) => {
+      if (count < 2) return n;
+      const from = Math.min(n.index, count - 1);
+      return { index: (((from + delta) % count) + count) % count, exiting: from, dir: delta };
+    });
 
   /*
    * Auto-advance, off whenever there is nothing to advance through (one
@@ -84,43 +102,83 @@ export function ProductViewer({
    * focus is somewhere inside the viewer (WCAG 2.2.2: moving content has to
    * stop for anyone reading or aiming a click at it, not just on request).
    *
-   * Depending on `index` looks redundant — the interval already re-fires
-   * itself — but it is what makes a manual Prev/Next click restart the
-   * eight seconds instead of the auto-advance landing right on top of it.
+   * Depending on the current index looks redundant — the interval already
+   * re-fires itself — but it is what makes a manual Prev/Next click restart
+   * the eight seconds instead of the auto-advance landing right on top of it.
    */
   const autoplay = count > 1 && !reduceMotion && !paused && !holding;
   useEffect(() => {
     if (!autoplay) return;
     const id = window.setInterval(() => {
-      setIndex((i) => (i + 1) % count);
+      setNav((n) => {
+        const from = Math.min(n.index, count - 1);
+        return { index: (from + 1) % count, exiting: from, dir: 1 };
+      });
     }, AUTOPLAY_MS);
     return () => window.clearInterval(id);
-  }, [autoplay, count, index]);
+  }, [autoplay, count, nav.index]);
+
+  // Retire the outgoing frame once it has finished travelling. On a timer
+  // rather than animationend so a skipped or interrupted animation — reduced
+  // motion, a background tab — can't strand it on top of the stack.
+  useEffect(() => {
+    if (nav.exiting === null) return;
+    const t = window.setTimeout(
+      () => setNav((n) => ({ ...n, exiting: null })),
+      SLIDE_MS + 60
+    );
+    return () => window.clearTimeout(t);
+  }, [nav.exiting, nav.index]);
+
+  function slideClass(i: number): string {
+    if (i === index) {
+      if (nav.dir === 0) return "";
+      return nav.dir === 1 ? "nla-slide-in-right" : "nla-slide-in-left";
+    }
+    if (i === nav.exiting) {
+      return nav.dir === 1 ? "nla-slide-out-left" : "nla-slide-out-right";
+    }
+    // Still rendered, so the browser fetches it well before its turn.
+    return "opacity-0 pointer-events-none";
+  }
 
   return (
     <div>
       <div
-        className={`surface relative border-line-strong p-6 ${dimmed ? "opacity-50" : ""}`}
+        className={`surface viewer-bleed relative border-line-strong p-2 sm:p-6 ${
+          dimmed ? "opacity-50" : ""
+        }`}
         onMouseEnter={() => setHolding(true)}
         onMouseLeave={() => setHolding(false)}
         onFocus={() => setHolding(true)}
         onBlur={() => setHolding(false)}
         onKeyDown={(e) => {
-          if (!count) return;
-          if (e.key === "ArrowLeft") goTo(index - 1);
-          if (e.key === "ArrowRight") goTo(index + 1);
+          if (count < 2) return;
+          if (e.key === "ArrowLeft") step(-1);
+          if (e.key === "ArrowRight") step(1);
         }}
       >
-        {current ? (
-          <Image
-            src={current.src}
-            alt={current.alt}
-            width={RENDER_SIZE}
-            height={RENDER_SIZE}
-            className="h-auto w-full"
-            // The first image is the largest element above the fold on this page.
-            priority={index === 0}
-          />
+        {images && current ? (
+          <div className="relative aspect-square overflow-hidden">
+            {images.map((img, i) => (
+              <div
+                key={img.key}
+                className={`absolute inset-0 ${slideClass(i)}`}
+                aria-hidden={i !== index}
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  width={RENDER_SIZE}
+                  height={RENDER_SIZE}
+                  sizes="(min-width: 1024px) 46vw, 100vw"
+                  className="h-full w-full object-contain"
+                  // The first frame is the largest element above the fold.
+                  priority={i === 0}
+                />
+              </div>
+            ))}
+          </div>
         ) : (
           <ProductArt
             art={product.art}
@@ -135,17 +193,17 @@ export function ProductViewer({
           <>
             <button
               type="button"
-              onClick={() => goTo(index - 1)}
+              onClick={() => step(-1)}
               aria-label="Previous image"
-              className="bg-bg-overlay/80 absolute top-1/2 left-3 -translate-y-1/2 border border-line p-2 text-ink-secondary backdrop-blur-sm transition-colors hover:border-line-strong hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="bg-bg-overlay/80 absolute top-1/2 left-3 z-10 -translate-y-1/2 border border-line p-2 text-ink-secondary backdrop-blur-sm transition-colors hover:border-line-strong hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:left-9"
             >
               <ChevronIcon direction="left" />
             </button>
             <button
               type="button"
-              onClick={() => goTo(index + 1)}
+              onClick={() => step(1)}
               aria-label="Next image"
-              className="bg-bg-overlay/80 absolute top-1/2 right-3 -translate-y-1/2 border border-line p-2 text-ink-secondary backdrop-blur-sm transition-colors hover:border-line-strong hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="bg-bg-overlay/80 absolute top-1/2 right-3 z-10 -translate-y-1/2 border border-line p-2 text-ink-secondary backdrop-blur-sm transition-colors hover:border-line-strong hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:right-9"
             >
               <ChevronIcon direction="right" />
             </button>

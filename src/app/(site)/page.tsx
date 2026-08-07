@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { PipelineList } from "@/components/PipelineList";
 import { ProductCard } from "@/components/ProductCard";
 import { Reveal, RevealLines } from "@/components/Reveal";
-import { HeroCanvas } from "@/components/three/HeroCanvas";
 import { getAllProducts, getAvailableProducts, getComingSoonProducts } from "@/lib/products";
 import { SITE_DESCRIPTION } from "@/lib/site";
 
@@ -78,24 +78,53 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Spec title-block card. The drawing area is a live CAD viewport:
-              the same part in 3D, with the title block beneath it — so the
-              geometry and its data stay one object rather than two competing
-              focal points. Falls back to the 2D drawing everywhere WebGL
-              isn't used. */}
+          {/* Spec title-block card. The image area is the real part, lit for
+              the backlight it is specified around, with the title block
+              beneath it — so the component and its data stay one object
+              rather than two competing focal points.
+
+              This was a live WebGL viewport of the latch. It is a photograph
+              now for two reasons: the mesh behind that viewport is the
+              disputed envelope (see research/render-pipeline-handoff.md), so
+              the homepage was leading with geometry we know to be wrong; and
+              it was `hidden lg:block`, which left every phone visitor on a
+              storefront with no picture of a product anywhere above the
+              fold. */}
           <aside
             aria-label="Featured part specification"
-            className="hidden self-start border border-line-strong bg-bg-raised lg:block"
+            className="self-start border border-line-strong bg-bg-raised"
           >
-            <div className="relative aspect-[4/3] border-b border-line">
-              <HeroCanvas />
-            </div>
+            <Link
+              href="/products/hvac-slider-knob-set-96-98-civic"
+              className="group block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              <div className="relative aspect-[4/3] overflow-hidden border-b border-line bg-black">
+                <Image
+                  src="/product-photos/hero-knob-backlit.png"
+                  alt="HVAC slider knob, backlit through the indicator stripe"
+                  width={2048}
+                  height={2048}
+                  sizes="(min-width: 1024px) 46vw, 100vw"
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  priority
+                />
+                {/* Corner ticks, the way a CAD window frames its content —
+                    kept from the viewport this replaced. */}
+                <span className="absolute left-3 top-3 h-3 w-3 border-l border-t border-line-strong" />
+                <span className="absolute right-3 top-3 h-3 w-3 border-r border-t border-line-strong" />
+                <span className="absolute bottom-3 left-3 h-3 w-3 border-b border-l border-line-strong" />
+                <span className="absolute bottom-3 right-3 h-3 w-3 border-b border-r border-line-strong" />
+                <p className="absolute bottom-3 left-1/2 -translate-x-1/2 font-mono text-[10px] uppercase tracking-widest text-ink-muted">
+                  NLA-002 · HVAC slider knob
+                </p>
+              </div>
+            </Link>
             <dl>
               {[
-                ["Part no.", "77540-S04-003ZA"],
-                ["Status", "Reproduced — made to order"],
+                ["Part no.", "NLA-002"],
+                ["Status", "In production — made to order"],
                 ["Material", "PETG"],
-                ["Fitment", "96–00 Civic EK/EJ"],
+                ["Fitment", "96–98 Civic EK/EJ"],
               ].map(([term, detail]) => (
                 <div
                   key={term}
