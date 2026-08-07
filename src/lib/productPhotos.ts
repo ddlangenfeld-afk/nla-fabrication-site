@@ -39,17 +39,7 @@ function classicGallery(productName: string): ProductPhoto[] {
       alt: `${productName} — side profile`,
     },
     {
-      label: "Backlit",
-      src: "/product-photos/classic/emission.png",
-      alt: `${productName} — backlit indicator detail`,
-    },
-    {
       label: "Features",
-      src: "/product-photos/classic/emission-with-text.png",
-      alt: `${productName} — material and fit detail`,
-    },
-    {
-      label: "Features 2",
       src: "/product-photos/classic/emission-with-text-2.png",
       alt: `${productName} — material and fit detail`,
     },
