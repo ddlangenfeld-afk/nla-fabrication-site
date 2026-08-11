@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddToCart } from "@/components/AddToCart";
-import { ProductArt } from "@/components/ProductArt";
 import { ProductCard } from "@/components/ProductCard";
+import { ProductViewer } from "@/components/ProductViewer";
 import { Reveal } from "@/components/Reveal";
 import { COLORS } from "@/lib/colors";
 import { designsFor } from "@/lib/faceDesigns";
+import { GlyphSelectionProvider } from "@/lib/glyphSelection";
 import {
   formatPriceRange,
   getAllProducts,
@@ -170,156 +171,152 @@ export default async function ProductPage({
         </ol>
       </nav>
 
-      <div className="shell grid gap-10 py-10 sm:py-14 lg:grid-cols-2 lg:gap-16">
-        {/* Drawing + spec table */}
-        <div className="lg:sticky lg:top-24 lg:self-start">
-          <div
-            className={`surface border-line-strong p-6 ${
-              comingSoon ? "opacity-50" : ""
-            }`}
-          >
-            <ProductArt art={product.art} title={product.name} className="h-auto w-full" />
-          </div>
-          <p className="mt-3 font-mono text-2xs uppercase tracking-wider text-ink-muted">
-            Engineering drawing — production photography follows the first release batch
-          </p>
+      {/* Both columns sit inside the provider: the picker is in the buy column
+          and the artwork is in the sticky column opposite, and one selection
+          has to drive both. See lib/glyphSelection.tsx. */}
+      <GlyphSelectionProvider surface={product.glyphSurface}>
+        <div className="shell grid gap-10 py-10 sm:py-14 lg:grid-cols-2 lg:gap-16">
+          {/* Drawing + spec table */}
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <ProductViewer product={product} dimmed={comingSoon} />
 
-          <dl className="mt-6 border border-line">
-            {specs.map(([term, detail]) => (
-              <div
-                key={term}
-                className="grid grid-cols-[104px_1fr] border-b border-line last:border-b-0 sm:grid-cols-[128px_1fr]"
-              >
-                <dt className="border-r border-line px-3 py-2.5 font-mono text-2xs uppercase tracking-wider text-ink-muted sm:px-4">
-                  {term}
-                </dt>
-                <dd className="px-3 py-2.5 font-mono text-2xs tracking-wide text-ink-secondary sm:px-4">
-                  {detail}
-                </dd>
-              </div>
-            ))}
-          </dl>
+            <dl className="mt-6 border border-line">
+              {specs.map(([term, detail]) => (
+                <div
+                  key={term}
+                  className="grid grid-cols-[104px_1fr] border-b border-line last:border-b-0 sm:grid-cols-[128px_1fr]"
+                >
+                  <dt className="border-r border-line px-3 py-2.5 font-mono text-2xs uppercase tracking-wider text-ink-muted sm:px-4">
+                    {term}
+                  </dt>
+                  <dd className="px-3 py-2.5 font-mono text-2xs tracking-wide text-ink-secondary sm:px-4">
+                    {detail}
+                  </dd>
+                </div>
+              ))}
+            </dl>
 
-          {/* Sits with the spec table rather than under the buy column: it's a
-              statement about the part numbers above it, and it fills what was
-              otherwise a tall empty gap beside the description on desktop. */}
-          <p className="mt-6 text-xs leading-relaxed text-ink-muted">
-            Aftermarket reproduction part manufactured by {SITE_NAME}. Not an original
-            manufacturer part and not affiliated with, sponsored by, or endorsed by any
-            vehicle manufacturer. OEM part numbers are referenced solely to identify
-            compatibility.
-          </p>
-        </div>
-
-        {/* Buy column */}
-        <div>
-          <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
-            {comingSoon ? "In engineering" : "In production"}
-          </p>
-          <h1 className="mt-4 font-display text-3xl font-semibold leading-tight tracking-tight text-ink sm:text-4xl">
-            {product.name}
-          </h1>
-          <p className="mt-3 text-ink-secondary">{product.fitment}</p>
-
-          {comingSoon ? (
-            <div className="mt-8 border border-line bg-bg-raised p-6">
-              <p className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
-                Not yet released
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
-                {product.oemNote}
-              </p>
-              <Link
-                href="/contact"
-                className="mt-5 inline-block border border-line-strong px-6 py-3 text-sm font-medium text-ink-secondary transition-colors hover:border-accent hover:text-ink"
-              >
-                Request release notification
-              </Link>
-            </div>
-          ) : (
-            <div className="mt-8">
-              {/* A ladder shows its range here and the exact figure on each
-                   tier button below, rather than duplicating a live price that
-                   would then need client state in a server component. */}
-              <p className="font-display text-3xl font-semibold text-accent">
-                {formatPriceRange(product)}
-                {product.hasVariants && (
-                  <span className="ml-2 font-sans text-sm font-normal text-ink-muted">
-                    {hasPriceLadder(product) ? "by specification" : "per side"}
-                  </span>
-                )}
-              </p>
-              <div className="mt-6">
-                <AddToCart product={product} />
-              </div>
-              <p className="mt-3 font-mono text-2xs uppercase tracking-wider text-ink-muted">
-                Produced to order · dispatch in 3–5 business days
-              </p>
-            </div>
-          )}
-
-          <div className="mt-10 space-y-4 border-t border-line pt-8 text-base leading-relaxed text-ink-secondary">
-            {product.description.map((para, i) => (
-              <Reveal as="p" key={para.slice(0, 24)} delay={i * 90}>
-                {para}
-              </Reveal>
-            ))}
+            {/* Sits with the spec table rather than under the buy column: it's a
+                statement about the part numbers above it, and it fills what was
+                otherwise a tall empty gap beside the description on desktop. */}
+            <p className="mt-6 text-xs leading-relaxed text-ink-muted">
+              Aftermarket reproduction part manufactured by {SITE_NAME}. Not an original
+              manufacturer part and not affiliated with, sponsored by, or endorsed by any
+              vehicle manufacturer. OEM part numbers are referenced solely to identify
+              compatibility.
+            </p>
           </div>
 
-          {product.features.length > 0 && (
-            <div className="mt-8">
-              <h2 className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
-                Specification
-              </h2>
-              <ul className="mt-4 space-y-1">
-                {product.features.map((feature, i) => (
-                  <Reveal
-                    as="li"
-                    key={feature}
-                    delay={i * 80}
-                    className="-mx-2 flex gap-3 px-2 py-1.5 text-sm text-ink-secondary transition-colors hover:text-ink"
-                  >
-                    <span aria-hidden="true" className="mt-2 h-1 w-1 shrink-0 bg-accent" />
-                    {feature}
-                  </Reveal>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* Buy column */}
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
+              {comingSoon ? "In engineering" : "In production"}
+            </p>
+            <h1 className="mt-4 font-display text-3xl font-semibold leading-tight tracking-tight text-ink sm:text-4xl">
+              {product.name}
+            </h1>
+            <p className="mt-3 text-ink-secondary">{product.fitment}</p>
 
-          <div className="mt-8 space-y-6 border-t border-line pt-8">
-            <div>
-              <h2 className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
-                Why it&rsquo;s in the catalog
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
-                {product.oemNote}
-              </p>
-            </div>
-            {product.materialNote && (
-              <div>
-                <h2 className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
-                  Material
-                </h2>
+            {comingSoon ? (
+              <div className="mt-8 border border-line bg-bg-raised p-6">
+                <p className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
+                  Not yet released
+                </p>
                 <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
-                  {product.materialNote}
+                  {product.oemNote}
+                </p>
+                <Link
+                  href="/contact"
+                  className="mt-5 inline-block border border-line-strong px-6 py-3 text-sm font-medium text-ink-secondary transition-colors hover:border-accent hover:text-ink"
+                >
+                  Request release notification
+                </Link>
+              </div>
+            ) : (
+              <div className="mt-8">
+                {/* A ladder shows its range here and the exact figure on each
+                     tier button below, rather than duplicating a live price that
+                     would then need client state in a server component. */}
+                <p className="font-display text-3xl font-semibold text-accent">
+                  {formatPriceRange(product)}
+                  {product.hasVariants && (
+                    <span className="ml-2 font-sans text-sm font-normal text-ink-muted">
+                      {hasPriceLadder(product) ? "by specification" : "per side"}
+                    </span>
+                  )}
+                </p>
+                <div className="mt-6">
+                  <AddToCart product={product} />
+                </div>
+                <p className="mt-3 font-mono text-2xs uppercase tracking-wider text-ink-muted">
+                  Produced to order · dispatch in 3–5 business days
                 </p>
               </div>
             )}
-            {product.installNote && (
-              <div>
+
+            <div className="mt-10 space-y-4 border-t border-line pt-8 text-base leading-relaxed text-ink-secondary">
+              {product.description.map((para, i) => (
+                <Reveal as="p" key={para.slice(0, 24)} delay={i * 90}>
+                  {para}
+                </Reveal>
+              ))}
+            </div>
+
+            {product.features.length > 0 && (
+              <div className="mt-8">
                 <h2 className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
-                  Installation
+                  Specification
                 </h2>
-                <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
-                  {product.installNote}
-                </p>
+                <ul className="mt-4 space-y-1">
+                  {product.features.map((feature, i) => (
+                    <Reveal
+                      as="li"
+                      key={feature}
+                      delay={i * 80}
+                      className="-mx-2 flex gap-3 px-2 py-1.5 text-sm text-ink-secondary transition-colors hover:text-ink"
+                    >
+                      <span aria-hidden="true" className="mt-2 h-1 w-1 shrink-0 bg-accent" />
+                      {feature}
+                    </Reveal>
+                  ))}
+                </ul>
               </div>
             )}
-          </div>
 
+            <div className="mt-8 space-y-6 border-t border-line pt-8">
+              <div>
+                <h2 className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
+                  Why it&rsquo;s in the catalog
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
+                  {product.oemNote}
+                </p>
+              </div>
+              {product.materialNote && (
+                <div>
+                  <h2 className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
+                    Material
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
+                    {product.materialNote}
+                  </p>
+                </div>
+              )}
+              {product.installNote && (
+                <div>
+                  <h2 className="font-mono text-2xs uppercase tracking-widest text-ink-muted">
+                    Installation
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
+                    {product.installNote}
+                  </p>
+                </div>
+              )}
+            </div>
+
+          </div>
         </div>
-      </div>
+      </GlyphSelectionProvider>
 
       {related.length > 0 && (
         <section aria-labelledby="related-heading" className="border-t border-line bg-bg-inset">

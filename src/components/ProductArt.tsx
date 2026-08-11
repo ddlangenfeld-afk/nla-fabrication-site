@@ -1,25 +1,99 @@
+import { GlyphMarks } from "@/components/KnobFaceIcon";
+import {
+  defaultDesignFor,
+  getFaceDesign,
+  type GlyphSurface,
+} from "@/lib/faceDesigns";
+
 type ProductArtProps = {
   art: string;
   title: string;
   className?: string;
+  /** The chosen face design, on products that offer one. Carved into the
+   *  drawing so the picker changes what you are looking at. Omitted (or
+   *  undefined) keeps the factory face, which is what the catalog grid and
+   *  the cart thumbnails want. */
+  glyphId?: string;
+  /** Whether that glyph is engraved into a knob face or cut as a backlit
+   *  window. Changes how it is drawn, not just where. */
+  glyphSurface?: GlyphSurface;
 };
 
 /*
- * Technical line-art placeholders in engineering-drawing style.
- * Deliberate stand-ins until real product renders exist (phase 2) —
- * drawn as schematics, not attempts at photorealism.
+ * Technical line-art in engineering-drawing style.
+ *
+ * These are not placeholders standing in for photography that is about to
+ * arrive — see src/lib/renders.ts for why the CAD renders are built but not
+ * served. They are drawings, they are labelled as drawings, and they are
+ * accurate about the one thing they claim: the reconciled envelope and the
+ * face design you selected. A drawing that says "16.5 mm" is a weaker
+ * promise than a photograph, and right now it is the only one that can be
+ * kept.
  */
-export function ProductArt({ art, title, className = "" }: ProductArtProps) {
+export function ProductArt({
+  art,
+  title,
+  className = "",
+  glyphId,
+  glyphSurface = "knob",
+}: ProductArtProps) {
+  const design = glyphId ? getFaceDesign(glyphId) : null;
+  const label = design
+    ? `Technical line drawing of ${title}, ${design.name} ${
+        glyphSurface === "aperture" ? "symbol" : "face"
+      }`
+    : `Technical line drawing of ${title}`;
+
   return (
     <svg
       viewBox="0 0 400 300"
       role="img"
-      aria-label={`Technical line drawing of ${title}`}
+      aria-label={label}
       className={className}
       fill="none"
     >
-      <Drawing art={art} />
+      <Drawing art={art} glyphId={glyphId} />
     </svg>
+  );
+}
+
+/*
+ * A face design placed into a drawing.
+ *
+ * GlyphMarks is authored in a 32x32 box, so it is scaled to `size` about
+ * (cx, cy). Stroke weight is divided back out by that same scale — otherwise
+ * a 46-unit glyph would come in at 1.3 x 1.44 = 1.9, heavier than the 1.25
+ * outline it sits inside, and the face would read as the primary form.
+ */
+function FaceGlyph({
+  id,
+  cx,
+  cy,
+  size,
+  lit = false,
+}: {
+  id: string;
+  cx: number;
+  cy: number;
+  size: number;
+  lit?: boolean;
+}) {
+  const k = size / 32;
+  const stroke = (lit ? 1.5 : 1.05) / k;
+
+  return (
+    <g transform={`translate(${cx} ${cy}) scale(${k}) translate(-16 -16)`}>
+      <g
+        className={lit ? "text-accent" : "text-ink-secondary"}
+        stroke="currentColor"
+        strokeWidth={stroke}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      >
+        <GlyphMarks id={id} />
+      </g>
+    </g>
   );
 }
 
@@ -95,7 +169,14 @@ function Frame() {
   );
 }
 
-function Drawing({ art }: { art: string }) {
+/*
+ * No `glyphSurface` here on purpose. Which treatment a glyph gets — engraved
+ * into a face, or cut as a lit window — is decided by which drawing it lands
+ * in, and each product names its own (`sliders` vs `aperture`). Threading the
+ * surface through as well would create a second, independent way to ask the
+ * same question, and the two could disagree.
+ */
+function Drawing({ art, glyphId }: { art: string; glyphId?: string }) {
   switch (art) {
     case "latch":
       return (
@@ -159,8 +240,19 @@ function Drawing({ art }: { art: string }) {
                  C143.8 111.4 155 155.5 155 213.6 Z"
               strokeWidth="0.9"
             />
-            {/* indicator line slot — the factory single-line face */}
-            <rect x="116.5" y="113.5" width="7" height="91" strokeWidth="0.9" />
+            {/*
+             * The face. `classic` is the factory single-line marker and is
+             * drawn as what it physically is — a full-length moulded stripe
+             * down the front face, not a short dash — so it keeps the slot
+             * rather than borrowing the picker's 32px icon, which shortens it
+             * to stay legible at chip size. Every other design is carved into
+             * the same panel.
+             */}
+            {!glyphId || glyphId === "classic" ? (
+              <rect x="116.5" y="113.5" width="7" height="91" strokeWidth="0.9" />
+            ) : (
+              <FaceGlyph id={glyphId} cx={120} cy={158} size={50} />
+            )}
 
             {/* right-side elevation */}
             <path
@@ -191,6 +283,109 @@ function Drawing({ art }: { art: string }) {
           <DimLine x1={62.25} y1={240} x2={177.75} y2={240} label="16.5 mm" labelX={120} labelY={256} />
           <DimLine x1={48} y1={79.76} x2={48} y2={222} label="20.32" labelX={30} labelY={154} />
           <DimLine x1={215} y1={240} x2={330.5} y2={240} label="16.5 mm" labelX={272} labelY={256} />
+        </>
+      );
+    /*
+     * The backlit symbol set — a different part from the slider knob, and
+     * until now it borrowed the knob's drawing, which showed a solid cap to
+     * sell a cut window.
+     *
+     * Two views, because the product is the relationship between them: the
+     * elevation shows the symbol, the section shows it as an opening with a
+     * light behind it. 6.00 mm across is the only dimension stated, because
+     * it is the only one sourced — it is the window size the glyph library
+     * already reasons about, and the reason `classic` and `skull` are not
+     * offered on this surface at all (see lib/faceDesigns.ts). Everything
+     * else here is drawn to that scale rather than dimensioned: the button's
+     * own outside dimensions have not been measured, and inventing a plausible
+     * "34 mm" for a drawing that people order parts from is exactly the kind
+     * of number that gets believed.
+     */
+    case "aperture":
+      return (
+        <>
+          <Frame />
+          {/* front elevation of the indicator button */}
+          <g className="text-ink-secondary" stroke="currentColor" strokeWidth="1.25">
+            <rect x="66" y="86" width="128" height="128" rx="7" />
+            <rect x="78" y="98" width="104" height="104" rx="4" strokeWidth="0.9" />
+          </g>
+          {/* The aperture. Drawn lit because that is the state it is bought
+              for — an unlit window is just a hole and says nothing about the
+              product. */}
+          <FaceGlyph
+            id={glyphId ?? defaultDesignFor("aperture")}
+            cx={130}
+            cy={150}
+            size={58}
+            lit
+          />
+          {/* section cut line A-A through the window */}
+          <g
+            className="text-line-strong"
+            stroke="currentColor"
+            strokeWidth="0.75"
+            strokeDasharray="10 4 2 4"
+          >
+            <line x1="52" y1="150" x2="208" y2="150" />
+          </g>
+          {/* section: the wall, cut through the window. The 58-unit gap is the
+              same 58 units the glyph spans in the elevation — one scale across
+              both views, so the opening reads as the same hole twice. */}
+          <clipPath id="nla-aperture-wall">
+            <rect x="296" y="86" width="12" height="35" />
+            <rect x="296" y="179" width="12" height="35" />
+          </clipPath>
+          <g className="text-ink-secondary" stroke="currentColor" strokeWidth="1.25">
+            <rect x="296" y="86" width="12" height="35" />
+            <rect x="296" y="179" width="12" height="35" />
+          </g>
+          {/* section hatching, clipped to the two cut faces */}
+          <g
+            className="text-line-strong"
+            stroke="currentColor"
+            strokeWidth="0.5"
+            clipPath="url(#nla-aperture-wall)"
+          >
+            {/* A uniform ladder across the whole height — the clip above is
+                what makes it stop at the opening, so the spacing stays even
+                across both cut faces instead of being hand-fitted twice. */}
+            <path d="M288 64 L316 92 M288 76 L316 104 M288 88 L316 116 M288 100 L316 128 M288 112 L316 140 M288 124 L316 152 M288 136 L316 164 M288 148 L316 176 M288 160 L316 188 M288 172 L316 200 M288 184 L316 212 M288 196 L316 224" />
+          </g>
+
+          {/* backlight: in from the lamp behind, out through the opening */}
+          <g className="text-accent" stroke="currentColor" strokeWidth="0.75">
+            <path d="M340 150 L308 150" strokeDasharray="4 3" />
+            <path d="M296 150 L244 150" />
+            <path d="M296 134 L248 116" />
+            <path d="M296 166 L248 184" />
+            {/* lamp */}
+            <circle cx="346" cy="150" r="6" />
+            <path d="M346 138 L346 132 M346 168 L346 162 M355 150 L361 150" strokeWidth="0.6" />
+          </g>
+
+          <DimLine x1={101} y1={228} x2={159} y2={228} label="6.00 mm" labelX={130} labelY={244} />
+
+          <g
+            className="text-ink-muted"
+            fill="currentColor"
+            stroke="none"
+            fontSize="9"
+            fontFamily="var(--font-mono)"
+          >
+            <text x="46" y="153" textAnchor="end">
+              A
+            </text>
+            <text x="214" y="153">
+              A
+            </text>
+            <text x="130" y="268" textAnchor="middle">
+              ELEVATION
+            </text>
+            <text x="302" y="268" textAnchor="middle">
+              SECTION A—A
+            </text>
+          </g>
         </>
       );
     case "bezel":

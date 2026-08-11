@@ -264,7 +264,8 @@ worse than good technical line art.
 
 - [ ] Replace placeholder dimensions in `ProductArt.tsx` with measured values
 - [ ] Legal review of all three `/legal` pages
-- [ ] Real domain → `NEXT_PUBLIC_SITE_URL`
+- [ ] Real domain → `NEXT_PUBLIC_SITE_URL` (`nlaparts.store` purchased; still
+      needs DNS pointed at Vercel and the env var set in the Vercel dashboard)
 - [ ] Real inbox → `CONTACT_EMAIL`, verified sending domain in Resend
 - [ ] Stripe live keys + shipping rates + tax settings
 - [ ] Product photography to replace line art

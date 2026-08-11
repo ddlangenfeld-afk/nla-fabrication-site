@@ -504,6 +504,56 @@ body {
   text-decoration-color: currentColor;
 }
 
+/* ---------------------------------------------------------------------------
+   Product gallery
+--------------------------------------------------------------------------- */
+
+/* On a phone the viewer cancels .shell's inset and runs to both edges — the
+   part is the content of that page, and 40px of gutter plus 48px of padding
+   was spending a quarter of the screen width on chrome. Its side borders go
+   with it: a hairline flush against the bezel reads as a rendering fault
+   rather than as a frame. Boxed again from sm up, where the room exists.
+
+   Written here rather than as `-mx-5 border-x-0` utilities because .surface
+   sets the border in this file: same specificity, so which one wins would
+   come down to stylesheet order. */
+@media (max-width: 639px) {
+  .viewer-bleed {
+    margin-inline: -1.25rem;
+    border-inline-width: 0;
+  }
+}
+
+/* Carousel slides. Direction-aware so a step always travels the way the
+   control implies — the incoming frame enters from the side you are heading
+   toward, and wrapping 6 → 1 slides forward like every other step rather
+   than rewinding through the four frames in between.
+
+   `both` fill mode matters on the way out: it pins the leaving frame at its
+   final offscreen position until React drops it a tick later, which is what
+   stops a one-frame flash of it back at centre. */
+@keyframes nla-slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes nla-slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+@keyframes nla-slide-out-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+@keyframes nla-slide-out-right {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+.nla-slide-in-right { animation: nla-slide-in-right 420ms cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+.nla-slide-in-left { animation: nla-slide-in-left 420ms cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+.nla-slide-out-left { animation: nla-slide-out-left 420ms cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+.nla-slide-out-right { animation: nla-slide-out-right 420ms cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

@@ -24,6 +24,15 @@
  * are the views the engineering drawing already uses.
  *
  * Run:  node scripts/render-knobs.mjs
+ *
+ * Any --flag value pairs are forwarded straight to knob_model.py, so a set of
+ * caliper readings goes to finished renders in one command rather than a
+ * source edit followed by two more:
+ *
+ *   node scripts/render-knobs.mjs --width 14.2 --height 12.0 --depth 9.4
+ *
+ * Forwarded blind on purpose — knob_model.py owns the dimension list and its
+ * validation, and duplicating either here is how the two drift apart.
  */
 
 import { chromium } from "playwright";
@@ -47,10 +56,13 @@ fs.mkdirSync(OUT, { recursive: true });
 // ---------------------------------------------------------------------------
 // 1. Meshes, straight from the parametric model
 // ---------------------------------------------------------------------------
+const DIM_ARGS = process.argv.slice(2);
 console.log(`generating meshes at res=${RES}`);
-execFileSync("python3", ["design/knob_model.py", "--all", "--res", String(RES), "--out", `${TMP}/k`], {
-  stdio: "inherit",
-});
+execFileSync(
+  "python3",
+  ["design/knob_model.py", "--all", "--res", String(RES), "--out", `${TMP}/k`, ...DIM_ARGS],
+  { stdio: "inherit" }
+);
 
 // ---------------------------------------------------------------------------
 // 2. A static server. ES modules will not load over file:// — Chrome blocks the
